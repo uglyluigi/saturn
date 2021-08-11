@@ -1,6 +1,5 @@
 [package]
 name = "saturn"
-authors = "Justin Woodring, @Booglejr <rooty@kwtechllc.com>; "
 license = "MIT"
 version = "0.1.0"
 edition = "2018"
