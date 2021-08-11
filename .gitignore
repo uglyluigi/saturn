@@ -4,3 +4,4 @@ src/clientapp/dist
 src/clientapp/target
 src/clientapp/Cargo.lock
 .vscode
+.env
