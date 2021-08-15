@@ -1,0 +1,100 @@
+
+/* Color */
+$BLACK_BG:        #26282C;
+$ACCENT_1_PURPLE: #4C1A88;
+$ACCENT_2_RUST:   #CF5C36;
+$ACCENT_3_TEAL:   #2BC29F;
+$ACCENT_4_YELLOW: #FFAF47;
+$TEXT_1_OFF_WHITE:#D2DDDE;
+
+/* Fonts */
+$FONT_HEADER: "Coda", cursive;
+$FONT_BODY: 'Poppins', sans-serif;
+
+@import url('https://fonts.googleapis.com/css2?family=Coda&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap%27');
+
+h1 {
+    font-family: $FONT_HEADER;
+    color: $TEXT_1_OFF_WHITE;
+    font-size: 60pt;
+    margin: 0;
+}
+
+/* Horizontal line */
+hr {
+    border-top: 1px solid $TEXT_1_OFF_WHITE;
+    width: 90%;
+}
+
+.button_style {
+    color: blue;
+    border-radius: 8px;
+    height: 50px;
+}
+
+.soft-grey-rect {
+    width: 90%;
+    height: 100%;
+    border-radius: 8px;
+    background-color: $BLACK_BG;
+
+    padding-top: 20px;
+    padding-bottom: 20px;
+
+    /* Center the rect vertically */
+    margin: auto;
+}
+
+.soft-grey-rect h1 {
+    text-align: center;
+}
+
+.please-login-text {
+    font-family: $FONT_BODY;
+    color: $TEXT_1_OFF_WHITE;
+    font-size: 20pt;
+    text-align: center;
+}
+
+/* Style for auth-header */
+
+.auth-header {
+    display: flex;
+    justify-content: center;
+}
+
+.auth-header img {
+    float: left;
+    width: 120px;
+    height: 120px;
+    margin-top: 10px;
+}
+
+.auth-header h1 {
+    position: relative;
+    left: 10px;
+    font-size: 80pt;
+    white-space: nowrap;
+  
+    // background: linear-gradient( 92deg, #95d7e3, #eb76ff );
+    background: -webkit-linear-gradient( 92deg, #95d7e3, #eb76ff );
+    background-size:600vw 600vw;
+    
+    // make sure to put these after the background property
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: textAnimate 5s linear infinite alternate;
+}
+
+@keyframes textAnimate {
+    from {
+        filter: hue-rotate(0deg);
+        background-position-x: 0%;
+    }
+
+    to {
+        filter: hue-rotate(360deg);
+        background-position-x: 600vw;
+    }
+}
