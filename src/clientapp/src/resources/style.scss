@@ -21,6 +21,11 @@ h1 {
     margin: 0;
 }
 
+h2 {
+    @extend h1;
+    font-size: 30pt;
+}
+
 /* Horizontal line */
 hr {
     border-top: 1px solid $TEXT_1_OFF_WHITE;
