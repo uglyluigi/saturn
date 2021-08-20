@@ -11,7 +11,6 @@ pub mod controllers;
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate diesel_migrations;
 
-
 //Meta Imports
 use prelude::*;
 
@@ -42,6 +41,7 @@ pub fn rocket() -> Rocket<Build>{
         .merge(("address", "0.0.0.0"))
         .merge(("port", 8000))
         .merge(("databases", map!["saturn" => db]))
+        .merge(("secret_key", "hPRYyVRiMyxpw5sBB1XeCMN1kFsDCqKvBi2QJxBVHQk="));
     ;
 
     //Build rocket object
@@ -74,4 +74,101 @@ async fn run_migrations(rocket: Rocket<Build>) -> Rocket<Build> {
     conn.run(|c| embedded_migrations::run(c)).await.expect("diesel migrations");
 
     rocket
+}
+
+
+
+//Stufff
+#[derive(Debug, Serialize, Deserialize)]
+struct GoogleClaims {
+    sub: String,
+    email: String,
+    exp: usize,
+}
+
+pub struct UserAuthenticator {
+    email: Box<String>,
+}
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for UserAuthenticator {
+    type Error = ();
+
+    async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
+        let mut email = None;
+        let jwt = req.cookies().get_private("user_jwt").map(|cookie| Box::new(cookie.value().to_owned()));
+        let validation = Validation::default();
+
+        let body = reqwest::get("https://www.googleapis.com/oauth2/v3/certs").await.unwrap().json::<HashMap<String, Vec<GoogleKey>>>().await.unwrap();
+
+        for key in body.get("keys").unwrap(){
+            let jwt = jwt.clone();
+            if let Some(jwt) = jwt{
+                match decode::<GoogleClaims>(&jwt, &DecodingKey::from_rsa_components(&key.n, &key.e), &validation) {
+                    Ok(c) => {email = Some(c.claims.email)},
+                    Err(_) => {}
+                };
+            }
+
+            if let Some(jwt) = req.headers().get_one("Authorization"){
+                match decode::<GoogleClaims>(&jwt, &DecodingKey::from_rsa_components(&key.n, &key.e), &validation) {
+                    Ok(c) => {let cookie = Cookie::new("user_jwt", jwt.to_owned()); req.cookies().add_private(cookie); email = Some(c.claims.email)},
+                    Err(_) => {}
+                };
+            }
+
+            if email.is_some() {break}
+        }
+
+        if email.is_none() {req.cookies().remove_private(Cookie::named("user_jwt"));}
+
+        match email {
+            None => Outcome::Failure((Status::Forbidden, ())),
+            Some(email) => Outcome::Success(UserAuthenticator{email: Box::new(email)}),
+        }
+    }
+}
+
+#[derive(Deserialize)]
+struct GoogleKey {
+    n: String,
+    e: String,
+    alg: String,
+    kty: String,
+    r#use: String,
+    kid: String
+}
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for User{
+
+    type Error = ();
+
+    async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
+        use crate::schema::users::dsl::{users, email};
+        let db = try_outcome!(req.guard::<Db>().await);
+        let auth = try_outcome!(req.guard::<UserAuthenticator>().await);
+        let used_email = auth.email.clone();
+        let user = db.run(move |conn| {
+            users
+                .filter(email.eq(&auth.email as &str))
+                .first::<User>(conn)
+                .optional()
+        }).await.unwrap();
+
+        if let Some(user) = user {
+            Outcome::Success(user)
+        } else {
+            let user = db.run(move |conn| {
+                let new_user = NewUser {
+                    email: &used_email
+                };
+                insert_into(users)
+                    .values(&new_user.clone())
+                    .get_result(conn)
+                    .optional()
+            }).await.unwrap();
+            Outcome::Success(user.unwrap())
+        }
+    }
 }

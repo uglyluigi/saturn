@@ -8,3 +8,15 @@ table! {
         expiry_date -> Timestamptz,
     }
 }
+
+table! {
+    users (id) {
+        id -> Int4,
+        email -> Text,
+    }
+}
+
+allow_tables_to_appear_in_same_query!(
+    clubs,
+    users,
+);

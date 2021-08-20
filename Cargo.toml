@@ -7,10 +7,12 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rocket = { version = "0.5.0-rc.1", features = ["json"] }
+rocket = { version = "0.5.0-rc.1", features = ["json", "secrets"] }
 rocket_sync_db_pools = { version = "0.1.0-rc.1", features = ["diesel_postgres_pool"]}
 diesel = { version = "1.4.4", features = ["postgres", "chrono"] }
 diesel_migrations = "1.4.0"
 dotenv = "0.15.0"
 serde = { version = "1.0", features = ["derive"] }
 chrono = { version = "0.4", features = ["serde", "rustc-serialize"] }
+jsonwebtoken = "7.2.0"
+reqwest = { version = "0.11", features = ["json"] }
