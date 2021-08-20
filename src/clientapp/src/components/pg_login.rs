@@ -1,5 +1,7 @@
 use yew::services::ConsoleService;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
+use crate::components::google_login_button::GoogleLoginButton;
+
 
 pub enum Msg {
     Increment,
@@ -54,6 +56,7 @@ impl Component for LoginPageComponent {
                     <hr/>
                     <div class="please-login-text">
                         {"Please log in to proceed."}
+                        <GoogleLoginButton/>
                     </div>
                 </div>
             </div>
