@@ -2,38 +2,20 @@ use yew::services::ConsoleService;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 use crate::components::google_login_button::GoogleLoginButton;
 
-
-pub enum Msg {
-    Increment,
-    Decrement,
-}
-
 pub struct LoginPageComponent {
     link: ComponentLink<Self>,
-    value: i64,
 }
 
 impl Component for LoginPageComponent {
-    type Message = Msg;
+    type Message = ();
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link, value: 0 }
+        Self { link }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
-        match msg {
-            Msg::Increment => {
-                self.value += 1;
-                ConsoleService::log("plus one");
-                true
-            }
-            Msg::Decrement => {
-                self.value -= 1;
-                ConsoleService::log("minus one");
-                true
-            }
-        }
+        false
     }
 
     fn change(&mut self, _props: Self::Properties) -> ShouldRender {
@@ -43,7 +25,6 @@ impl Component for LoginPageComponent {
     fn view(&self) -> Html {
         html! {
             <div>
-
                 <div class="auth-header">
                     <img class="saturn-logo" src="assets/saturn-logo.svg" alt="Saturn logo"/>
                     <h1>{"Saturn"}</h1>

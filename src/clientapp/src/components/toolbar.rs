@@ -5,6 +5,10 @@ pub struct ToolbarComponent {
     link: ComponentLink<Self>,
 }
 
+enum Msg {
+    NowActive(String),
+}
+
 impl Component for ToolbarComponent {
     type Message = ();
     type Properties = ();
@@ -23,10 +27,13 @@ impl Component for ToolbarComponent {
 
     fn view(&self) -> Html {
         html! {
-            <span id="toolbar">
-                <img src="assets/saturn-logo.svg" alt="Saturn logo"/>
-                <h2>{"Saturn"}</h2>
-            </span>
+            <div class="top_navbar">
+                <img src="./assets/saturn-logo.svg"/>
+                <div class="links">
+                    <a class="active" href="#home">{"Home"}</a>
+                    <a href="#smth">{"Something"}</a>
+                </div>
+            </div>
         }
     }
 }

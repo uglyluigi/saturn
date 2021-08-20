@@ -1,0 +1,24 @@
+@import "./consts.scss";
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-family: $FONT_HEADER;
+    color: $TEXT_1_OFF_WHITE;
+    font-size: 60pt;
+    margin: 0;
+}
+
+h2 {
+    @extend h1;
+    font-size: 30pt;
+}
+
+/* Horizontal line */
+hr {
+    border-top: 1px solid $TEXT_1_OFF_WHITE;
+    width: 90%;
+}

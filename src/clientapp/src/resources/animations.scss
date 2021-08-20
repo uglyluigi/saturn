@@ -1,0 +1,33 @@
+animated-obj {
+    animation-name: drop_fade_in;
+    animation-duration: .7s;
+    animation-fill-mode: forwards;
+    position: relative;
+    overflow: hidden;
+    opacity: 0%;
+}
+
+.auth-header {
+    @extend animated-obj;
+}
+
+.soft-grey-rect {
+    @extend animated-obj;
+    animation-delay: 0.5s;
+}
+
+@keyframes drop_fade_in {
+    from {
+        opacity: 0%;
+        top: -500px;
+    }
+
+    66% {
+        opacity: 0%;
+    }
+
+    to {
+        top: 0px;
+        opacity: 100%;
+    }
+}

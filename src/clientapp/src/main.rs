@@ -6,7 +6,6 @@ struct Model {
     // `ComponentLink` is like a reference to a component.
     // It can be used to send messages to the component
     link: ComponentLink<Self>,
-    value: i64,
 }
 
 impl Component for Model {
@@ -14,10 +13,7 @@ impl Component for Model {
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self {
-            link,
-            value: 0,
-        }
+        Self { link }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -33,10 +29,8 @@ impl Component for Model {
 
     fn view(&self) -> Html {
         html! {
-            <div>
-                <ToolbarComponent/>
-
-                <div class="stars">
+                <div>
+                    <div class="stars">
                     <div class="star"></div>
                     <div class="star"></div>
                     <div class="star"></div>
@@ -89,6 +83,7 @@ impl Component for Model {
                     <div class="star"></div>
                 </div>
 
+                <ToolbarComponent/>
                 <LoginPageComponent/>
             </div>
         }
