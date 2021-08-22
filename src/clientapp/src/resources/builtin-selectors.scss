@@ -22,3 +22,10 @@ hr {
     border-top: 1px solid $TEXT_1_OFF_WHITE;
     width: 90%;
 }
+
+canvas {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+}
