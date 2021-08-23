@@ -39,9 +39,11 @@ pub fn rocket() -> Rocket<Build>{
     //Build config
     let figment = Figment::from(rocket::Config::default())
         .merge(("address", "0.0.0.0"))
-        .merge(("port", 8000))
+        .merge(("port", 443))
         .merge(("databases", map!["saturn" => db]))
-        .merge(("secret_key", "hPRYyVRiMyxpw5sBB1XeCMN1kFsDCqKvBi2QJxBVHQk="));
+        .merge(("secret_key", "hPRYyVRiMyxpw5sBB1XeCMN1kFsDCqKvBi2QJxBVHQk="))
+        .merge(("tls.certs", env::var("TLS_CERT_PATH").expect("TLS_CERT_PATH must be set")))
+        .merge(("tls.key", env::var("TLS_KEY_PATH").expect("TLS_KEY_PATH must be set")))
     ;
 
     //Build rocket object
