@@ -51,7 +51,7 @@ pub fn rocket() -> Rocket<Build>{
         .attach(AdHoc::on_ignite("Diesel Migrations", run_migrations))
         //Startup
         .mount("/", routes![controllers::index::index])
-        .mount("/.well-known", FileServer::from(relative!(".well-known"))
+        .mount("/.well-known", FileServer::from(relative!(".well-known")))
         .mount("/", FileServer::from(relative!("src/clientapp/dist")).rank(-1))
         .attach(AdHoc::on_response("404 Redirector", |_req, res| Box::pin(async move {
             if res.status() == Status::NotFound {
