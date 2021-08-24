@@ -1,5 +1,5 @@
 use yew::prelude::*;
-use yew_router::prelude::*;
+use yew_router::{define_router_state, prelude::{Switch, Router}};
 
 use serde::{Serialize, Deserialize};
 mod components;
@@ -13,13 +13,14 @@ pub enum AppRoute {
     Login
 }
 
-define_router_state!(crate::AppRoute)
+define_router_state!(crate::AppRoute);
 use router_state::*;
 
 struct Model {
     // `ComponentLink` is like a reference to a component.
     // It can be used to send messages to the component
     link: ComponentLink<Self>,
+    service: RouteService,
 }
 
 enum Msg {
@@ -32,7 +33,7 @@ impl Component for Model {
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link }
+        Self { link, service: RouteService::new() }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -52,7 +53,7 @@ impl Component for Model {
     fn view(&self) -> Html {
         html! {
             <main>
-                <Router
+                <Router<AppRoute, ()>
                     render = Router::render(|switch: AppRoute| {
                         match switch {
                             AppRoute::Index => {
@@ -60,6 +61,7 @@ impl Component for Model {
                                 html! {
                                     <h1>{"Redirecting..."}</h1>
                                 }
+
                             },
 
                             AppRoute::Login => {
