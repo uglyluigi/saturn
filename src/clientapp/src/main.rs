@@ -1,9 +1,9 @@
 use yew::prelude::*;
-use yew_router::prelude::*;
-use yew_router::service::RouteService;
-use yew_router::route::RouteState;
 use serde::{Serialize, Deserialize};
 
+#[macro_use]
+extern crate yew_router;
+use yew_router::prelude::*;
 
 mod components;
 use components::{pg_login::LoginPageComponent, toolbar::ToolbarComponent, stellar::StellarBg};
@@ -12,15 +12,10 @@ struct Model {
     // `ComponentLink` is like a reference to a component.
     // It can be used to send messages to the component
     link: ComponentLink<Self>,
-    route_service: RouteService<SaturnRouteState>,
-    route_state: SaturnRouteState,
 }
 
-#[derive(PartialEq, Serialize, Debug, Clone, Default, Deserialize)]
-struct SaturnRouteState { }
-
-#[derive(Debug, Switch, Clone)]
-enum Route {
+#[derive(Debug, Switch, Clone, PartialEq, Serialize, Deserialize)]
+enum AppRoute {
     #[to = "/"]
     Index,
 
@@ -34,6 +29,9 @@ enum Route {
     NotFound
 }
 
+define_router_state!(Option<crate::AppRoute>);
+use router_state::*;
+
 enum Msg {
     RouteChanged,
 }
@@ -44,7 +42,7 @@ impl Component for Model {
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link, route_service: RouteService::<SaturnRouteState>::new(), route_state: SaturnRouteState::default() }
+        Self { link }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -63,10 +61,10 @@ impl Component for Model {
 
     fn view(&self) -> Html {
         html! {
-            <Router<Route, SaturnRouteState> 
-                render = Router::render(|route: Route| {
+            <Router<AppRoute, router_state::State> 
+                render = Router::render(|route: AppRoute| -> Html {
                     match route {
-                        Route::Index => {
+                        AppRoute::Index => {
                             html! {
                                 // todo: if not logged in...
                                 // for now, redirect to login page
@@ -76,11 +74,11 @@ impl Component for Model {
                             }
                         },
 
-                        Route::Home => {
+                        AppRoute::Home => {
                             html!{"NYI"}
                         },
 
-                        Route::Login => html! {
+                        AppRoute::Login => html! {
                             <div>
                                 <StellarBg/>
                                 <ToolbarComponent/>
@@ -88,7 +86,7 @@ impl Component for Model {
                             </div>
                         },
 
-                        Route::NotFound => html! {
+                        AppRoute::NotFound => html! {
                             <div>
                                 <h1>{"404 Not Found :("}</h1>
                             </div>
