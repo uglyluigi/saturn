@@ -29,6 +29,7 @@ pub use rocket::outcome::try_outcome;
 pub use rocket::request::{self, Outcome, Request, FromRequest};
 pub use std::collections::HashMap;
 pub use rocket::config::SecretKey;
+pub use rocket::form::Form;
 //Diesel
 pub use diesel::prelude::*;
 pub use diesel::pg::PgConnection;
@@ -37,5 +38,6 @@ pub use chrono::{ DateTime, Utc };
 //Other
 pub use std::io::Cursor;
 pub use dotenv::dotenv;
+
 pub use std::env;
 pub use jsonwebtoken::{encode, decode, Header, Algorithm, Validation, EncodingKey, DecodingKey};
