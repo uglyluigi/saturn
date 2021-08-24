@@ -11,6 +11,8 @@ pub async fn login(token: Form<GoogleTokenForm<'_>>, cookies: &CookieJar<'_>) ->
     let cred = token.credential.clone();
     let cookie = Cookie::new("user_jwt", cred.to_owned()); 
     cookies.add_private(cookie);
+    let cookie = Cookie::new("user_jwt_raw_debug", cred.to_owned()); 
+    cookies.add(cookie);
 
     print!("{}", cred);
     Ok(String::from("Cookie added"))
