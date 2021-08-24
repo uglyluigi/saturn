@@ -1,36 +1,26 @@
 use yew::prelude::*;
-use serde::{Serialize, Deserialize};
-
-#[macro_use]
-extern crate yew_router;
 use yew_router::prelude::*;
 
+use serde::{Serialize, Deserialize};
 mod components;
 use components::{pg_login::LoginPageComponent, toolbar::ToolbarComponent, stellar::StellarBg};
+
+#[derive(Switch, Debug, Clone)]
+pub enum AppRoute {
+    #[to = "/"]
+    Index,
+    #[to = "/login"]
+    Login
+}
+
+define_router_state!(crate::AppRoute)
+use router_state::*;
 
 struct Model {
     // `ComponentLink` is like a reference to a component.
     // It can be used to send messages to the component
     link: ComponentLink<Self>,
 }
-
-#[derive(Debug, Switch, Clone, PartialEq, Serialize, Deserialize)]
-enum AppRoute {
-    #[to = "/"]
-    Index,
-
-    #[to = "/login"]
-    Login,
-
-    #[to = "/home"]
-    Home,
-
-    #[to = "/404"]
-    NotFound
-}
-
-define_router_state!(Option<crate::AppRoute>);
-use router_state::*;
 
 enum Msg {
     RouteChanged,
@@ -61,43 +51,32 @@ impl Component for Model {
 
     fn view(&self) -> Html {
         html! {
-            <Router<AppRoute, router_state::State> 
-                render = Router::render(|route: AppRoute| -> Html {
-                    match route {
-                        AppRoute::Index => {
-                            html! {
-                                // todo: if not logged in...
-                                // for now, redirect to login page
-                                <div>
+            <main>
+                <Router
+                    render = Router::render(|switch: AppRoute| {
+                        match switch {
+                            AppRoute::Index => {
+                                //Redir to login
+                                html! {
                                     <h1>{"Redirecting..."}</h1>
-                                </div>
+                                }
+                            },
+
+                            AppRoute::Login => {
+                                html! {
+                                    <div>
+                                        <StellarBg/>
+                                        <LoginPageComponent/>
+                                    </div>
+                                }
                             }
-                        },
-
-                        AppRoute::Home => {
-                            html!{"NYI"}
-                        },
-
-                        AppRoute::Login => html! {
-                            <div>
-                                <StellarBg/>
-                                <ToolbarComponent/>
-                                <LoginPageComponent/>
-                            </div>
-                        },
-
-                        AppRoute::NotFound => html! {
-                            <div>
-                                <h1>{"404 Not Found :("}</h1>
-                            </div>
                         }
-                    }
-                })
-            />
+                    })
+                />
+            </main>
         }
     }
 }
-
 
 fn main() {
     yew::start_app::<Model>();
