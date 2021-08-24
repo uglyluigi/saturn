@@ -112,7 +112,7 @@ impl<'r> FromRequest<'r> for UserAuthenticator {
     async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
         let mut email = None;
         let jwt = req.cookies().get_private("user_jwt").map(|cookie| Box::new(cookie.value().to_owned()));
-        let validation = Validation::default();
+        let validation = Validation::new(Algorithm::RS256);
 
         let body = reqwest::get("https://www.googleapis.com/oauth2/v3/certs").await.unwrap().json::<HashMap<String, Vec<GoogleKey>>>().await.unwrap();
 
