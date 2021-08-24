@@ -84,9 +84,21 @@ async fn run_migrations(rocket: Rocket<Build>) -> Rocket<Build> {
 //Stufff
 #[derive(Debug, Serialize, Deserialize)]
 struct GoogleClaims {
+    iss: String,
+    nbf: usize,
+    aud: String,
     sub: String,
+    hd: String,
     email: String,
+    email_verified: bool,
+    azp: String,
+    name: String,
+    picture: String,
+    given_name: String,
+    family_name: String,
+    iat: usize,
     exp: usize,
+    jti: String
 }
 
 pub struct UserAuthenticator {
@@ -104,12 +116,14 @@ impl<'r> FromRequest<'r> for UserAuthenticator {
 
         let body = reqwest::get("https://www.googleapis.com/oauth2/v3/certs").await.unwrap().json::<HashMap<String, Vec<GoogleKey>>>().await.unwrap();
 
+        println!("User get keys.");
+
         for key in body.get("keys").unwrap(){
             let jwt = jwt.clone();
             if let Some(jwt) = jwt{
                 match decode::<GoogleClaims>(&jwt, &DecodingKey::from_rsa_components(&key.n, &key.e), &validation) {
                     Ok(c) => {email = Some(c.claims.email)},
-                    Err(_) => {}
+                    Err(e) => {println!("{:?}", e)}
                 };
             }
 
