@@ -1,4 +1,7 @@
 use yew::prelude::*;
+use yew_router::prelude::*;
+
+
 mod components;
 use components::{pg_login::LoginPageComponent, toolbar::ToolbarComponent, stellar::StellarBg};
 
@@ -6,6 +9,14 @@ struct Model {
     // `ComponentLink` is like a reference to a component.
     // It can be used to send messages to the component
     link: ComponentLink<Self>,
+}
+
+#[derive(Debug, Switch, Clone)]
+enum Route {
+    #[to = "/"]
+    Home,
+    #[to = "/"]
+    Secure
 }
 
 impl Component for Model {
@@ -29,11 +40,21 @@ impl Component for Model {
 
     fn view(&self) -> Html {
         html! {
-            <div>
-                <StellarBg/>
-                <ToolbarComponent/>
-                <LoginPageComponent/>
-            </div>
+            <Router<Route> render={Router::render(|r: Route| {
+                match r {
+                    Route::Home => html!{ 
+                        <div>
+                            <StellarBg/>
+                            <ToolbarComponent/>
+                            <LoginPageComponent/> 
+                        </div>
+                    },
+        
+                    Route::Secure => html! {
+                        {"Penis!"}
+                    }
+                }
+            })} />
         }
     }
 }
