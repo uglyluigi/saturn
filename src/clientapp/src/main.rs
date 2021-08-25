@@ -79,10 +79,15 @@ impl Component for Model {
                 {
                     match AppRoute::switch(self.route.clone()) {
                         Some(AppRoute::Index) => {
+                            self.change_route(AppRoute::Login);
                             self.link.send_message(Msg::ChangeRoute(AppRoute::Login));
 
                             html! {
-                                { "Redirecting..." }
+                                <div>
+                                    { "Redirecting..." }
+                
+
+                                </div>
                             }
                         },
 
