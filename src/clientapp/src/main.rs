@@ -73,15 +73,19 @@ impl Component for Model {
         false
     }
 
+    fn rendered(&mut self, first_render: bool) {
+        if self.route.clone() == AppRoute::Index {
+            self.change_route(AppRoute::Login);
+            self.link.send_message(Msg::ChangeRoute(AppRoute::Login));
+        }
+    }
+
     fn view(&self) -> Html {
         html! {
             <main>
                 {
                     match AppRoute::switch(self.route.clone()) {
                         Some(AppRoute::Index) => {
-                            self.change_route(AppRoute::Login);
-                            self.link.send_message(Msg::ChangeRoute(AppRoute::Login));
-
                             html! {
                                 <div>
                                     { "Redirecting..." }
