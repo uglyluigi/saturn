@@ -44,6 +44,8 @@ impl Component for Model {
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let mut service = RouteService::<()>::new();
         let route = service.get_route();
+        let callback = link.callback(Msg::RouteChanged);
+        service.register_callback(callback);
 
 
         Self { link, service, route }
