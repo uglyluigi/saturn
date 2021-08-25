@@ -74,10 +74,14 @@ impl Component for Model {
     }
 
     fn rendered(&mut self, first_render: bool) {
-        if self.route.clone() == AppRoute::Index {
-            self.change_route(AppRoute::Login);
-            self.link.send_message(Msg::ChangeRoute(AppRoute::Login));
-        }
+        match AppRoute::switch(self.route.clone()) {
+            Some(AppRoute::Index) => {
+                self.change_route(AppRoute::Login);
+                self.link.send_message(Msg::ChangeRoute(AppRoute::Login));
+            },
+
+            _ => ()
+        };
     }
 
     fn view(&self) -> Html {
