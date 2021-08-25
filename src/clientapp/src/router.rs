@@ -37,6 +37,10 @@ impl<SW: Switch + Clone + 'static, STATE: RouterState> Component for RouterRedir
         false
     }
 
+    fn change(&mut self, props: Self::Properties) -> ShouldRender {
+        false
+    }
+
     fn view(&self) -> Html {
         self.link.send_message(Msg::Clicked);
 
