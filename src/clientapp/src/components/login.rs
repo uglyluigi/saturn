@@ -1,4 +1,6 @@
-struct Login {
+use yew::prelude::*;
+
+pub struct Login {
     // `ComponentLink` is like a reference to a component.
     // It can be used to send messages to the component
     link: ComponentLink<Self>,

@@ -1,3 +1,5 @@
+use yew::prelude::*;
+
 pub struct NotFound {
     // `ComponentLink` is like a reference to a component.
     // It can be used to send messages to the component

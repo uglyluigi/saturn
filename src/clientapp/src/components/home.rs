@@ -1,4 +1,6 @@
-struct Home {
+use yew::prelude::*;
+
+pub struct Home {
     // `ComponentLink` is like a reference to a component.
     // It can be used to send messages to the component
     link: ComponentLink<Self>,
