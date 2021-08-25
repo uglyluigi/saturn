@@ -3,78 +3,23 @@ mod components;
 use components::{pg_login::LoginPageComponent, toolbar::ToolbarComponent, stellar::StellarBg};
 use yew::{html::IntoPropValue, web_sys::Url};
 use yew_router::{components::RouterAnchor, prelude::*, switch::Permissive};
+use web_sys::console::log_2;
+use wasm_bindgen::prelude::*;
+
 
 #[derive(Clone, Debug, Switch)]
 pub enum AppRoute {
     #[to = "/login"]
     Login,
-    #[to = "/!"]
-    Home,
     #[to = "/page-not-found"]
     NotFound(Permissive<String>),
+    #[to = "/!"]
+    Home,
 }
 
-impl AppRoute {
-    pub fn into_public(self) -> PublicUrlSwitch {
-        PublicUrlSwitch(self)
-    }
-
-    pub fn into_route(self) -> Route {
-        Route::from(self.into_public())
-    }
-}
-
-#[derive(Clone, Debug)]
-pub struct PublicUrlSwitch(AppRoute);
-impl PublicUrlSwitch {
-    fn base_url() -> Url {
-        if let Ok(Some(href)) = yew::utils::document().base_uri() {
-            // since this always returns an absolute URL we turn it into `Url`
-            // so we can more easily get the path.
-            Url::new(&href).unwrap()
-        } else {
-            Url::new("/").unwrap()
-        }
-    }
-
-    fn base_path() -> String {
-        let mut path = Self::base_url().pathname();
-        if path.ends_with('/') {
-            // pop the trailing slash because AppRoute already accounts for it
-            path.pop();
-        }
-
-        path
-    }
-
-    pub fn route(self) -> AppRoute {
-        self.0
-    }
-}
-impl Switch for PublicUrlSwitch {
-    fn from_route_part<STATE>(part: String, state: Option<STATE>) -> (Option<Self>, Option<STATE>) {
-        if let Some(part) = part.strip_prefix(&Self::base_path()) {
-            let (route, state) = AppRoute::from_route_part(part.to_owned(), state);
-            (route.map(Self), state)
-        } else {
-            (None, None)
-        }
-    }
-
-    fn build_route_section<STATE>(self, route: &mut String) -> Option<STATE> {
-        route.push_str(&Self::base_path());
-        self.0.build_route_section(route)
-    }
-}
-
-impl IntoPropValue<PublicUrlSwitch> for AppRoute {
-    fn into_prop_value(self: AppRoute) -> PublicUrlSwitch {
-        self.into_public()
-    }
-}
-
-pub type AppRouter = Router<PublicUrlSwitch>;
-pub type AppAnchor = RouterAnchor<PublicUrlSwitch>;
+pub type AppRouter = Router<AppRoute>;
+pub type AppAnchor = RouterAnchor<AppRoute>;
+pub type AppRedirect = RouterRedirect<AppRoute>;
 
 struct Model {
     // `ComponentLink` is like a reference to a component.
@@ -117,7 +62,7 @@ impl Component for Model {
                 <AppRouter
                     render=AppRouter::render(Self::switch)
                     redirect=AppRouter::redirect(|route: Route| {
-                        AppRoute::NotFound(Permissive(Some(route.route))).into_public()
+                        AppRoute::NotFound(Permissive(Some(route.route)))
                     })
                 />
             </div>
@@ -126,8 +71,8 @@ impl Component for Model {
 }
 
 impl Model {
-    fn switch(switch: PublicUrlSwitch) -> Html {
-        match switch.route() {
+    fn switch(switch: AppRoute) -> Html {
+        match switch {
             AppRoute::Login => {
                 html! { <crate::components::login::Login /> }
             }
@@ -139,6 +84,55 @@ impl Model {
             }
         }
     }
+}
+
+use yew_router::components::{Props, Msg};
+use yew_router::agent::RouteRequest;
+pub struct RouterRedirect<SW: Switch + Clone + 'static, STATE: RouterState = ()> {
+    
+    // `ComponentLink` is like a reference to a component.
+    // It can be used to send messages to the component
+    link: ComponentLink<Self>,
+    router: RouteAgentDispatcher<STATE>,
+    props: Props<SW>,
+}
+
+impl<SW: Switch + Clone + 'static, STATE: RouterState> Component for RouterRedirect<SW, STATE> {
+    type Message = Msg;
+    type Properties = Props<SW>;
+
+    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+        let router = RouteAgentDispatcher::new();
+        RouterRedirect {
+            link,
+            router,
+            props,
+        }
+    }
+
+    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+        web_sys::console::log_2(&"%s : Hello World".into(),&"OnLoad".into());
+        let route: Route<STATE> = Route::from(self.props.route.clone());
+        self.router.send(RouteRequest::ChangeRoute(route));
+        false
+    }
+
+    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
+        // Should only return "true" if new properties are different to
+        // previously received properties.
+        // This component has no properties so we will always return "false".
+        false
+    }
+
+    fn view(&self) -> Html {
+        self.link.send_message(Msg::Clicked);
+
+        html!{
+            <>
+            </>
+        }
+    }
+    
 }
 
 fn main() {

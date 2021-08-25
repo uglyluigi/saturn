@@ -1,4 +1,6 @@
 use yew::prelude::*;
+use crate::AppRedirect;
+use crate::AppRoute;
 
 pub struct Home {
     // `ComponentLink` is like a reference to a component.
@@ -31,7 +33,7 @@ impl Component for Home {
                 //<StellarBg/>
                 //<ToolbarComponent/>
                 //<LoginPageComponent/>
-                <h1>{ "Home" }</h1>
+                <h1>{ "Home" } <AppRedirect route=AppRoute::Login/></h1>
             </div>
         }
     }
