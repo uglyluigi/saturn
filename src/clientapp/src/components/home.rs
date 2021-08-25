@@ -11,7 +11,7 @@ impl Component for Home {
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link }
+        Self { link,  }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -31,7 +31,7 @@ impl Component for Home {
                 //<StellarBg/>
                 //<ToolbarComponent/>
                 //<LoginPageComponent/>
-                <h1>Home</h1>
+                <h1>{ "Home" }</h1>
             </div>
         }
     }

@@ -31,7 +31,7 @@ impl Component for Login {
                 //<StellarBg/>
                 //<ToolbarComponent/>
                 //<LoginPageComponent/>
-                <h1>Login</h1>
+                <h1>{ "Login"  }</h1>
             </div>
         }
     }

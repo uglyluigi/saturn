@@ -10,6 +10,8 @@ pub enum AppRoute {
     Login,
     #[to = "/!"]
     Home,
+    #[to = "/page-not-found"]
+    NotFound(Permissive<String>),
 }
 
 impl AppRoute {
@@ -111,7 +113,7 @@ impl Component for Model {
                 <AppAnchor classes="navbar-item" route=AppRoute::Login>
                             { "Login" }
                 </AppAnchor>
-                <h1>Main Thing</h1>
+                <h1> {"Main Thing" } </h1>
                 <AppRouter
                     render=AppRouter::render(Self::switch)
                     redirect=AppRouter::redirect(|route: Route| {
@@ -133,7 +135,7 @@ impl Model {
                 html! { <crate::components::home::Home /> }
             }
             AppRoute::NotFound(Permissive(route)) => {
-                html! { <crate::components::notfounf::NotFound route=route /> }
+                html! { <crate::components::notfound::NotFound route=route /> }
             }
         }
     }

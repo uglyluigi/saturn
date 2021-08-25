@@ -7,6 +7,7 @@ pub struct NotFound {
     props: Props,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq, Properties)]
 pub struct Props {
     pub route: Option<String>,
 }
@@ -15,8 +16,8 @@ impl Component for NotFound {
     type Message = ();
     type Properties = Props;
 
-    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link }
+    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+        Self { link, props }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -36,7 +37,7 @@ impl Component for NotFound {
                 //<StellarBg/>
                 //<ToolbarComponent/>
                 //<LoginPageComponent/>
-                <h1>NotFound</h1>
+                <h1>{ "Not Found" }</h1>
             </div>
         }
     }
