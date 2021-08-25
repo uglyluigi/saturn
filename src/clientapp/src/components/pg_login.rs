@@ -1,6 +1,6 @@
+use crate::components::google_login_button::GoogleLoginButton;
 use yew::services::ConsoleService;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
-use crate::components::google_login_button::GoogleLoginButton;
 
 pub struct LoginPageComponent {
     link: ComponentLink<Self>,

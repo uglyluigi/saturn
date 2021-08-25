@@ -1,8 +1,6 @@
 use yew::prelude::*;
 
 pub struct NotFound {
-    // `ComponentLink` is like a reference to a component.
-    // It can be used to send messages to the component
     link: ComponentLink<Self>,
     props: Props,
 }
@@ -31,19 +29,8 @@ impl Component for NotFound {
     fn view(&self) -> Html {
         html! {
             <div>
-                <h1> {Self.get_random_404_msg()} </h1>
+                <h1> {"Oh no!"} </h1>
             </div>
         }
-    }
-}
-
-impl Component {
-    fn get_random_404_msg() -> String {
-        let responses = vec![
-            "Are you lost?",
-            "East? I thought you said \"weast...\""
-        ];
-
-        return responses[0];
     }
 }

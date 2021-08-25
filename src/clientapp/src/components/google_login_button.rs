@@ -20,7 +20,7 @@ impl Component for GoogleLoginButton {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::GooglePLLoaded => true,
-            _ => false
+            _ => false,
         }
     }
 
