@@ -26,13 +26,14 @@ impl Model {
     fn change_route(&self, app_route: AppRoute) -> Callback<()> {
         self.link.callback(move |_| {
             let route = app_route.clone();
-            Msg::RouteChanged(route)
+            Msg::ChangeRoute(route)
         })
     }
 }
 
 enum Msg {
-    RouteChanged(AppRoute),
+    RouteChanged(Route<()>),
+    ChangeRoute(AppRoute),
 }
 
 impl Component for Model {
@@ -51,12 +52,16 @@ impl Component for Model {
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::RouteChanged(r) => {
+                self.route = r;
+            },
+
+            Msg::ChangeRoute(r) => {
                 self.route = r.into();
                 self.service.set_route(&self.route.route, ());
-                true
             },
-            _ => false
         }
+
+        true
     }
 
     fn change(&mut self, _props: Self::Properties) -> ShouldRender {
