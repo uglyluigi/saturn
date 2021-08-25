@@ -25,20 +25,25 @@ impl Component for NotFound {
     }
 
     fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        // Should only return "true" if new properties are different to
-        // previously received properties.
-        // This component has no properties so we will always return "false".
         false
     }
 
     fn view(&self) -> Html {
         html! {
             <div>
-                //<StellarBg/>
-                //<ToolbarComponent/>
-                //<LoginPageComponent/>
-                <h1>{ "Not Found" }</h1>
+                <h1> {Self.get_random_404_msg()} </h1>
             </div>
         }
+    }
+}
+
+impl Component {
+    fn get_random_404_msg() -> String {
+        let responses = vec![
+            "Are you lost?",
+            "East? I thought you said \"weast...\""
+        ];
+
+        return responses[0];
     }
 }

@@ -1,6 +1,6 @@
 use yew::prelude::*;
 mod components;
-use components::{pg_login::LoginPageComponent, toolbar::ToolbarComponent, stellar::StellarBg};
+use components::{pg_login::LoginPageComponent, toolbar::ToolbarComponent, stellar::StellarBg, home::Home, notfound::NotFound};
 use yew::{html::IntoPropValue, web_sys::Url};
 use yew_router::{components::RouterAnchor, prelude::*, switch::Permissive};
 use web_sys::console::log_2;
@@ -36,7 +36,7 @@ impl Component for Model {
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
-        false
+        true
     }
 
     fn change(&mut self, _props: Self::Properties) -> ShouldRender {
@@ -49,18 +49,10 @@ impl Component for Model {
     fn view(&self) -> Html {
         html! {
             <div>
-                //<StellarBg/>
-                //<ToolbarComponent/>
-                //<LoginPageComponent/>
-                <AppAnchor classes="navbar-item" route=AppRoute::Home>
-                            { "Home" }
-                </AppAnchor>
-                <AppAnchor classes="navbar-item" route=AppRoute::Login>
-                            { "Login" }
-                </AppAnchor>
-                <h1> {"Main Thing" } </h1>
                 <AppRouter
-                    render=AppRouter::render(Self::switch)
+                    render=AppRouter::render(|thing : AppRoute| {
+                        Self::switch(thing)
+                    })
                     redirect=AppRouter::redirect(|route: Route| {
                         AppRoute::NotFound(Permissive(Some(route.route)))
                     })
@@ -74,10 +66,10 @@ impl Model {
     fn switch(switch: AppRoute) -> Html {
         match switch {
             AppRoute::Login => {
-                html! { <crate::components::login::Login /> }
+                html! { <LoginPageComponent/> }
             }
             AppRoute::Home => {
-                html! { <crate::components::home::Home /> }
+                html! { <Home/> }
             }
             AppRoute::NotFound(Permissive(route)) => {
                 html! { <crate::components::notfound::NotFound route=route /> }
@@ -103,7 +95,8 @@ impl<SW: Switch + Clone + 'static, STATE: RouterState> Component for RouterRedir
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let router = RouteAgentDispatcher::new();
-        RouterRedirect {
+
+        Self {
             link,
             router,
             props,
@@ -111,7 +104,6 @@ impl<SW: Switch + Clone + 'static, STATE: RouterState> Component for RouterRedir
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
-        web_sys::console::log_2(&"%s : Hello World".into(),&"OnLoad".into());
         let route: Route<STATE> = Route::from(self.props.route.clone());
         self.router.send(RouteRequest::ChangeRoute(route));
         false
