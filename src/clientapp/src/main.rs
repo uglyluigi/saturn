@@ -86,7 +86,7 @@ impl Component for Model {
                                     <LoginPageComponent/>
                                 </div>
                             }
-                        }
+                        },
 
                         None => {
                             html! {
