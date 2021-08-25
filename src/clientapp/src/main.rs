@@ -1,5 +1,6 @@
 use yew::prelude::*;
-use yew_router::{define_router_state, prelude::{Switch, Router}};
+use yew_router::{route::Route, service::RouteService, Switch};
+use yew::callback::Callback;
 
 use serde::{Serialize, Deserialize};
 mod components;
@@ -10,21 +11,28 @@ pub enum AppRoute {
     #[to = "/"]
     Index,
     #[to = "/login"]
-    Login
+    Login,
 }
-
-define_router_state!(crate::AppRoute);
-use router_state::*;
 
 struct Model {
     // `ComponentLink` is like a reference to a component.
     // It can be used to send messages to the component
     link: ComponentLink<Self>,
-    service: RouteService,
+    service: RouteService<()>,
+    route: Route<()>,
+}
+
+impl Model {
+    fn change_route(&self, app_route: AppRoute) -> Callback<()> {
+        self.link.callback(move |_| {
+            let route = app_route.clone();
+            Msg::RouteChanged(route)
+        })
+    }
 }
 
 enum Msg {
-    RouteChanged,
+    RouteChanged(AppRoute),
 }
 
 impl Component for Model {
@@ -33,12 +41,20 @@ impl Component for Model {
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link, service: RouteService::new() }
+        let mut service = RouteService::<()>::new();
+        let route = service.get_route();
+
+
+        Self { link, service, route }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
-            Msg::RouteChanged => true,
+            Msg::RouteChanged(r) => {
+                self.route = r.into();
+                self.service.set_route(&self.route.route, ());
+                true
+            },
             _ => false
         }
     }
@@ -53,28 +69,33 @@ impl Component for Model {
     fn view(&self) -> Html {
         html! {
             <main>
-                <Router<AppRoute, ()>
-                    render = Router::render(|switch: AppRoute| {
-                        match switch {
-                            AppRoute::Index => {
-                                //Redir to login
-                                html! {
-                                    <h1>{"Redirecting..."}</h1>
-                                }
+                {
+                    match AppRoute::switch(self.route.clone()) {
+                        Some(AppRoute::Index) => {
+                            self.change_route(AppRoute::Login);
 
-                            },
+                            html! {
+                                { "Redirecting..." }
+                            }
+                        },
 
-                            AppRoute::Login => {
-                                html! {
-                                    <div>
-                                        <StellarBg/>
-                                        <LoginPageComponent/>
-                                    </div>
-                                }
+                        Some(AppRoute::Login) => {
+                            html! {
+                                <div>
+                                    <StellarBg/>
+                                    <LoginPageComponent/>
+                                </div>
                             }
                         }
-                    })
-                />
+
+                        None => {
+                            html! {
+                                {"404"}
+                         
+                            }
+                        }
+                    }
+                }
             </main>
         }
     }
