@@ -20,7 +20,7 @@ pub struct AuthDetails{
     pub profile_picture: Option<String>
 }
 
-#[post("/auth/details")]
+#[get("/auth/details")]
 pub async fn details_admin(admin: Admin) -> Result<Json<AuthDetails>> {
     Ok(Json(AuthDetails{
         auth_level: AuthLevel::Admin,
@@ -29,7 +29,7 @@ pub async fn details_admin(admin: Admin) -> Result<Json<AuthDetails>> {
     }))
 }
 
-#[post("/auth/details", rank=2)]
+#[get("/auth/details", rank=2)]
 pub async fn details_user(user: User) -> Result<Json<AuthDetails>> {
     Ok(Json(AuthDetails{
         auth_level: AuthLevel::User,
@@ -39,7 +39,7 @@ pub async fn details_user(user: User) -> Result<Json<AuthDetails>> {
 }
 
 
-#[post("/auth/details", rank=3)]
+#[get("/auth/details", rank=3)]
 pub async fn details_guest() -> Result<Json<AuthDetails>> {
     
     Ok(Json(AuthDetails{
