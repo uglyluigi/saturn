@@ -36,7 +36,7 @@ impl Component for GoogleLoginButton {
                 <div id="google-button-container">
                     <div id="g_id_onload"
                         data-client_id="699719776672-56jqfpk1g2uq8tma72hi56n5jkan82nr.apps.googleusercontent.com"
-                        data-login_uri="https://joinsaturn.net/"
+                        data-login_uri="https://joinsaturn.net/api/auth/login"
                         data-ux_mode="redirect"
                         data-auto_prompt="false">
                     </div>

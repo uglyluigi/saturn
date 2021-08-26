@@ -52,7 +52,13 @@ pub fn rocket() -> Rocket<Build>{
         .attach(Db::fairing())
         .attach(AdHoc::on_ignite("Diesel Migrations", run_migrations))
         //Startup
-        .mount("/", routes![controllers::index::index, controllers::login::login])
+        .mount("/api/", routes![
+            controllers::index::index,
+            controllers::auth::login::login,
+            controllers::auth::details::details_admin,
+            controllers::auth::details::details_user,
+            controllers::auth::details::details_guest,
+        ])
         .mount("/.well-known", FileServer::from(relative!(".well-known")))
         .mount("/", FileServer::from(relative!("src/clientapp/dist")).rank(-1))
         .attach(AdHoc::on_response("404 Redirector", |_req, res| Box::pin(async move {
@@ -178,7 +184,8 @@ impl<'r> FromRequest<'r> for User{
         } else {
             let user = db.run(move |conn| {
                 let new_user = NewUser {
-                    email: &used_email
+                    email: &used_email,
+                    is_admin: &false
                 };
                 insert_into(users)
                     .values(&new_user.clone())
@@ -187,5 +194,26 @@ impl<'r> FromRequest<'r> for User{
             }).await.unwrap();
             Outcome::Success(user.unwrap())
         }
+    }
+}
+
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for Admin{
+
+    type Error = ();
+
+    async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
+        //use crate::schema::users::dsl::{users, email};
+        //let db = try_outcome!(req.guard::<Db>().await);
+        let auth = try_outcome!(req.guard::<User>().await);
+        
+        if auth.is_admin {
+            Outcome::Success(Admin(auth))
+        } else {
+            Outcome::Forward(())
+        }
+
+
     }
 }

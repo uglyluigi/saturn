@@ -2,6 +2,7 @@
 pub use crate::models::clubs_md::Club;
 pub use crate::models::users_md::User;
 pub use crate::models::users_md::NewUser;
+pub use crate::models::users_md::Admin;
 pub use crate::Db;
 pub use crate::Result;
 pub use crate::schema;
@@ -27,9 +28,9 @@ pub use rocket::figment::{value::{Map, Value}, util::map};
 pub use rocket::http::{Cookie, CookieJar};
 pub use rocket::outcome::try_outcome;
 pub use rocket::request::{self, Outcome, Request, FromRequest};
-pub use std::collections::HashMap;
 pub use rocket::config::SecretKey;
 pub use rocket::form::Form;
+pub use rocket::response::Redirect;
 //Diesel
 pub use diesel::prelude::*;
 pub use diesel::pg::PgConnection;
@@ -38,6 +39,6 @@ pub use chrono::{ DateTime, Utc };
 //Other
 pub use std::io::Cursor;
 pub use dotenv::dotenv;
-
+pub use std::collections::HashMap;
 pub use std::env;
 pub use jsonwebtoken::{encode, decode, Header, Algorithm, Validation, EncodingKey, DecodingKey};
