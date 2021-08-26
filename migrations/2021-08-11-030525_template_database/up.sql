@@ -11,5 +11,8 @@ CREATE TABLE clubs (
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   email TEXT NOT NULL UNIQUE,
+  picture TEXT NOT NULL UNIQUE,
+  first_name TEXT NOT NULL UNIQUE,
+  last_name TEXT NOT NULL UNIQUE,
   is_admin BOOLEAN NOT NULL DEFAULT false
 );

@@ -13,6 +13,9 @@ table! {
     users (id) {
         id -> Int4,
         email -> Text,
+        picture -> Text,
+        first_name -> Text,
+        last_name -> Text,
         is_admin -> Bool,
     }
 }

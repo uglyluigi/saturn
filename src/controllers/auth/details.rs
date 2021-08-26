@@ -17,7 +17,7 @@ pub struct AuthDetails{
     pub first_name: Option<String>,
     pub last_name: Option<String>,
     pub email: Option<String>,
-    pub profile_picture: Option<String>
+    pub picture: Option<String>
 }
 
 #[get("/auth/details")]
