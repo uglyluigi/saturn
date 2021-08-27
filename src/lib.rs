@@ -55,6 +55,7 @@ pub fn rocket() -> Rocket<Build>{
         .mount("/api/", routes![
             controllers::index::index,
             controllers::auth::login::login,
+            controllers::auth::logout::logout,
             controllers::auth::details::details_admin,
             controllers::auth::details::details_user,
             controllers::auth::details::details_guest,
