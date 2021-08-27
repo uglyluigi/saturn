@@ -1,13 +1,13 @@
 @import "./consts.scss";
 
 .soft-grey-rect {
-    width: 90%;
+    width: 40%;
     height: 100%;
     border-radius: 8px;
     background-color: $BLACK_BG;
 
-    padding-top: 20px;
     padding-bottom: 20px;
+    padding-top: 20px;
 
     /* Center the rect vertically */
     margin: auto;
@@ -30,6 +30,8 @@
 .auth-header {
     display: flex;
     justify-content: center;
+    padding-top: 50px;
+    padding-bottom: 50px;
 }
 
 .auth-header img {
@@ -44,27 +46,12 @@
     left: 10px;
     font-size: 80pt;
     white-space: nowrap;
-  
-    // background: linear-gradient( 92deg, #95d7e3, #eb76ff );
-    background: -webkit-linear-gradient( 92deg, #95d7e3, #eb76ff );
-    background-size:600vw 600vw;
+    background-color: white;
     
     // make sure to put these after the background property
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: textAnimate 5s linear infinite alternate;
-}
-
-@keyframes textAnimate {
-    from {
-        filter: hue-rotate(0deg);
-        background-position-x: 0%;
-    }
-
-    to {
-        filter: hue-rotate(360deg);
-        background-position-x: 600vw;
-    }
 }
 
 #google-button-container {
