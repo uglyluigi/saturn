@@ -37,14 +37,18 @@ pub fn rocket() -> Rocket<Build>{
     };
 
     //Build config
-    let figment = Figment::from(rocket::Config::default())
+    let mut figment = Figment::from(rocket::Config::default())
         .merge(("address", "0.0.0.0"))
         .merge(("port", 443))
         .merge(("databases", map!["saturn" => db]))
         .merge(("secret_key", env::var("SECRET_KEY").expect("TLS_CERT_PATH must be set")))
-        .merge(("tls.certs", env::var("TLS_CERT_PATH").expect("TLS_CERT_PATH must be set")))
-        .merge(("tls.key", env::var("TLS_KEY_PATH").expect("TLS_KEY_PATH must be set")))
     ;
+
+    if env::var("IN_PRODUCTION").expect("TLS_CERT_PATH must be set") == "TRUE"{
+        figment = figment
+            .merge(("tls.certs", env::var("TLS_CERT_PATH").expect("TLS_CERT_PATH must be set")))
+            .merge(("tls.key", env::var("TLS_KEY_PATH").expect("TLS_KEY_PATH must be set")))
+    }
 
     //Build rocket object
     rocket::custom(figment)
