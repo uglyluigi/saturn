@@ -24,7 +24,7 @@ impl Component for LoginPageComponent {
 
     fn view(&self) -> Html {
         html! {
-            <div>
+            <div class="login-page">
                 <div class="auth-header">
                     <img class="saturn-logo" src="assets/saturn-logo.svg" alt="Saturn logo"/>
                     <h1>{"Saturn"}</h1>
