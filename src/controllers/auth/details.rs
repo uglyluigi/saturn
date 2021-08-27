@@ -14,18 +14,20 @@ impl Default for AuthLevel {
 #[derive(Serialize, Deserialize, Default)]
 pub struct AuthDetails{
     pub auth_level: AuthLevel,
+    pub email: Option<String>,
+    pub picture: Option<String>,
     pub first_name: Option<String>,
     pub last_name: Option<String>,
-    pub email: Option<String>,
-    pub picture: Option<String>
 }
 
 #[get("/auth/details")]
 pub async fn details_admin(admin: Admin) -> Result<Json<AuthDetails>> {
     Ok(Json(AuthDetails{
-        auth_level: AuthLevel::Admin,
+        auth_level: AuthLevel::User,
         email: Some(admin.0.email),
-        ..Default::default()
+        picture: Some(admin.0.picture),
+        first_name: Some(admin.0.first_name),
+        last_name: Some(admin.0.last_name)
     }))
 }
 
@@ -34,7 +36,9 @@ pub async fn details_user(user: User) -> Result<Json<AuthDetails>> {
     Ok(Json(AuthDetails{
         auth_level: AuthLevel::User,
         email: Some(user.email),
-        ..Default::default()
+        picture: Some(user.picture),
+        first_name: Some(user.first_name),
+        last_name: Some(user.last_name)
     }))
 }
 
