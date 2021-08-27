@@ -28,8 +28,10 @@ impl Component for NotFound {
 
     fn view(&self) -> Html {
         html! {
-            <div>
-                <h1> {"Oh no!"} </h1>
+            <div class="not-found">
+                <h1> {"404"} </h1>
+                <h2> {"Page Not Found"} </h2>
+                <h3> {"The page you're looking for either doesn't exist or an error occured. Go back to your momma"} </h3>
             </div>
         }
     }
