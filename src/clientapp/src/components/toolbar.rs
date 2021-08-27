@@ -27,7 +27,7 @@ impl Component for ToolbarComponent {
 
     fn view(&self) -> Html {
         html! {
-            <div class="top_navbar">
+            <div class="toolbar">
                 <img src="./assets/saturn-logo.svg"/>
                 <div class="links">
                     <a class="active" href="#home">{"Home"}</a>

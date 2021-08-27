@@ -1,61 +1,65 @@
 @import "./consts.scss";
 
-.soft-grey-rect {
-    width: 40%;
-    height: 100%;
-    border-radius: 8px;
-    background-color: $BLACK_BG;
-
-    padding-bottom: 20px;
-    padding-top: 20px;
-
-    /* Center the rect vertically */
-    margin: auto;
-}
-
-.soft-grey-rect h1 {
-    text-align: center;
-}
-
-.please-login-text {
-    font-family: $FONT_BODY;
-    color: $TEXT_1_OFF_WHITE;
-    font-size: 20pt;
-    text-align: center;
-    padding-bottom: 20px;
-}
-
-/* Style for auth-header */
-
-.auth-header {
-    display: flex;
-    justify-content: center;
-    padding-top: 50px;
-    padding-bottom: 50px;
-}
-
-.auth-header img {
-    float: left;
-    width: 120px;
-    height: 120px;
-    margin-top: 10px;
-}
-
-.auth-header h1 {
-    position: relative;
-    left: 10px;
-    font-size: 80pt;
-    white-space: nowrap;
-    background-color: white;
+.login-page {
+    .soft-grey-rect {
+        width: 40%;
+        height: 100%;
+        border-radius: 8px;
+        background-color: $BLACK_BG;
     
-    // make sure to put these after the background property
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: textAnimate 5s linear infinite alternate;
-}
-
-#google-button-container {
-    margin: auto;
-    padding-top: 20px;
-    width: 250px;
+        padding-bottom: 20px;
+        padding-top: 20px;
+    
+        /* Center the rect vertically */
+        margin: auto;
+    }
+    
+    .soft-grey-rect h1 {
+        text-align: center;
+        color: $TEXT_1_OFF_WHITE;
+        font-size: 60pt;
+    }
+    
+    .please-login-text {
+        font-family: $FONT_BODY;
+        color: $TEXT_1_OFF_WHITE;
+        font-size: 20pt;
+        text-align: center;
+        padding-bottom: 20px;
+    }
+    
+    /* Style for auth-header */
+    
+    .auth-header {
+        display: flex;
+        justify-content: center;
+        padding-top: 50px;
+        padding-bottom: 50px;
+    }
+    
+    .auth-header img {
+        float: left;
+        width: 120px;
+        height: 120px;
+        margin-top: 10px;
+    }
+    
+    .auth-header h1 {
+        position: relative;
+        left: 10px;
+        font-size: 80pt;
+        white-space: nowrap;
+        background-color: white;
+        
+        // make sure to put these after the background property
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: textAnimate 5s linear infinite alternate;
+    }
+    
+    #google-button-container {
+        margin: auto;
+        padding-top: 20px;
+        width: 250px;
+    }
 }

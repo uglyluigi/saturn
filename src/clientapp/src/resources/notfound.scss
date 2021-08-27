@@ -1,21 +1,23 @@
 .not-found {
     text-align: center;
-    color: black !important;
-}
-.not-found h1 {
-    font-size: 6em;
     color: black;
-}
 
-.not-found h2 {
-    font-size: 1.5em;
-    color: black;
-}
-
-.not-found h3{
-    font-size: 1.17em;
-}
-.logo {
-    height: 15em;
-    width: 15em;
+    h1 {
+        font-size: 6em;
+        color: black;
+    }
+    
+    h2 {
+        font-size: 1.5em;
+        color: black;
+    }
+    
+    h3 {
+        font-size: 1.17em;
+    }
+    
+    .logo {
+        height: 15em;
+        width: 15em;
+    }    
 }
