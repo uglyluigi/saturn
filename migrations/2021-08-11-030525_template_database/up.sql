@@ -20,14 +20,7 @@ CREATE TABLE club_members(
   id SERIAL PRIMARY KEY,
   user_id INT NOT NULL,
   club_id INT NOT NULL,
+  is_moderator BOOLEAN NOT NULL DEFAULT false,
   CONSTRAINT member_user_id_exists FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
   CONSTRAINT member_club_id_exists FOREIGN KEY(club_id) REFERENCES clubs(id) ON DELETE CASCADE
-);
-
-CREATE TABLE club_moderators(
-  id SERIAL PRIMARY KEY,
-  user_id INT NOT NULL,
-  club_id INT NOT NULL,
-  CONSTRAINT moderator_user_id_exists FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
-  CONSTRAINT moderator_club_id_exists FOREIGN KEY(club_id) REFERENCES clubs(id) ON DELETE CASCADE
 );

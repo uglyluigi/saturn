@@ -29,7 +29,8 @@ pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Js
 
         let new_club_member = NewClubMember{
             user_id: &user.id,
-            club_id: &club.id
+            club_id: &club.id,
+            is_moderator: &true,
         };
 
         insert_into(club_members)

@@ -6,6 +6,7 @@ pub struct ClubMember {
     pub id: i32,
     pub user_id: i32,
     pub club_id: i32,
+    pub is_moderator: bool,
 }
 
 #[derive(Insertable)]
@@ -13,4 +14,5 @@ pub struct ClubMember {
 pub struct NewClubMember<'a> {
     pub user_id: &'a i32,
     pub club_id: &'a i32,
+    pub is_moderator: &'a bool,
 }

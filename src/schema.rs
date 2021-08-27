@@ -3,14 +3,7 @@ table! {
         id -> Int4,
         user_id -> Int4,
         club_id -> Int4,
-    }
-}
-
-table! {
-    club_moderators (id) {
-        id -> Int4,
-        user_id -> Int4,
-        club_id -> Int4,
+        is_moderator -> Bool,
     }
 }
 
@@ -37,12 +30,9 @@ table! {
 
 joinable!(club_members -> clubs (club_id));
 joinable!(club_members -> users (user_id));
-joinable!(club_moderators -> clubs (club_id));
-joinable!(club_moderators -> users (user_id));
 
 allow_tables_to_appear_in_same_query!(
     club_members,
-    club_moderators,
     clubs,
     users,
 );
