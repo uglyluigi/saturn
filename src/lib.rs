@@ -41,7 +41,7 @@ pub fn rocket() -> Rocket<Build>{
         .merge(("address", "0.0.0.0"))
         .merge(("port", 443))
         .merge(("databases", map!["saturn" => db]))
-        .merge(("secret_key", "hPRYyVRiMyxpw5sBB1XeCMN1kFsDCqKvBi2QJxBVHQk="))
+        .merge(("secret_key", env::var("SECRET_KEY").expect("TLS_CERT_PATH must be set")))
         .merge(("tls.certs", env::var("TLS_CERT_PATH").expect("TLS_CERT_PATH must be set")))
         .merge(("tls.key", env::var("TLS_KEY_PATH").expect("TLS_KEY_PATH must be set")))
     ;

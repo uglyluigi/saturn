@@ -1,8 +1,7 @@
 -- Your SQL goes here
 CREATE TABLE clubs (
   id SERIAL PRIMARY KEY,
-  maintainer INT NOT NULL,
-  title VARCHAR NOT NULL,
+  name TEXT NOT NULL,
   body TEXT NOT NULL,
   publish_date timestamp with TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   expiry_date timestamp with TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -15,4 +14,20 @@ CREATE TABLE users (
   first_name TEXT NOT NULL UNIQUE,
   last_name TEXT NOT NULL UNIQUE,
   is_admin BOOLEAN NOT NULL DEFAULT false
+);
+
+CREATE TABLE club_members(
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL,
+  club_id INT NOT NULL,
+  CONSTRAINT member_user_id_exists FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT member_club_id_exists FOREIGN KEY(club_id) REFERENCES clubs(id) ON DELETE CASCADE
+);
+
+CREATE TABLE club_moderators(
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL,
+  club_id INT NOT NULL,
+  CONSTRAINT moderator_user_id_exists FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT moderator_club_id_exists FOREIGN KEY(club_id) REFERENCES clubs(id) ON DELETE CASCADE
 );
