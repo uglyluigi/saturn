@@ -57,7 +57,8 @@ pub fn rocket() -> Rocket<Build>{
         .attach(AdHoc::on_ignite("Diesel Migrations", run_migrations))
         //Startup
         .mount("/api/", routes![
-            controllers::index::index,
+            //controllers::index::index,
+            controllers::clubs::create::create,
             controllers::auth::login::login,
             controllers::auth::logout::logout,
             controllers::auth::details::details_admin,
