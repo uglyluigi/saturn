@@ -12,7 +12,7 @@ pub struct ClubDetails{
 }
 
 impl ClubDetails {
-    fn from(join: (ClubMember, Club), user_id: i32) -> Self {
+    pub fn from_join(join: (ClubMember, Club), user_id: i32) -> Self {
         ClubDetails {
             id: join.1.id,
             name: join.1.name,
@@ -51,7 +51,7 @@ pub async fn get_all(user: User, db: Db) -> Result<Json<Vec<ClubDetails>>> {
                 club_id: -1,
                 is_moderator: false
             });
-            results.push(ClubDetails::from((member_unwrapped, club), user.id));
+            results.push(ClubDetails::from_join((member_unwrapped, club), user.id));
         }
 
         results
@@ -74,7 +74,7 @@ pub async fn get_clubs_by_membership(user: User, db: Db) -> Result<Json<Vec<Club
         
         let mut results = Vec::new();
         for (member, club) in join {
-            results.push(ClubDetails::from((member, club), user.id));
+            results.push(ClubDetails::from_join((member, club), user.id));
         }
 
         results
@@ -98,7 +98,7 @@ pub async fn get_clubs_by_moderatorship(user: User, db: Db) -> Result<Json<Vec<C
         
         let mut results = Vec::new();
         for (member, club) in join {
-            results.push(ClubDetails::from((member, club), user.id));
+            results.push(ClubDetails::from_join((member, club), user.id));
         }
         
         results

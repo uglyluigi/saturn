@@ -7,12 +7,13 @@ pub struct NewClubDTO<'r> {
 }
 
 #[post("/clubs/create", data = "<club>")]
-pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Json<Club>> {
+pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Json<super::get::ClubDetails>> {
     use crate::schema::clubs::dsl::{clubs};
     use crate::schema::club_members::dsl::{club_members};
 
     let name = club.name.to_string().clone();
     let body = club.body.to_string().clone();
+    let user_id = user.id.clone();
 
     let created_club: Club = db.run(move |conn| {
         let new_club = NewClub {
@@ -40,5 +41,12 @@ pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Js
         club
     }).await;
 
-    Ok(Json(created_club))
+    let member = ClubMember{
+        id: -1,
+        user_id: user_id,
+        club_id: created_club.id,
+        is_moderator: true
+    };
+
+    Ok(Json(super::get::ClubDetails::from_join((member, created_club), user_id)))
 }

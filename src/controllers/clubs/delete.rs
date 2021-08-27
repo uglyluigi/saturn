@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-#[get("/clubs/<id>", rank=1)]
+#[delete("/clubs/<id>", rank=1)]
 pub async fn delete_admin(_admin: Admin, db: Db, id: i32) -> Result<()> {
     use crate::schema::clubs::dsl::{clubs};
     use crate::schema::club_members::dsl::{club_members, club_id};
@@ -17,7 +17,7 @@ pub async fn delete_admin(_admin: Admin, db: Db, id: i32) -> Result<()> {
     Ok(())
 }
 
-#[get("/clubs/<id>", rank=2)]
+#[delete("/clubs/<id>", rank=2)]
 pub async fn delete_user(user: User, db: Db, id: i32) -> Result<()> {
     use crate::schema::clubs::dsl::{clubs};
     use crate::schema::club_members::dsl::{club_members, club_id, user_id, is_moderator};
