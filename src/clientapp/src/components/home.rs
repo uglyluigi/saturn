@@ -1,6 +1,6 @@
 use yew::{prelude::*, services::fetch::{FetchService, FetchTask, Request, Response}, format::{Nothing, Json}};
 use web_sys::{MouseEvent, console::log_1};
-use serde::{Deserialize};
+use serde::{Deserialize, Serialize};
 
 extern crate yew;
 
@@ -19,9 +19,30 @@ pub struct User {
     pub is_admin: bool,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub enum AuthLevel{
+    Admin,
+    User,
+    Guest
+}
+
+impl Default for AuthLevel {
+    fn default() -> Self { AuthLevel::Guest }
+}
+
+#[derive(Serialize, Deserialize, Default, Debug)]
+pub struct AuthDetails {
+    pub auth_level: AuthLevel,
+    pub id: Option<i32>,
+    pub email: Option<String>,
+    pub picture: Option<String>,
+    pub first_name: Option<String>,
+    pub last_name: Option<String>,
+}
+
 pub enum Msg {
     FetchUserInfo,
-    ReceieveUserInfo(User),
+    ReceieveUserInfo(AuthDetails),
     FailToReceiveUserInfo(Option<anyhow::Error>),
 }
 
@@ -48,7 +69,7 @@ impl Component for Home {
             Msg::FetchUserInfo => {
                 let req = Request::get("/api/auth/details").body(Nothing).expect("Could not build request");
                 
-                let callback = self.link.callback(|response: Response<Json<Result<User, anyhow::Error>>>| {
+                let callback = self.link.callback(|response: Response<Json<Result<AuthDetails, anyhow::Error>>>| {
                     tell!("Got response");
 
                     if let Json(data) = response.into_body() {
