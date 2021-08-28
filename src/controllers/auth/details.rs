@@ -64,6 +64,6 @@ pub async fn forbidden_or_details_guest(req: &Request<'_>) -> std::result::Resul
             ..Default::default()
         })))
     } else{
-        Err(status::Forbidden(Some(Json(JsonError{error: "Guest user is not authorized.".to_owned()}))))
+        Err(status::Forbidden(Some(Json(JsonError{error: "Client not authorized to perform that action.".to_owned()}))))
     }
 }
