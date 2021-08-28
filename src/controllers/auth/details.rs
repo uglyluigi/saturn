@@ -57,7 +57,7 @@ pub struct JsonError{
 
 #[catch(403)]
 pub async fn forbidden_or_details_guest(req: &Request<'_>) -> std::result::Result<status::Custom<Json<AuthDetails>>, status::Forbidden<Json<JsonError>>> {
-    if req.uri().path() == "auth/details" {
+    if req.uri().path() == "/api/auth/details" {
         //details_guest
         Ok(status::Custom(Status::Ok, Json(AuthDetails{
             auth_level: AuthLevel::Guest,
