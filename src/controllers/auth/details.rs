@@ -50,11 +50,6 @@ assuming the route is correct. Otherwise it will just say the user is
 not authorized.
 */
 
-#[derive(Serialize)]
-pub struct JsonError{
-    pub error: String,
-}
-
 #[catch(403)]
 pub async fn forbidden_or_details_guest(req: &Request<'_>) -> std::result::Result<status::Custom<Json<AuthDetails>>, status::Forbidden<Json<JsonError>>> {
     if req.uri().path() == "/api/auth/details" {
