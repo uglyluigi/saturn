@@ -20,7 +20,7 @@ impl Component for GoogleLoginButton {
                 url: 
                 String::from(match std::env::var("SATURN_EXEC_PROFILE") {
                     Ok(val) => match val.as_str() {
-                        "LOCAL" => "localhost:8080/",
+                        "LOCAL" => "localhost:8080/api/auth/login",
                         _ => "https://joinsaturn.net/api/auth/login",
                     }
 
