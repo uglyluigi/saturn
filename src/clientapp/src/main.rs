@@ -1,10 +1,7 @@
 use yew::prelude::*;
 mod components;
-use components::{home::Home, notfound::NotFound, pg_login::LoginPageComponent, stellar::StellarBg};
+use components::{home::Home, notfound::NotFound, pg_login::LoginPageComponent, stellar::StellarBg, router::*};
 use yew_router::{prelude::*, switch::Permissive};
-
-mod router;
-use router::*;
 
 struct Model {
     link: ComponentLink<Self>,
@@ -59,11 +56,6 @@ impl Model {
             }
             AppRoute::NotFound(Permissive(route)) => {
                 html! { <NotFound route=route /> }
-            }
-            AppRoute::Root => {
-                html! {
-                    <AppRedirect route=AppRoute::Login/>
-                }
             }
         }
     }
