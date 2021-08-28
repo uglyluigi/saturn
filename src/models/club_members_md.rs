@@ -16,3 +16,9 @@ pub struct NewClubMember<'a> {
     pub club_id: &'a i32,
     pub is_moderator: &'a bool,
 }
+
+pub enum MembershipStatus {
+    Unassociated,
+    Member,
+    Moderator
+}

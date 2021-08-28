@@ -4,12 +4,14 @@ pub use crate::models::clubs_md::NewClub;
 pub use crate::models::users_md::User;
 pub use crate::models::users_md::NewUser;
 pub use crate::models::users_md::Admin;
+pub use crate::models::club_members_md::MembershipStatus;
 pub use crate::models::club_members_md::ClubMember;
 pub use crate::models::club_members_md::NewClubMember;
 pub use crate::Db;
 pub use crate::Result;
 pub use crate::schema;
 pub use crate::UserAuthenticator;
+pub use crate::JsonError;
 //Self SB imports
 
 

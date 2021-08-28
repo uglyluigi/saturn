@@ -269,3 +269,8 @@ impl<'r> FromRequest<'r> for Admin{
 
     }
 }
+
+#[derive(Serialize)]
+pub struct JsonError{
+    pub error: String,
+}
