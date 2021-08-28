@@ -55,6 +55,13 @@ pub fn rocket() -> Rocket<Build>{
         //Diesel
         .attach(Db::fairing())
         .attach(AdHoc::on_ignite("Diesel Migrations", run_migrations))
+        //GoogleKeyState
+        .manage(GoogleKeysState {
+            lock: Arc::new(RwLock::new(GoogleKeys {
+                keys: Vec::new(),
+                expires: chrono::offset::Utc::now(),
+            }))
+        })
         //Startup
         .mount("/api/", routes![
             controllers::clubs::get::get_all,
@@ -100,20 +107,54 @@ async fn run_migrations(rocket: Rocket<Build>) -> Rocket<Build> {
 
 
 
+
 //Stufff
+pub struct GoogleKeysState {
+    lock: Arc<RwLock<GoogleKeys>>,
+}
+
+impl GoogleKeysState {
+    pub async fn fetch_keys(&self) -> Vec<GoogleKey>{
+        let mut get_new_keys = false;
+        {
+            let keys = self.lock.read().unwrap();
+            if (*keys).expires <= chrono::offset::Utc::now(){
+                get_new_keys=true;
+            }else{
+                return (*keys).keys.clone();
+            }
+        }
+        let request = reqwest::get("https://www.googleapis.com/oauth2/v3/certs").await.unwrap();
+        let expiry_date = chrono::DateTime::parse_from_rfc2822(request.headers().get("expires").unwrap().to_str().unwrap()).unwrap();
+        let body = request.json::<HashMap<String, Vec<GoogleKey>>>().await.unwrap();
+        let new_keys = body.get("keys").unwrap();
+        {
+            let mut keys = self.lock.write().unwrap();
+            (*keys).expires = expiry_date.into();
+            (*keys).keys = new_keys.to_vec();
+        }
+        new_keys.clone()
+    }
+}
+
+struct GoogleKeys {
+    keys: Vec<GoogleKey>,
+    expires: chrono::DateTime<Utc>
+}
+
 #[allow(dead_code)]
-#[derive(Deserialize)]
-struct GoogleKey {
+#[derive(Deserialize, Clone)]
+pub struct GoogleKey {
     n: String,
     e: String,
     alg: String,
     kty: String,
     r#use: String,
-    kid: String
+    kid: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct GoogleClaims {
+pub struct GoogleClaims {
     iss: String,
     nbf: usize,
     aud: String,
@@ -153,11 +194,11 @@ impl<'r> FromRequest<'r> for UserAuthenticator {
         let jwt = req.cookies().get_private("user_jwt").map(|cookie| Box::new(cookie.value().to_owned()));
         let validation = Validation::new(Algorithm::RS256);
 
-        //Retreive google's public keys to verify signature. FIXME - This should be cached at some point.
-        let body = reqwest::get("https://www.googleapis.com/oauth2/v3/certs").await.unwrap().json::<HashMap<String, Vec<GoogleKey>>>().await.unwrap();
-
+        //Retrieve google's public keys to verify signature.
+        let key_state = try_outcome!(req.guard::<&State<GoogleKeysState>>().await);
+        
         //Load each key and check the signature and claims.
-        for key in body.get("keys").unwrap(){
+        for key in key_state.fetch_keys().await{
             let jwt = jwt.clone();
             if let Some(jwt) = jwt{
                 match decode::<GoogleClaims>(&jwt, &DecodingKey::from_rsa_components(&key.n, &key.e), &validation) {

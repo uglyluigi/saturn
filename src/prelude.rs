@@ -12,6 +12,8 @@ pub use crate::Result;
 pub use crate::schema;
 pub use crate::UserAuthenticator;
 pub use crate::JsonError;
+pub use crate::GoogleClaims;
+pub use crate::GoogleKeysState;
 //Self SB imports
 
 
@@ -36,6 +38,8 @@ pub use rocket::request::{self, Outcome, Request, FromRequest};
 pub use rocket::config::SecretKey;
 pub use rocket::form::Form;
 pub use rocket::response::Redirect;
+pub use rocket::State;
+pub use std::sync::Arc;
 //Diesel
 pub use diesel::prelude::*;
 pub use diesel::pg::PgConnection;
@@ -46,4 +50,5 @@ pub use std::io::Cursor;
 pub use dotenv::dotenv;
 pub use std::collections::HashMap;
 pub use std::env;
+pub use std::sync::RwLock;
 pub use jsonwebtoken::{encode, decode, Header, Algorithm, Validation, EncodingKey, DecodingKey};

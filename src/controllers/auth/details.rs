@@ -14,6 +14,7 @@ impl Default for AuthLevel {
 #[derive(Serialize, Deserialize, Default)]
 pub struct AuthDetails{
     pub auth_level: AuthLevel,
+    pub exp: Option<usize>,
     pub id: Option<i32>,
     pub email: Option<String>,
     pub picture: Option<String>,
@@ -22,9 +23,28 @@ pub struct AuthDetails{
 }
 
 #[get("/auth/details", rank=2)]
-pub async fn details_admin(admin: Admin) -> Result<Json<AuthDetails>> {
+pub async fn details_admin(admin: Admin, key_state: &State<GoogleKeysState>, cookies: &CookieJar<'_>) -> Result<Json<AuthDetails>> {
+    let mut exp = None;
+
+    //Fetch the jwt token from the user's computer and set our validation algorithm.
+    let jwt = cookies.get_private("user_jwt").map(|cookie| Box::new(cookie.value().to_owned()));
+    let validation = Validation::new(Algorithm::RS256);
+    
+    //Load each key and check the signature and claims.
+    for key in key_state.fetch_keys().await{
+        if let Some(jwt) = jwt.clone(){
+            match decode::<GoogleClaims>(&jwt, &DecodingKey::from_rsa_components(&key.n, &key.e), &validation) {
+                Ok(c) => {exp=Some(c.claims.exp)},
+                Err(e) => {println!("{:?}", e)}
+            };
+        }
+
+        if exp.is_some() {break}
+    }
+    
     Ok(Json(AuthDetails{
         auth_level: AuthLevel::User,
+        exp: exp,
         id: Some(admin.0.id),
         email: Some(admin.0.email),
         picture: Some(admin.0.picture),
@@ -34,9 +54,28 @@ pub async fn details_admin(admin: Admin) -> Result<Json<AuthDetails>> {
 }
 
 #[get("/auth/details", rank=3)]
-pub async fn details_user(user: User) -> Result<Json<AuthDetails>> {
+pub async fn details_user(user: User, key_state: &State<GoogleKeysState>, cookies: &CookieJar<'_>) -> Result<Json<AuthDetails>> {
+    let mut exp = None;
+
+    //Fetch the jwt token from the user's computer and set our validation algorithm.
+    let jwt = cookies.get_private("user_jwt").map(|cookie| Box::new(cookie.value().to_owned()));
+    let validation = Validation::new(Algorithm::RS256);
+    
+    //Load each key and check the signature and claims.
+    for key in key_state.fetch_keys().await{
+        if let Some(jwt) = jwt.clone(){
+            match decode::<GoogleClaims>(&jwt, &DecodingKey::from_rsa_components(&key.n, &key.e), &validation) {
+                Ok(c) => {exp=Some(c.claims.exp)},
+                Err(e) => {println!("{:?}", e)}
+            };
+        }
+
+        if exp.is_some() {break}
+    }
+    
     Ok(Json(AuthDetails{
         auth_level: AuthLevel::User,
+        exp: exp,
         id: Some(user.id),
         email: Some(user.email),
         picture: Some(user.picture),
