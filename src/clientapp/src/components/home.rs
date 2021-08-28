@@ -1,8 +1,6 @@
-use crate::AppRedirect;
-use crate::AppRoute;
 use yew::{prelude::*, services::fetch::{FetchService, FetchTask, Request, Response}, format::{Nothing, Json}};
-use anyhow::Error;
-use serde::{Serialize, Deserialize};
+use web_sys::{MouseEvent, console::log_1};
+use serde::{Deserialize};
 
 extern crate yew;
 
@@ -23,9 +21,19 @@ pub struct User {
 
 pub enum Msg {
     FetchUserInfo,
-    ReceieveUserInfo(Result<User, anyhow::Error>),
+    ReceieveUserInfo(User),
+    FailToReceiveUserInfo(Option<anyhow::Error>),
 }
 
+macro_rules! tell {
+    ($str_slice:expr) => (
+        web_sys::console::log_1(&$str_slice.into())
+    );
+
+    ($str_slice:expr, $($arg:expr),*) => (
+        tell!(format!($str_slice, $($arg),*))
+    )
+}
 
 impl Component for Home {
     type Message = Msg;
@@ -41,8 +49,16 @@ impl Component for Home {
                 let req = Request::get("/api/auth/details").body(Nothing).expect("Could not build request");
                 
                 let callback = self.link.callback(|response: Response<Json<Result<User, anyhow::Error>>>| {
-                    let Json(data) = response.into_body();
-                    Msg::ReceieveUserInfo(data)
+                    tell!("Got response");
+
+                    if let Json(data) = response.into_body() {
+                        match data {
+                            Ok(user) => Msg::ReceieveUserInfo(user),
+                            Err(err) => Msg::FailToReceiveUserInfo(Some(err)),
+                        }
+                    } else {
+                        Msg::FailToReceiveUserInfo(None)
+                    }
                 });
 
                 match FetchService::fetch(req, callback) {
@@ -50,16 +66,24 @@ impl Component for Home {
                         self.fetch_task = Some(task);
                     },
 
-                    Err(err) => eprintln!("{}", err),
+                    Err(err) => tell!("{}", err),
                 }
-
-                true
             },
 
             Msg::ReceieveUserInfo(data) => {
-                true
+                self.fetch_task = None;
+                tell!("User info received: {:?}", data);
+            },
+
+            Msg::FailToReceiveUserInfo(maybe_error) => {
+                if let Some(error) = maybe_error {
+                    self.fetch_task = None;
+                    tell!("Error getting user details: {:?}", error);
+                }
             }
         }
+
+        true
     }
 
     fn change(&mut self, _props: Self::Properties) -> ShouldRender {
@@ -67,9 +91,16 @@ impl Component for Home {
     }
 
     fn view(&self) -> Html {
+        // Kind of silly that I have to provide a type annotation to something I'm ignoring!
+        let callback = self.link.callback(|_: MouseEvent| {
+            log_1(&"Fetching user data".into());
+            Msg::FetchUserInfo
+        });
+
         html! {
             <div>
-                
+                <button onclick=callback>{"Button!"}</button>
+                { self.fetch_user_info() }
             </div>
         }
     }
@@ -83,9 +114,7 @@ impl Home {
             }
         } else {
             html! {
-                html! {
-                    <h1>{"Oh god! Oh Fuck!"} </h1>
-                }
+                <></>
             }
         }
     }

@@ -1,3 +1,4 @@
 #!/bin/bash
 make build
-cargo run --release
+cd target/debug
+sudo ./saturn

@@ -1,20 +1,12 @@
 use yew::prelude::*;
 mod components;
-use components::{
-    home::Home, notfound::NotFound, pg_login::LoginPageComponent, stellar::StellarBg,
-    toolbar::ToolbarComponent,
-};
-use wasm_bindgen::prelude::*;
-use web_sys::console::log_2;
-use yew::{html::IntoPropValue, web_sys::Url};
-use yew_router::{components::RouterAnchor, prelude::*, switch::Permissive};
+use components::{home::Home, notfound::NotFound, pg_login::LoginPageComponent, stellar::StellarBg};
+use yew_router::{prelude::*, switch::Permissive};
 
 mod router;
 use router::*;
 
 struct Model {
-    // `ComponentLink` is like a reference to a component.
-    // It can be used to send messages to the component
     link: ComponentLink<Self>,
 }
 
@@ -31,9 +23,6 @@ impl Component for Model {
     }
 
     fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        // Should only return "true" if new properties are different to
-        // previously received properties.
-        // This component has no properties so we will always return "false".
         false
     }
 
@@ -44,6 +33,7 @@ impl Component for Model {
                     render=AppRouter::render(|thing : AppRoute| {
                         Self::switch(thing)
                     })
+                    
                     redirect=AppRouter::redirect(|route: Route| {
                         AppRoute::NotFound(Permissive(Some(route.route)))
                     })
@@ -69,6 +59,11 @@ impl Model {
             }
             AppRoute::NotFound(Permissive(route)) => {
                 html! { <NotFound route=route /> }
+            }
+            AppRoute::Root => {
+                html! {
+                    <AppRedirect route=AppRoute::Login/>
+                }
             }
         }
     }

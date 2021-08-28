@@ -3,6 +3,7 @@ use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
 pub struct GoogleLoginButton {
     link: ComponentLink<Self>,
+    url: String,
 }
 
 pub enum Msg {
@@ -14,7 +15,10 @@ impl Component for GoogleLoginButton {
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link }
+        Self { 
+                link, 
+                url: String::from("localhost:8000/"),
+        }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -36,7 +40,7 @@ impl Component for GoogleLoginButton {
                 <div id="google-button-container">
                     <div id="g_id_onload"
                         data-client_id="699719776672-56jqfpk1g2uq8tma72hi56n5jkan82nr.apps.googleusercontent.com"
-                        data-login_uri="https://joinsaturn.net/api/auth/login"
+                        data-login_uri=self.url.clone()
                         data-ux_mode="redirect"
                         data-auto_prompt="false">
                     </div>
