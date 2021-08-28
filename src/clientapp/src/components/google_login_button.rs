@@ -17,7 +17,15 @@ impl Component for GoogleLoginButton {
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
         Self { 
                 link, 
-                url: String::from("localhost:8000/"),
+                url: 
+                String::from(match std::env::var("SATURN_EXEC_PROFILE") {
+                    Ok(val) => match val.as_str() {
+                        "LOCAL" => "localhost:8080/",
+                        _ => "https://joinsaturn.net/",
+                    }
+
+                    Err(_) => "https://joinsaturn.net/",
+            }) 
         }
     }
 
