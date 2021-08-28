@@ -1,13 +1,9 @@
 use yew::{prelude::*, services::fetch::{FetchService, FetchTask, Request, Response}, format::{Nothing, Json}};
 use web_sys::{MouseEvent, console::log_1};
-use serde::{Deserialize};
+use serde::{Deserialize, Serialize};
 
-extern crate yew;
-
-pub struct Home {
-    link: ComponentLink<Self>,
-    fetch_task: Option<FetchTask>,
-}
+use super::router::*;
+use crate::tell;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct User {
@@ -19,20 +15,45 @@ pub struct User {
     pub is_admin: bool,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub enum AuthLevel {
+    Admin,
+    User,
+    Guest
+}
+
+impl Default for AuthLevel {
+    fn default() -> Self { AuthLevel::Guest }
+}
+
+#[derive(Serialize, Deserialize, Default, Debug)]
+pub struct AuthDetails {
+    pub auth_level: AuthLevel,
+    pub id: Option<i32>,
+    pub email: Option<String>,
+    pub picture: Option<String>,
+    pub first_name: Option<String>,
+    pub last_name: Option<String>,
+}
+
 pub enum Msg {
     FetchUserInfo,
-    ReceieveUserInfo(User),
+    ReceieveUserInfo(AuthDetails),
     FailToReceiveUserInfo(Option<anyhow::Error>),
 }
 
-macro_rules! tell {
-    ($str_slice:expr) => (
-        web_sys::console::log_1(&$str_slice.into())
-    );
 
-    ($str_slice:expr, $($arg:expr),*) => (
-        tell!(format!($str_slice, $($arg),*))
-    )
+pub struct Home {
+    link: ComponentLink<Self>,
+    fetch_task: Option<FetchTask>,
+    fetch_state: Option<FetchState>,
+    details: Option<AuthDetails>
+}
+
+pub enum FetchState {
+    Waiting,
+    Succeeded,
+    Failed(Option<anyhow::Error>)
 }
 
 impl Component for Home {
@@ -40,7 +61,7 @@ impl Component for Home {
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link, fetch_task: None }
+        Self { link, fetch_task: None, details: None }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -48,16 +69,32 @@ impl Component for Home {
             Msg::FetchUserInfo => {
                 let req = Request::get("/api/auth/details").body(Nothing).expect("Could not build request");
                 
-                let callback = self.link.callback(|response: Response<Json<Result<User, anyhow::Error>>>| {
-                    tell!("Got response");
+                let callback = self.link.callback(|response: Response<Json<Result<AuthDetails, anyhow::Error>>>| {
+                    let status = response.headers()["status"].to_str().unwrap();
 
-                    if let Json(data) = response.into_body() {
-                        match data {
-                            Ok(user) => Msg::ReceieveUserInfo(user),
-                            Err(err) => Msg::FailToReceiveUserInfo(Some(err)),
-                        }
-                    } else {
-                        Msg::FailToReceiveUserInfo(None)
+                    tell!("Got response: {}", status);
+
+                    match response.headers()["status"].to_str() {
+                        Ok(code) => {
+                            tell!("Response code: {}", code);
+
+                            match code.parse::<i32>() {
+                                Ok(code) => {
+                                    match code {
+                                        200 => {
+                                            let Json(body) = response.into_body();
+
+                                            Msg::ReceieveUserInfo(body)
+                                        }
+
+                                        _ => Msg::FailToReceiveUserInfo(Err("").into()),
+                                    }
+                                },
+
+                                Err(err) => Msg::FailToReceiveUserInfo(Some(err.into())),
+                            }
+                        },
+                        Err(err) => (),
                     }
                 });
 
@@ -71,13 +108,16 @@ impl Component for Home {
             },
 
             Msg::ReceieveUserInfo(data) => {
+                self.fetch_state = Some(FetchState::Succeeded);
                 self.fetch_task = None;
                 tell!("User info received: {:?}", data);
             },
 
             Msg::FailToReceiveUserInfo(maybe_error) => {
+                self.fetch_task = None;
+                self.fetch_state = Some(FetchState::Failed());
+
                 if let Some(error) = maybe_error {
-                    self.fetch_task = None;
                     tell!("Error getting user details: {:?}", error);
                 }
             }
@@ -99,14 +139,23 @@ impl Component for Home {
 
         html! {
             <div>
-                <button onclick=callback>{"Button!"}</button>
-                { self.fetch_user_info() }
+                { self.check_auth() }
+
             </div>
         }
     }
 }
 
 impl Home {
+
+    fn try_auth(&self) -> Result<AuthDetails, anyhow::Error> {
+        
+    }
+
+    fn check_auth(&self) -> Html {
+        
+    }
+
     fn fetch_user_info(&self) -> Html {
         if self.fetch_task.is_some() {
             html! {
