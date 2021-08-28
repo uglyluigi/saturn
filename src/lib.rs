@@ -68,10 +68,12 @@ pub fn rocket() -> Rocket<Build>{
             controllers::auth::logout::logout,
             controllers::auth::details::details_admin,
             controllers::auth::details::details_user,
-            controllers::auth::details::details_guest,
+        ])
+        .register("/api", catchers![
+            controllers::auth::details::forbidden_or_details_guest
         ])
         .mount("/.well-known", FileServer::from(relative!(".well-known")))
-        .mount("/", FileServer::from(relative!("src/clientapp/dist")).rank(10))
+        .mount("/", FileServer::from(relative!("src/clientapp/dist")).rank(-1))
         .attach(AdHoc::on_response("404 Redirector", |_req, res| Box::pin(async move {
             if res.status() == Status::NotFound {
                 let body = std::fs::read_to_string("src/clientapp/dist/index.html").expect("Index file can't be found.");
@@ -99,6 +101,17 @@ async fn run_migrations(rocket: Rocket<Build>) -> Rocket<Build> {
 
 
 //Stufff
+#[allow(dead_code)]
+#[derive(Deserialize)]
+struct GoogleKey {
+    n: String,
+    e: String,
+    alg: String,
+    kty: String,
+    r#use: String,
+    kid: String
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 struct GoogleClaims {
     iss: String,
@@ -130,18 +143,20 @@ impl<'r> FromRequest<'r> for UserAuthenticator {
     type Error = ();
 
     async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
+        //Create variables to hold potential output.
         let mut email = None;
         let mut picture = String::new();
         let mut first_name = String::new();
         let mut last_name = String::new();
 
+        //Fetch the jwt token from the user's computer and set our validation algorithm.
         let jwt = req.cookies().get_private("user_jwt").map(|cookie| Box::new(cookie.value().to_owned()));
         let validation = Validation::new(Algorithm::RS256);
 
+        //Retreive google's public keys to verify signature. FIXME - This should be cached at some point.
         let body = reqwest::get("https://www.googleapis.com/oauth2/v3/certs").await.unwrap().json::<HashMap<String, Vec<GoogleKey>>>().await.unwrap();
 
-        println!("User get keys.");
-
+        //Load each key and check the signature and claims.
         for key in body.get("keys").unwrap(){
             let jwt = jwt.clone();
             if let Some(jwt) = jwt{
@@ -156,6 +171,7 @@ impl<'r> FromRequest<'r> for UserAuthenticator {
 
         if email.is_none() {req.cookies().remove_private(Cookie::named("user_jwt"));}
 
+        //If we were able to decode the email proceed otherwise return forbidden status.
         match email {
             None => Outcome::Failure((Status::Forbidden, ())),
             Some(email) => Outcome::Success(
@@ -167,16 +183,6 @@ impl<'r> FromRequest<'r> for UserAuthenticator {
                 }),
         }
     }
-}
-
-#[derive(Deserialize)]
-struct GoogleKey {
-    n: String,
-    e: String,
-    alg: String,
-    kty: String,
-    r#use: String,
-    kid: String
 }
 
 #[rocket::async_trait]
@@ -225,6 +231,7 @@ impl<'r> FromRequest<'r> for User{
                 Outcome::Success(user)
             }
         } else {
+            //User didn't exist so we're creating them.
             let user = db.run(move |conn| {
                 let new_user = NewUser {
                     email: &used_email,
@@ -250,10 +257,9 @@ impl<'r> FromRequest<'r> for Admin{
     type Error = ();
 
     async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
-        //use crate::schema::users::dsl::{users, email};
-        //let db = try_outcome!(req.guard::<Db>().await);
         let auth = try_outcome!(req.guard::<User>().await);
         
+        //Pretty straight forward just load the user and check if they're an admin.
         if auth.is_admin {
             Outcome::Success(Admin(auth))
         } else {

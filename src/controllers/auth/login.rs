@@ -6,6 +6,14 @@ pub struct GoogleTokenForm<'r> {
     pub g_csrf_token: &'r str,
 }
 
+/*
+This endpoint is designed to receive a POST form
+field request from Google's oauth process. It 
+should contain a jwt token and g_crsf_token. We
+will store the former in cookies assuming the 
+latter matches its copy which was sent to us via
+cookies.
+*/
 #[post("/auth/login", data = "<token>")]
 pub async fn login(token: Form<GoogleTokenForm<'_>>, cookies: &CookieJar<'_>) -> Redirect {
     let cred = token.credential.clone();

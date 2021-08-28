@@ -9,14 +9,6 @@ pub struct ClubMember {
     pub is_moderator: bool,
 }
 
-#[derive(Queryable, Serialize, Deserialize)]
-pub struct ClubMemberNullable {
-    pub id: Option<i32>,
-    pub user_id: Option<i32>,
-    pub club_id: Option<i32>,
-    pub is_moderator: Option<bool>,
-}
-
 #[derive(Insertable)]
 #[table_name = "club_members"]
 pub struct NewClubMember<'a> {
