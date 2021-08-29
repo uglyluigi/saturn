@@ -115,12 +115,9 @@ pub struct GoogleKeysState {
 
 impl GoogleKeysState {
     pub async fn fetch_keys(&self) -> Vec<GoogleKey>{
-        let mut get_new_keys = false;
         {
             let keys = self.lock.read().unwrap();
-            if (*keys).expires <= chrono::offset::Utc::now(){
-                get_new_keys=true;
-            }else{
+            if (*keys).expires > chrono::offset::Utc::now(){
                 return (*keys).keys.clone();
             }
         }
