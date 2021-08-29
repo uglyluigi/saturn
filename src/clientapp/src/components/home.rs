@@ -1,4 +1,4 @@
-use yew::{prelude::*, services::fetch::{FetchService, FetchTask, Request, Response}, format::{Nothing, Json}};
+use yew::{prelude::*, services::fetch::{FetchService, FetchTask, Request, Response, StatusCode}, format::{Nothing, Json}, };
 use web_sys::{MouseEvent, console::log_1};
 use serde::{Deserialize, Serialize};
 
@@ -72,34 +72,18 @@ impl Component for Home {
                 let req = Request::get("/api/auth/details").body(Nothing).expect("Could not build request");
                 
                 let callback = self.link.callback(|response: Response<Json<Result<AuthDetails, anyhow::Error>>>| {
-                    let status = response.headers()["status"].to_str().unwrap();
+                    match response.status() {
+                        StatusCode::OK => {
+                            tell!("OK response");
+                            let Json(body) = response.into_body();
 
-                    tell!("Got response: {}", status);
-
-                    match response.headers()["status"].to_str() {
-                        Ok(code) => {
-                            tell!("Response code: {}", code);
-
-                            match code.parse::<i32>() {
-                                Ok(code) => {
-                                    match code {
-                                        200 => {
-                                            let Json(body) = response.into_body();
-
-                                            match body {
-                                                Ok(deets) => Msg::ReceieveUserInfo(deets),
-                                                Err(err) => Msg::FailToReceiveUserInfo(Some(err))
-                                            }
-                                        }
-
-                                        _ => Msg::FailToReceiveUserInfo(Some(anyhow!("Non-200 status received: {}", code))),
-                                    }
-                                },
-
-                                Err(err) => Msg::FailToReceiveUserInfo(Some(err.into())),
+                            match body {
+                                Ok(deets) => Msg::ReceieveUserInfo(deets),
+                                Err(err) => Msg::FailToReceiveUserInfo(Some(err))
                             }
                         },
-                        Err(err) => Msg::FailToReceiveUserInfo(Some(err.into())),
+
+                        _ => Msg::FailToReceiveUserInfo(Some(anyhow!("Weird status code received: {}", response.status()))),
                     }
                 });
 
