@@ -165,10 +165,7 @@ impl Component for Home {
             },
 
             None => {
-                self.link.callback(|_: Option<()>| {
-                    tell!("Fetching user data");
-                    Msg::FetchUserInfo
-                }).emit(None);
+                self.link.send_message(Msg::FetchUserInfo);
 
                 html! {
                     <h1> {"Getting user data..."} </h1>
