@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use super::router::*;
 use crate::tell;
+use anyhow::*;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct User {
@@ -61,12 +62,13 @@ impl Component for Home {
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link, fetch_task: None, details: None }
+        Self { link, fetch_task: None, details: None, fetch_state: None }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::FetchUserInfo => {
+                self.fetch_state = Some(FetchState::Waiting);
                 let req = Request::get("/api/auth/details").body(Nothing).expect("Could not build request");
                 
                 let callback = self.link.callback(|response: Response<Json<Result<AuthDetails, anyhow::Error>>>| {
@@ -84,17 +86,20 @@ impl Component for Home {
                                         200 => {
                                             let Json(body) = response.into_body();
 
-                                            Msg::ReceieveUserInfo(body)
+                                            match body {
+                                                Ok(deets) => Msg::ReceieveUserInfo(deets),
+                                                Err(err) => Msg::FailToReceiveUserInfo(Some(err))
+                                            }
                                         }
 
-                                        _ => Msg::FailToReceiveUserInfo(Err("").into()),
+                                        _ => Msg::FailToReceiveUserInfo(Some(anyhow!("Non-200 status received: {}", code))),
                                     }
                                 },
 
                                 Err(err) => Msg::FailToReceiveUserInfo(Some(err.into())),
                             }
                         },
-                        Err(err) => (),
+                        Err(err) => Msg::FailToReceiveUserInfo(Some(err.into())),
                     }
                 });
 
@@ -115,10 +120,13 @@ impl Component for Home {
 
             Msg::FailToReceiveUserInfo(maybe_error) => {
                 self.fetch_task = None;
-                self.fetch_state = Some(FetchState::Failed());
 
                 if let Some(error) = maybe_error {
                     tell!("Error getting user details: {:?}", error);
+                    self.fetch_state = Some(FetchState::Failed(Some(error)));
+                } else {
+                    tell!("Unspecified error getting user details");
+                    self.fetch_state = Some(FetchState::Failed(None));
                 }
             }
         }
@@ -130,40 +138,41 @@ impl Component for Home {
         false
     }
 
-    fn view(&self) -> Html {
-        // Kind of silly that I have to provide a type annotation to something I'm ignoring!
-        let callback = self.link.callback(|_: MouseEvent| {
-            log_1(&"Fetching user data".into());
-            Msg::FetchUserInfo
-        });
+    fn view(&self) -> Html {        
+        match &self.fetch_state {
+            Some(state) => {
+                match state {
+                    FetchState::Waiting => html! {
+                        <h1> {"Waiting..."} </h1>
+                    },
 
-        html! {
-            <div>
-                { self.check_auth() }
+                    FetchState::Succeeded => html! {
+                        //TODO handle token timeout. Just send Msg::RequestUserData again
+                        <h1> {"You're home!"} </h1>
+                    },
 
-            </div>
-        }
-    }
-}
+                    FetchState::Failed(maybe_error) => {
+                        match maybe_error {
+                            Some(err) => tell!("Error: {:?}", err),
+                            None => tell!("Unspecified error occurred."),
+                        };
 
-impl Home {
+                        html! {
+                            <AppRedirect route=AppRoute::Login/>
+                        }
+                    }
+                }
+            },
 
-    fn try_auth(&self) -> Result<AuthDetails, anyhow::Error> {
-        
-    }
+            None => {
+                self.link.callback(|_: Option<()>| {
+                    tell!("Fetching user data");
+                    Msg::FetchUserInfo
+                }).emit(None);
 
-    fn check_auth(&self) -> Html {
-        
-    }
-
-    fn fetch_user_info(&self) -> Html {
-        if self.fetch_task.is_some() {
-            html! {
-                <h1> {"Loading..."} </h1>
-            }
-        } else {
-            html! {
-                <></>
+                html! {
+                    <h1> {"Getting user data..."} </h1>
+                }
             }
         }
     }
