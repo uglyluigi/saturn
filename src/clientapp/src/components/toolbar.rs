@@ -1,20 +1,26 @@
 use yew::services::ConsoleService;
-use yew::{html, Component, ComponentLink, Html, ShouldRender};
+use yew::{html, Component, ComponentLink, Html, ShouldRender, Properties};
 
 pub struct ToolbarComponent {
     link: ComponentLink<Self>,
+    props: Props,
 }
 
 enum Msg {
     NowActive(String),
 }
 
+#[derive(Properties, Clone, PartialEq)]
+pub struct Props {
+    pub username: String,
+}
+
 impl Component for ToolbarComponent {
     type Message = ();
-    type Properties = ();
+    type Properties = Props;
 
-    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link }
+    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+        Self { link, props }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -29,8 +35,9 @@ impl Component for ToolbarComponent {
         html! {
             <div class="toolbar">
                 <img src="./assets/saturn-logo.svg"/>
+                <h1>{"Hi, "} {self.props.username.clone()}</h1>
                 <div class="links">
-                    <a class="active" href="#home">{"Home"}</a>
+                    <a class="active" href="/">{"Home"}</a>
                     <a href="#smth">{"Something"}</a>
                 </div>
             </div>

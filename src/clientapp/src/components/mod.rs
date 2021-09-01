@@ -5,6 +5,7 @@ pub mod pg_login;
 pub mod stellar;
 pub mod toolbar;
 pub mod router;
+pub mod club_view;
 
 #[macro_use]
 pub mod mac {

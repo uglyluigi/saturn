@@ -50,10 +50,12 @@ impl Model {
                         <LoginPageComponent/> 
                     </div>
                 }
-            }
+            },
+
             AppRoute::Home => {
                 html! { <Home/> }
-            }
+            },
+            
             AppRoute::NotFound(Permissive(route)) => {
                 html! { <NotFound route=route /> }
             }

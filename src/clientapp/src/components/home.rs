@@ -1,10 +1,14 @@
+use std::env;
+
 use yew::{prelude::*, services::fetch::{FetchService, FetchTask, Request, Response, StatusCode}, format::{Nothing, Json}, };
 use web_sys::{MouseEvent, console::log_1};
 use serde::{Deserialize, Serialize};
 
 use super::router::*;
 use crate::tell;
+use crate::components::club_view::ClubView;
 use anyhow::*;
+use dotenv::dotenv;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct User {
@@ -69,30 +73,38 @@ impl Component for Home {
         match msg {
             Msg::FetchUserInfo => {
                 self.fetch_state = Some(FetchState::Waiting);
-                let req = Request::get("/api/auth/details").body(Nothing).expect("Could not build request");
-                
-                let callback = self.link.callback(|response: Response<Json<Result<AuthDetails, anyhow::Error>>>| {
-                    match response.status() {
-                        StatusCode::OK => {
-                            tell!("OK response");
-                            let Json(body) = response.into_body();
+                let req = Request::get("/api/auth/details").body(Nothing);
 
-                            match body {
-                                Ok(deets) => Msg::ReceieveUserInfo(deets),
-                                Err(err) => Msg::FailToReceiveUserInfo(Some(err))
+                match req {
+                    Ok(req) => {
+                        let callback = self.link.callback(|response: Response<Json<Result<AuthDetails, anyhow::Error>>>| {
+                            match response.status() {
+                                StatusCode::OK => {
+                                    tell!("OK response");
+                                    let Json(body) = response.into_body();
+        
+                                    match body {
+                                        Ok(deets) => {
+                                            match deets.auth_level {
+                                                Guest => Msg::FailToReceiveUserInfo(Some(anyhow!("Guests must log in"))),
+                                                _ => Msg::ReceieveUserInfo(deets)
+                                            }
+                                        },
+                                        Err(err) => Msg::FailToReceiveUserInfo(Some(err))
+                                    }
+                                },
+        
+                                _ => Msg::FailToReceiveUserInfo(Some(anyhow!("Weird status code received: {}", response.status()))),
                             }
-                        },
-
-                        _ => Msg::FailToReceiveUserInfo(Some(anyhow!("Weird status code received: {}", response.status()))),
-                    }
-                });
-
-                match FetchService::fetch(req, callback) {
-                    Ok(task) => {
-                        self.fetch_task = Some(task);
+                        });
+        
+                        match FetchService::fetch(req, callback) {
+                            Ok(task) => self.fetch_task = Some(task),
+                            Err(err) => tell!("{}", err),
+                        }
                     },
 
-                    Err(err) => tell!("{}", err),
+                    Err(err) => tell!("Error building request: {}", err),
                 }
             },
 
@@ -122,7 +134,22 @@ impl Component for Home {
         false
     }
 
-    fn view(&self) -> Html {        
+
+    fn view(&self) -> Html {
+        let THIS_SHOULDNT_BE_TRUE = true;
+
+        if THIS_SHOULDNT_BE_TRUE == true {
+            html! {
+                <ClubView username=String::from("DEBUG")/>
+            }
+        } else {
+            self.normal_view()
+        }
+    }
+}
+
+impl Home {
+    fn normal_view(&self) -> Html {
         match &self.fetch_state {
             Some(state) => {
                 match state {
@@ -132,7 +159,7 @@ impl Component for Home {
 
                     FetchState::Succeeded => html! {
                         //TODO handle token timeout. Just send Msg::RequestUserData again
-                        <h1> {"You're home!"} </h1>
+                        <ClubView username=String::from(self.details.as_ref().unwrap().first_name.as_ref().unwrap().clone())/>
                     },
 
                     FetchState::Failed(maybe_error) => {

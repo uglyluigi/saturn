@@ -5,7 +5,7 @@
     overflow: hidden;
     background-color: $BLACK_BG;
     
-    a {
+    a, h1 {
         float: left;
         color: $TEXT_1_OFF_WHITE;
         text-align: center;
@@ -31,11 +31,10 @@
     }
     
     img {
-        display: inline-block;
+        float: left;
         vertical-align: middle;
         height: 3em;
         width: 3em;
-        padding-right: 20px;
-        padding-left: 20px;
+        padding: em;
     }
 }
