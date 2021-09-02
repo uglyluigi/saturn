@@ -29,6 +29,7 @@ impl Component for ToolbarComponent {
         html! {
             <div class="toolbar">
                 <img src="./assets/saturn-logo.svg"/>
+                <img src="./assets/saturn-text-logo.svg"/>
                 <div class="links">
                     <a class="active" href="#home">{"Home"}</a>
                     <a href="#smth">{"Something"}</a>
