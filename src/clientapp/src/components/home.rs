@@ -1,14 +1,10 @@
-use std::env;
-
 use yew::{prelude::*, services::fetch::{FetchService, FetchTask, Request, Response, StatusCode}, format::{Nothing, Json}, };
-use web_sys::{MouseEvent, console::log_1};
 use serde::{Deserialize, Serialize};
 
 use super::router::*;
 use crate::tell;
 use crate::components::club_view::ClubView;
 use anyhow::*;
-use dotenv::dotenv;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct User {

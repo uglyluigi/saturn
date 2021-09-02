@@ -1,0 +1,68 @@
+@import "./consts.scss";
+
+.club-view {
+    body {
+        background-color: $BLACK_BG;
+    }
+}
+
+.club-card {
+    height: auto;
+    width: 20em;
+    border-radius: 8px;
+    background-color: $BLACK_BG;
+    padding: 1em 1em 1em 1em;
+    margin: 1em;
+    display: flex;
+    flex-direction: column;
+
+    p, h1 {
+        color: $TEXT_1_OFF_WHITE;
+    }
+
+    .club-card-action-bar {
+        font-size: 30px;
+        flex-direction: row;
+        
+        button {
+            font-size: 30px;
+            background-color: transparent;
+            border: none;
+            margin: none;
+            padding-right: none;
+            padding-left: none;
+        }
+
+        button:hover {
+            animation-duration: 0.3s;
+            animation-name: pop;
+            animation-fill-mode: forwards;
+        }
+
+        button:not(:hover) {
+            animation-duration: 0.3s;
+            animation-name: pop_out;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes pop_out {
+            from {
+                font-size: 40px;
+            }
+
+            to {
+                font-size: 30px;
+            }
+        }
+
+        @keyframes pop {
+            from {
+                font-size: 30px;
+            }
+
+            to {
+                font-size: 40px;
+            }
+        }
+    }
+}

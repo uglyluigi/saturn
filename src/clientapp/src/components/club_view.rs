@@ -1,5 +1,5 @@
 use yew::prelude::*;
-use crate::components::{toolbar::ToolbarComponent, router::*};
+use crate::components::{toolbar::ToolbarComponent, router::*, club_card::ClubCard};
 use yew_router::{prelude::*, switch::Permissive};
 use std::rc::Rc;
 use yew::Properties;
@@ -35,6 +35,8 @@ impl Component for ClubView {
         html! {
             <div>
                 <ToolbarComponent username=self.props.username.clone()/>
+
+                <ClubCard vote_count=0 club_name=String::from("Southeastern Vegans") club_description=String::from("The coolest club ever")/>
             </div>
         }
     }

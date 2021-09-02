@@ -6,6 +6,7 @@ pub mod stellar;
 pub mod toolbar;
 pub mod router;
 pub mod club_view;
+pub mod club_card;
 
 #[macro_use]
 pub mod mac {
