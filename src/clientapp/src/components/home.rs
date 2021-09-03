@@ -6,6 +6,8 @@ use crate::tell;
 use crate::components::club_view::ClubView;
 use anyhow::*;
 
+use crate::please;
+
 #[derive(Deserialize, Debug, Clone)]
 pub struct User {
     pub id: i32,
@@ -136,7 +138,7 @@ impl Component for Home {
 
         if THIS_SHOULDNT_BE_TRUE == true {
             html! {
-                <ClubView username=String::from("DEBUG")/>
+                <ClubView first_name=String::from("DEBUG") last_name=String::from("GUY")/>
             }
         } else {
             self.normal_view()
@@ -155,7 +157,7 @@ impl Home {
 
                     FetchState::Succeeded => html! {
                         //TODO handle token timeout. Just send Msg::RequestUserData again
-                        <ClubView username=String::from(self.details.as_ref().unwrap().first_name.as_ref().unwrap().clone())/>
+                        <ClubView first_name=please!(self.details, first_name) last_name=please!(self.details, last_name)/>
                     },
 
                     FetchState::Failed(maybe_error) => {

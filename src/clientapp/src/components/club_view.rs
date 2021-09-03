@@ -11,8 +11,8 @@ pub struct ClubView {
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct Props {
-    #[prop_or(String::from("USERNAME_ERROR"))]
-    pub username: String,
+    pub first_name: String,
+    pub last_name: String,
 }
 
 impl Component for ClubView {
@@ -33,10 +33,9 @@ impl Component for ClubView {
 
     fn view(&self) -> Html {
         html! {
-            <div>
-                <ToolbarComponent username=self.props.username.clone()/>
-
-                <ClubCard vote_count=0 club_name=String::from("Southeastern Vegans") club_description=String::from("The coolest club ever")/>
+            <div class="club-view">
+                <ToolbarComponent username=self.props.first_name.clone()/>
+                <ClubCard vote_count=0 organizer_name=String::from("Sans Undertale") club_name=String::from("Southeastern Undertale Club") club_description=String::from("The coolest club ever")/>
             </div>
         }
     }

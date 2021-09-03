@@ -34,13 +34,11 @@ impl Component for ToolbarComponent {
     fn view(&self) -> Html {
         html! {
             <div class="toolbar">
-                <img src="./assets/saturn-logo.svg"/>
-                <img src="./assets/saturn-text-logo.PNG"/>
+                <img id="logo" src="./assets/saturn-logo.svg"/>
+                <img id="txt-logo" src="./assets/saturn-text-logo.PNG"/>
                 <h1>{"Hi, "} {self.props.username.clone()}</h1>
-                <div class="links">
-                    <a class="active" href="/">{"Home"}</a>
-                    <a href="#smth">{"Something"}</a>
-                </div>
+                <a class="active" href="/">{"Home"}</a>
+                <a href="#smth">{"Something"}</a>
             </div>
         }
     }

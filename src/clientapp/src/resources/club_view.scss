@@ -1,5 +1,9 @@
 @import "./consts.scss";
 
+body {
+    background-color: $PLEASING_BG_COLOR;
+}
+
 .club-view {
     body {
         background-color: $BLACK_BG;
@@ -8,61 +12,107 @@
 
 .club-card {
     height: auto;
-    width: 20em;
+    width: 35em;
     border-radius: 8px;
     background-color: $BLACK_BG;
     padding: 1em 1em 1em 1em;
     margin: 1em;
     display: flex;
     flex-direction: column;
+    transition: transform 0.5s;
 
     p, h1 {
         color: $TEXT_1_OFF_WHITE;
     }
 
-    .club-card-action-bar {
+    hr {
+        width: 100%;
+    }
+}
+
+.club-card div {
+    transform: scaleY(-0.25em);
+}
+
+.club-card-header {       
+    h1 {
+        text-align: center;
+    }
+}
+
+.club-card-action-bar {
+    font-size: 30px;
+    flex-direction: row;
+    
+    button {
         font-size: 30px;
-        flex-direction: row;
-        
-        button {
-            font-size: 30px;
-            background-color: transparent;
-            border: none;
-            margin: none;
-            padding-right: none;
-            padding-left: none;
+        background-color: transparent;
+        border: none;
+        margin: none;
+        padding-right: none;
+        padding-left: none;
+        min-height: 1em;
+        min-width: 1em;
+
+        transition: transform 0.33s;
+    }
+
+    button:hover {
+        transform: translateY(-0.25em) !important;
+    }
+
+    button:hover {
+        transform: scale(1.5);
+    }
+}
+
+.club-card-body {
+    display: flex;
+    flex: 50%;
+    text-align: center;
+    color: $TEXT_1_OFF_WHITE;
+
+    #right-col {
+        flex: 50%;
+
+        h2 {
+            font-size: 20pt;
         }
 
-        button:hover {
-            animation-duration: 0.3s;
-            animation-name: pop;
-            animation-fill-mode: forwards;
+        p {
+            display: flex;
+            flex-direction: row;
         }
 
-        button:not(:hover) {
-            animation-duration: 0.3s;
-            animation-name: pop_out;
-            animation-fill-mode: forwards;
+        p:before, p:after {
+            content: "";
+            flex: 1 1;
+            border-bottom: 1px solid;
+            margin: auto;
         }
 
-        @keyframes pop_out {
-            from {
-                font-size: 40px;
-            }
-
-            to {
-                font-size: 30px;
-            }
+        p:before {
+            margin-right: 1em;
         }
 
-        @keyframes pop {
-            from {
-                font-size: 30px;
-            }
-
-            to {
-                font-size: 40px;
-            }
+        p:after {
+            margin-left: 1em;
         }
+    }
+
+    #left-col {
+        margin: auto;
+        flex: 50%
+    }
+
+    img {
+        padding-top: 1em;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 10em;
+        height: 10em;
+        border-radius: 50%;
+        padding-bottom: 1em;
     }
 }

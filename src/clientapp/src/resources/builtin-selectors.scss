@@ -5,13 +5,17 @@ body {
     padding: 0;
 }
 
+h1, h2, h3, p {
+    margin: 0;
+    padding: 0;
+}
+
 h1 {
     font-family: $FONT_HEADER;
-    margin: 0;
 }
 
 h2 {
-    @extend h1;
+    font-family: $FONT_HEADER;
     font-size: 30pt;
 }
 
@@ -26,4 +30,8 @@ canvas {
     height: 100%;
     width: 100%;
     z-index: -1;
+}
+
+p {
+    font-family: $FONT_BODY;
 }
