@@ -1,4 +1,5 @@
 use crate::components::google_login_button::GoogleLoginButton;
+use crate::components::three::ThreeJSViewport;
 use yew::services::ConsoleService;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 

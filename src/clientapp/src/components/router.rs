@@ -7,6 +7,8 @@ pub enum AppRoute {
     Login,
     #[to = "/page-not-found"]
     NotFound(Permissive<String>),
+    #[to = "/test"]
+    Test,
     #[to = "/!"]
     Home,
 }

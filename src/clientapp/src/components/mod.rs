@@ -7,6 +7,7 @@ pub mod toolbar;
 pub mod router;
 pub mod club_view;
 pub mod club_card;
+pub mod three;
 
 #[macro_use]
 pub mod mac {

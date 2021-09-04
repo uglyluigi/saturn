@@ -1,6 +1,6 @@
 use yew::prelude::*;
 mod components;
-use components::{home::Home, notfound::NotFound, pg_login::LoginPageComponent, stellar::StellarBg, router::*};
+use components::{home::Home, notfound::NotFound, pg_login::LoginPageComponent, stellar::StellarBg, router::*, three::ThreeJSViewport};
 use yew_router::{prelude::*, switch::Permissive};
 
 struct Model {
@@ -44,12 +44,7 @@ impl Model {
     fn switch(switch: AppRoute) -> Html {
         match switch {
             AppRoute::Login => {
-                html! { 
-                    <div>
-                        <StellarBg/>
-                        <LoginPageComponent/> 
-                    </div>
-                }
+                html! { <LoginPageComponent/> }
             },
 
             AppRoute::Home => {
@@ -58,6 +53,10 @@ impl Model {
             
             AppRoute::NotFound(Permissive(route)) => {
                 html! { <NotFound route=route /> }
+            },
+
+            AppRoute::Test => {
+                html! { <ThreeJSViewport/> }
             }
         }
     }
