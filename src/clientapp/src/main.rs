@@ -1,6 +1,10 @@
 use yew::prelude::*;
 mod components;
-use components::{home::Home, notfound::NotFound, pg_login::LoginPageComponent, stellar::StellarBg, router::*, three::ThreeJSViewport};
+use components::{
+    coolshit::ThreeJSViewport,
+    core::{router::*, NotFound},
+    login::{Home, LoginPage},
+};
 use yew_router::{prelude::*, switch::Permissive};
 
 struct Model {
@@ -30,7 +34,7 @@ impl Component for Model {
                     render=AppRouter::render(|thing : AppRoute| {
                         Self::switch(thing)
                     })
-                    
+
                     redirect=AppRouter::redirect(|route: Route| {
                         AppRoute::NotFound(Permissive(Some(route.route)))
                     })
@@ -44,16 +48,16 @@ impl Model {
     fn switch(switch: AppRoute) -> Html {
         match switch {
             AppRoute::Login => {
-                html! { <LoginPageComponent/> }
-            },
+                html! { <LoginPage/> }
+            }
 
             AppRoute::Home => {
                 html! { <Home/> }
-            },
-            
+            }
+
             AppRoute::NotFound(Permissive(route)) => {
                 html! { <NotFound route=route /> }
-            },
+            }
 
             AppRoute::Test => {
                 html! { <ThreeJSViewport/> }

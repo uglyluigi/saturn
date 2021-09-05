@@ -89,8 +89,8 @@ impl StellarBg {
     fn render_gl(&mut self, timestamp: f64) {
         let gl = self.gl.as_ref().expect("GL Context not initialized!");
 
-        let vert_code = include_str!("./basic.vert");
-        let frag_code = include_str!("./basic.frag");
+        let vert_code = include_str!("./shaders/basic.vert");
+        let frag_code = include_str!("./shaders/basic.frag");
 
         // This list of vertices will draw two triangles to cover the entire canvas.
         let vertices: Vec<f32> = vec![

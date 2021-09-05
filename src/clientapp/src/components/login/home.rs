@@ -1,9 +1,12 @@
-use yew::{prelude::*, services::fetch::{FetchService, FetchTask, Request, Response, StatusCode}, format::{Nothing, Json}, };
 use serde::{Deserialize, Serialize};
+use yew::{
+    format::{Json, Nothing},
+    prelude::*,
+    services::fetch::{FetchService, FetchTask, Request, Response, StatusCode},
+};
 
-use super::router::*;
+use crate::components::{core::*, ClubView};
 use crate::tell;
-use crate::components::club_view::ClubView;
 use anyhow::*;
 
 use crate::please;
@@ -22,11 +25,13 @@ pub struct User {
 pub enum AuthLevel {
     Admin,
     User,
-    Guest
+    Guest,
 }
 
 impl Default for AuthLevel {
-    fn default() -> Self { AuthLevel::Guest }
+    fn default() -> Self {
+        AuthLevel::Guest
+    }
 }
 
 #[derive(Serialize, Deserialize, Default, Debug)]
@@ -45,18 +50,17 @@ pub enum Msg {
     FailToReceiveUserInfo(Option<anyhow::Error>),
 }
 
-
 pub struct Home {
     link: ComponentLink<Self>,
     fetch_task: Option<FetchTask>,
     fetch_state: Option<FetchState>,
-    details: Option<AuthDetails>
+    details: Option<AuthDetails>,
 }
 
 pub enum FetchState {
     Waiting,
     Succeeded,
-    Failed(Option<anyhow::Error>)
+    Failed(Option<anyhow::Error>),
 }
 
 impl Component for Home {
@@ -64,7 +68,12 @@ impl Component for Home {
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link, fetch_task: None, details: None, fetch_state: None }
+        Self {
+            link,
+            fetch_task: None,
+            details: None,
+            fetch_state: None,
+        }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -75,42 +84,47 @@ impl Component for Home {
 
                 match req {
                     Ok(req) => {
-                        let callback = self.link.callback(|response: Response<Json<Result<AuthDetails, anyhow::Error>>>| {
-                            match response.status() {
-                                StatusCode::OK => {
-                                    tell!("OK response");
-                                    let Json(body) = response.into_body();
-        
-                                    match body {
-                                        Ok(deets) => {
-                                            match deets.auth_level {
-                                                Guest => Msg::FailToReceiveUserInfo(Some(anyhow!("Guests must log in"))),
-                                                _ => Msg::ReceieveUserInfo(deets)
-                                            }
-                                        },
-                                        Err(err) => Msg::FailToReceiveUserInfo(Some(err))
+                        let callback = self.link.callback(
+                            |response: Response<Json<Result<AuthDetails, anyhow::Error>>>| {
+                                match response.status() {
+                                    StatusCode::OK => {
+                                        tell!("OK response");
+                                        let Json(body) = response.into_body();
+
+                                        match body {
+                                            Ok(deets) => match deets.auth_level {
+                                                Guest => Msg::FailToReceiveUserInfo(Some(anyhow!(
+                                                    "Guests must log in"
+                                                ))),
+                                                _ => Msg::ReceieveUserInfo(deets),
+                                            },
+                                            Err(err) => Msg::FailToReceiveUserInfo(Some(err)),
+                                        }
                                     }
-                                },
-        
-                                _ => Msg::FailToReceiveUserInfo(Some(anyhow!("Weird status code received: {}", response.status()))),
-                            }
-                        });
-        
+
+                                    _ => Msg::FailToReceiveUserInfo(Some(anyhow!(
+                                        "Weird status code received: {}",
+                                        response.status()
+                                    ))),
+                                }
+                            },
+                        );
+
                         match FetchService::fetch(req, callback) {
                             Ok(task) => self.fetch_task = Some(task),
                             Err(err) => tell!("{}", err),
                         }
-                    },
+                    }
 
                     Err(err) => tell!("Error building request: {}", err),
                 }
-            },
+            }
 
             Msg::ReceieveUserInfo(data) => {
                 self.fetch_state = Some(FetchState::Succeeded);
                 self.fetch_task = None;
                 tell!("User info received: {:?}", data);
-            },
+            }
 
             Msg::FailToReceiveUserInfo(maybe_error) => {
                 self.fetch_task = None;
@@ -131,7 +145,6 @@ impl Component for Home {
     fn change(&mut self, _props: Self::Properties) -> ShouldRender {
         false
     }
-
 
     fn view(&self) -> Html {
         let THIS_SHOULDNT_BE_TRUE = true;
@@ -171,7 +184,7 @@ impl Home {
                         }
                     }
                 }
-            },
+            }
 
             None => {
                 self.link.send_message(Msg::FetchUserInfo);

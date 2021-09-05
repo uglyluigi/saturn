@@ -1,8 +1,10 @@
-use yew::prelude::*;
-use crate::components::{toolbar::ToolbarComponent, router::*, club_card::ClubCard};
-use yew_router::{prelude::*, switch::Permissive};
+use crate::components::{
+    clubs::club_card::ClubCard, core::router::*, core::toolbar::ToolbarComponent,
+};
 use std::rc::Rc;
+use yew::prelude::*;
 use yew::Properties;
+use yew_router::{prelude::*, switch::Permissive};
 
 pub struct ClubView {
     link: ComponentLink<Self>,

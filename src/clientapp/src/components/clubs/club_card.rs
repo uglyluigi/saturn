@@ -1,7 +1,4 @@
 use yew::prelude::*;
-use crate::components::{toolbar::ToolbarComponent, router::*};
-use yew_router::{prelude::*, switch::Permissive};
-use std::rc::Rc;
 use yew::Properties;
 
 pub struct ClubCard {
@@ -28,7 +25,11 @@ impl Component for ClubCard {
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         //TODO like button is already toggled based on if the user liked this club
-        Self { link, props, like_button_char: '💛' }
+        Self {
+            link,
+            props,
+            like_button_char: '💛',
+        }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -37,7 +38,7 @@ impl Component for ClubCard {
                 self.like_button_char = match self.like_button_char {
                     '💛' => '💖',
                     '💖' => '💛',
-                    _ => panic!("WTF?") 
+                    _ => panic!("WTF?"),
                 };
             }
         }
@@ -50,9 +51,9 @@ impl Component for ClubCard {
     }
 
     fn view(&self) -> Html {
-        let callback = self.link.callback(|event: MouseEvent| {
-            Msg::ToggleLikeButton
-        });
+        let callback = self
+            .link
+            .callback(|event: MouseEvent| Msg::ToggleLikeButton);
 
         html! {
             <div class="club-card">
