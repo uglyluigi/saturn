@@ -40,6 +40,8 @@ impl Component for ThreeJSViewport {
     fn view(&self) -> Html {
         html! {
             <div class="space-container">
+                <div id="canvas_container">
+                </div>
             </div>
         }
     }
