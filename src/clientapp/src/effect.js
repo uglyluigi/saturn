@@ -1,9 +1,9 @@
 import * as THREE from 'https://cdn.skypack.dev/three';
 
-let camera, scene, renderer;
-let geometry, material, mesh;
-
 const all_geometries = [];
+const material = new THREE.LineBasicMaterial({color: 0x2BC29F, linewidth: 3});
+
+let t = 0;
 
 export function init() {
 
@@ -33,12 +33,27 @@ export function init() {
         all_geometries.push(geo);
     }
 
+    function clamp(num, min, max) {
+        return num <= min 
+          ? min 
+          : num >= max 
+            ? max 
+            : num;
+      }
 
     function animate () {
+        //A lot of HSV selectors put the hue values on a scale from 0 to 360 instead of 0 to 1.
+        let h = sin_between(150.0 / 360.0, 120.0 / 360.0, t * 0.03);
+        let s = 1;
+        //t is multiplied by something to make change lightness either faster or slower than hue.
+        let l = sin_between(0.55, 0.45, t * 0.03);
+        material.color.setHSL(h, s, l);
+        t += 1;
+
         //TODO use Object3D to rotate these instead. This is really slow
 
         // Calculate rotations in rad/sec: (speed * fps) 
-        const speed = 0.01;
+        const speed = 0.02;
 
         requestAnimationFrame(animate);
 
@@ -52,8 +67,14 @@ export function init() {
     animate()
 }
 
+
+function sin_between(upper, lower, x) {
+    let avg = (upper - lower) / 2;
+
+    return avg * Math.sin(x) + (avg + lower);
+}
+
 function get_star_geometries(z) {
-    const material = new THREE.LineBasicMaterial({color: 0x2BC29F});
     const geos = [];
 
     const star_vertices = [
