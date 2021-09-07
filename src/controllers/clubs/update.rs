@@ -31,3 +31,35 @@ pub async fn renew(user: User, db: Db, id: i32) -> std::result::Result<Json<supe
         }
     }
 }
+
+#[put("/clubs/<id>/join")]
+pub async fn join(user: User, db: Db, id: i32) -> std::result::Result<Json<super::get::ClubDetails>, status::Custom<Option<Json<JsonError>>>> {
+    use crate::schema::clubs::dsl::{clubs};
+    use crate::schema::club_members::dsl::{club_members};
+
+    let user_id=user.id.clone();
+    match user.get_membership_status(&db, &id).await {
+        MembershipStatus::Unassociated => {
+            let result = db.run(move |conn| {
+                let club_exists = clubs.find(id).get_result::<Club>(conn);
+                
+                if club_exists.is_ok() {
+                    let member = NewClubMember{
+                        user_id: &user_id,
+                        club_id: &id,
+                        is_moderator: &false,
+                    };
+
+                    let result = insert_into(club_members).values(member).get_result(conn);
+                    Ok(Json(super::get::ClubDetails::from_join_with_db_connection((result.unwrap(), club_exists.unwrap()), user_id, &conn)))
+                }else{
+                    Err(status::Custom(Status::BadRequest, Some(Json(JsonError {error: "The club you are trying to access does not exist.".to_owned()}))))
+                }
+            }).await;
+            result
+        },
+        _ => {
+            Err(status::Custom(Status::BadRequest, Some(Json(JsonError {error: "User is already a member or moderator.".to_owned()}))))
+        }
+    }
+}
