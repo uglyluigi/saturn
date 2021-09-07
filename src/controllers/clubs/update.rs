@@ -19,7 +19,7 @@ pub async fn renew(user: User, db: Db, id: i32) -> std::result::Result<Json<supe
                         club_id: update.id,
                         is_moderator: true
                     };
-                    Ok(Json(super::get::ClubDetails::from_join((member, update), user_id)))
+                    Ok(Json(super::get::ClubDetails::from_join_with_db_connection((member, update), user_id, &conn)))
                 }else{
                     Err(status::Custom(Status::BadRequest, Some(Json(JsonError {error: "The club you are trying to access does not exist.".to_owned()}))))
                 }
