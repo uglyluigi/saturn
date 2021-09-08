@@ -7,7 +7,7 @@ pub struct Club {
     pub name: String,
     pub body: String,
     pub publish_date: DateTime<Utc>,
-    pub expiry_date: DateTime<Utc>,
+    pub expiry_date: DateTime<Utc>
 }
 
 #[derive(Insertable)]
@@ -16,5 +16,5 @@ pub struct NewClub<'a> {
     pub name: &'a str,
     pub body: &'a str,
     pub publish_date: &'a DateTime<Utc>,
-    pub expiry_date: &'a DateTime<Utc>,
+    pub expiry_date: &'a DateTime<Utc>
 }

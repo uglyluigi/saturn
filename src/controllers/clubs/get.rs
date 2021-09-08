@@ -9,17 +9,25 @@ pub struct ClubDetails{
     pub publish_date: DateTime<Utc>,
     pub expiry_date: DateTime<Utc>,
     pub is_member: bool,
-    pub is_moderator: bool,
+    pub is_moderator: String,
+    pub head_moderator: User,
 }
 
 impl ClubDetails {
     pub async fn from_join_with_db_pool(join: (ClubMember, Club), user_id: i32, db: Db) -> Self {
-        use crate::schema::club_members::dsl::{club_members, club_id};
+        use crate::schema::club_members::dsl::{club_members, club_id, is_moderator, user_id as club_members_user_id};
+        use crate::schema::users::dsl::{users, id};
 
         let arg_club_id = join.1.id.clone();
 
         let member_count = db.run(move |conn| {
             club_members.filter(club_id.eq(arg_club_id)).count().first::<i64>(conn).unwrap()
+        }).await;
+
+        let user = db.run(move |conn| {
+            let req_id = club_members.filter(club_id.eq(arg_club_id)).filter(is_moderator.eq("head")).select(club_members_user_id).first::<i32>(conn).unwrap();
+            users.filter(id.eq(req_id)).first(conn).unwrap()
+            
         }).await;
 
         ClubDetails {
@@ -33,18 +41,23 @@ impl ClubDetails {
                 join.0.user_id == user_id && 
                 join.0.club_id==join.1.id,
             is_moderator: 
-                join.0.user_id == user_id && 
-                join.0.club_id==join.1.id &&
-                join.0.is_moderator,
+                if join.0.user_id == user_id && 
+                join.0.club_id==join.1.id {
+                join.0.is_moderator } else { "false".to_owned() },
+            head_moderator:
+                user
         }
     }
 
     pub fn from_join_with_db_connection(join: (ClubMember, Club), user_id: i32, conn: &PgConnection) -> Self {
-        use crate::schema::club_members::dsl::{club_members, club_id};
+        use crate::schema::club_members::dsl::{club_members, club_id, is_moderator, user_id as club_members_user_id};
 
         let arg_club_id = join.1.id.clone();
 
         let member_count = club_members.filter(club_id.eq(arg_club_id)).count().first::<i64>(conn).unwrap();
+
+        let req_id = club_members.filter(club_id.eq(arg_club_id)).filter(is_moderator.eq("head")).select(club_members_user_id).first::<i32>(conn).unwrap();
+        let user = User::get_by_id(req_id, conn).unwrap();
 
         ClubDetails {
             id: join.1.id,
@@ -57,9 +70,11 @@ impl ClubDetails {
                 join.0.user_id == user_id && 
                 join.0.club_id==join.1.id,
             is_moderator: 
-                join.0.user_id == user_id && 
-                join.0.club_id==join.1.id &&
-                join.0.is_moderator,
+                if join.0.user_id == user_id && 
+                join.0.club_id==join.1.id {
+                join.0.is_moderator } else { "false".to_owned() },
+            head_moderator:
+                user
         }
     }
 }
@@ -83,7 +98,7 @@ pub async fn get_all(user: User, db: Db) -> Result<Json<Vec<ClubDetails>>> {
                 id: -1,
                 user_id: -1,
                 club_id: -1,
-                is_moderator: false
+                is_moderator: "false".to_owned()
             });
             results.push(ClubDetails::from_join_with_db_connection((member_unwrapped, club), user.id, &conn));
         }
@@ -126,7 +141,7 @@ pub async fn get_clubs_by_moderatorship(user: User, db: Db) -> Result<Json<Vec<C
         let join = club_members
             .inner_join(clubs)
             .filter(user_id.eq(user.id))
-            .filter(is_moderator.eq(true))
+            .filter(is_moderator.eq("true").or(is_moderator.eq("head")))
             .load::<(ClubMember, Club)>(conn)
             .expect("Couldn't perform inner join with clubs from database.");
         

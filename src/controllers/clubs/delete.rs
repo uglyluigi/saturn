@@ -23,7 +23,7 @@ pub async fn delete_user(user: User, db: Db, id: i32) -> std::result::Result<sta
     use crate::schema::club_members::dsl::{club_members, club_id};
 
     match user.get_membership_status(&db, &id).await {
-        MembershipStatus::Moderator => {
+        MembershipStatus::Moderator(_is_head) => {
             let _result = db.run(move |conn| {
                 diesel::delete(club_members.filter(club_id.eq(id)))
                     .execute(conn)

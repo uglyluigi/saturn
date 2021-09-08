@@ -31,7 +31,7 @@ pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Js
         let new_club_member = NewClubMember{
             user_id: &user.id,
             club_id: &club.id,
-            is_moderator: &true,
+            is_moderator: &"head",
         };
 
         insert_into(club_members)
@@ -45,7 +45,7 @@ pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Js
         id: -1,
         user_id: user_id,
         club_id: created_club.id,
-        is_moderator: true
+        is_moderator: "head".to_owned()
     };
 
     Ok(Json(super::get::ClubDetails::from_join_with_db_pool((member, created_club), user_id, db).await))
