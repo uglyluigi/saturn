@@ -45,7 +45,7 @@ impl User{
         result
     }
 
-    pub async fn to_user_details(&self) -> UserDetails{
+    pub fn to_user_details(&self) -> UserDetails{
         UserDetails{
             email: self.email.clone(),
             picture: self.picture.clone(),

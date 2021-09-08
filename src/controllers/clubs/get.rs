@@ -10,13 +10,12 @@ pub struct ClubDetails{
     pub expiry_date: DateTime<Utc>,
     pub is_member: bool,
     pub is_moderator: String,
-    pub head_moderator: User,
+    pub head_moderator: UserDetails,
 }
 
 impl ClubDetails {
     pub async fn from_join_with_db_pool(join: (ClubMember, Club), user_id: i32, db: Db) -> Self {
         use crate::schema::club_members::dsl::{club_members, club_id, is_moderator, user_id as club_members_user_id};
-        use crate::schema::users::dsl::{users, id};
 
         let arg_club_id = join.1.id.clone();
 
@@ -26,8 +25,7 @@ impl ClubDetails {
 
         let user = db.run(move |conn| {
             let req_id = club_members.filter(club_id.eq(arg_club_id)).filter(is_moderator.eq("head")).select(club_members_user_id).first::<i32>(conn).unwrap();
-            users.filter(id.eq(req_id)).first(conn).unwrap()
-            
+            User::get_by_id(req_id, conn).unwrap()
         }).await;
 
         ClubDetails {
@@ -45,7 +43,7 @@ impl ClubDetails {
                 join.0.club_id==join.1.id {
                 join.0.is_moderator } else { "false".to_owned() },
             head_moderator:
-                user
+                user.to_user_details()
         }
     }
 
@@ -74,7 +72,7 @@ impl ClubDetails {
                 join.0.club_id==join.1.id {
                 join.0.is_moderator } else { "false".to_owned() },
             head_moderator:
-                user
+                user.to_user_details()
         }
     }
 }
