@@ -35,11 +35,13 @@ pub mod mac {
      *
      * This is a good example of how Rust's enum and memory systems can make things a little crazy,
      * but how basically any example of this kind of thing can be overcome easily with macros.
+     * 
+     * TODO generalize this somehow? IDK
      */
     #[macro_export]
     macro_rules! please {
         ($thing:expr, $prop:ident) => {
             std::string::String::from($thing.as_ref().unwrap().$prop.as_ref().unwrap().clone())
         };
-    }
+    }    
 }

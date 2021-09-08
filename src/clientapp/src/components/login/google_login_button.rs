@@ -1,5 +1,4 @@
-use yew::services::ConsoleService;
-use yew::{html, Component, ComponentLink, Html, ShouldRender};
+use yew::{html, services::ConsoleService, Component, ComponentLink, Html, ShouldRender};
 
 pub struct GoogleLoginButton {
     link: ComponentLink<Self>,

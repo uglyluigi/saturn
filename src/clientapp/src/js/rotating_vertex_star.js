@@ -5,6 +5,8 @@ const material = new THREE.LineBasicMaterial({color: 0x2BC29F, linewidth: 3});
 
 let t = 0;
 
+// FIXME Does not resize with page
+
 export function init() {
 
     const renderer = new THREE.WebGLRenderer();
@@ -64,7 +66,7 @@ export function init() {
         renderer.render(scene, camera);
     };
 
-    animate()
+    animate();
 }
 
 
