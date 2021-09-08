@@ -7,7 +7,7 @@ pub struct NewClubDTO<'r> {
 }
 
 #[post("/clubs/create", data = "<club>")]
-pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Json<super::get::ClubDetails>> {
+pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Json<ClubDetails>> {
     use crate::schema::clubs::dsl::{clubs};
     use crate::schema::club_members::dsl::{club_members};
 
@@ -48,5 +48,5 @@ pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Js
         is_moderator: "head".to_owned()
     };
 
-    Ok(Json(super::get::ClubDetails::from_join_with_db_pool((member, created_club), user_id, db).await))
+    Ok(Json(ClubDetails::from_join_async((member, created_club), user_id, db).await))
 }

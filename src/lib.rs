@@ -69,6 +69,8 @@ pub fn rocket() -> Rocket<Build>{
             controllers::clubs::get::get_clubs_by_moderatorship,
             controllers::clubs::create::create,
             controllers::clubs::update::renew,
+            controllers::clubs::update::join,
+            controllers::clubs::update::leave,
             controllers::clubs::delete::delete_admin,
             controllers::clubs::delete::delete_user,
             controllers::auth::login::login,

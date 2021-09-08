@@ -1,6 +1,7 @@
 //Self
 pub use crate::models::clubs_md::Club;
 pub use crate::models::clubs_md::NewClub;
+pub use crate::models::clubs_md::ClubDetails;
 pub use crate::models::users_md::User;
 pub use crate::models::users_md::UserDetails;
 pub use crate::models::users_md::NewUser;

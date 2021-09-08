@@ -17,6 +17,7 @@ pub struct NewClubMember<'a> {
     pub is_moderator: &'a str,
 }
 
+#[derive(PartialEq, Eq)]
 pub enum MembershipStatus {
     Unassociated,
     Member,
