@@ -1,5 +1,6 @@
-use yew::services::ConsoleService;
-use yew::{html, Component, ComponentLink, Html, ShouldRender, Properties};
+use yew::{
+    html, Component, ComponentLink, Html, Properties, ShouldRender,
+};
 
 pub struct ToolbarComponent {
     link: ComponentLink<Self>,

@@ -1,8 +1,6 @@
-use yew::prelude::*;
-use crate::components::{toolbar::ToolbarComponent, router::*, club_card::ClubCard};
-use yew_router::{prelude::*, switch::Permissive};
-use std::rc::Rc;
-use yew::Properties;
+use yew::{prelude::*, Properties};
+
+use crate::components::{ClubCard, core::Toolbar};
 
 pub struct ClubView {
     link: ComponentLink<Self>,
@@ -34,7 +32,7 @@ impl Component for ClubView {
     fn view(&self) -> Html {
         html! {
             <div class="club-view">
-                <ToolbarComponent username=self.props.first_name.clone()/>
+                <Toolbar username=self.props.first_name.clone()/>
                 <ClubCard vote_count=0 organizer_name=String::from("Sans Undertale") club_name=String::from("Southeastern Undertale Club") club_description=String::from("The coolest club ever")/>
             </div>
         }

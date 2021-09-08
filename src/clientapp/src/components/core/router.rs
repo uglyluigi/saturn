@@ -1,5 +1,10 @@
 use yew::prelude::*;
-use yew_router::{components::{RouterAnchor, Props, Msg}, prelude::*, switch::Permissive, agent::RouteRequest};
+use yew_router::{
+    agent::RouteRequest,
+    components::{Msg, Props, RouterAnchor},
+    prelude::*,
+    switch::Permissive,
+};
 
 #[derive(Clone, Debug, Switch)]
 pub enum AppRoute {
@@ -30,7 +35,11 @@ impl<SW: Switch + Clone + 'static, STATE: RouterState> Component for RouterRedir
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let router = RouteAgentDispatcher::new();
 
-        Self { link, router, props }
+        Self {
+            link,
+            router,
+            props,
+        }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -46,7 +55,7 @@ impl<SW: Switch + Clone + 'static, STATE: RouterState> Component for RouterRedir
     fn view(&self) -> Html {
         self.link.send_message(Msg::Clicked);
 
-        html!{
+        html! {
             <>
             </>
         }

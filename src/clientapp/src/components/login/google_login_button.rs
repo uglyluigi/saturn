@@ -1,5 +1,4 @@
-use yew::services::ConsoleService;
-use yew::{html, Component, ComponentLink, Html, ShouldRender};
+use yew::{html, services::ConsoleService, Component, ComponentLink, Html, ShouldRender};
 
 pub struct GoogleLoginButton {
     link: ComponentLink<Self>,
@@ -15,17 +14,16 @@ impl Component for GoogleLoginButton {
     type Properties = ();
 
     fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { 
-                link, 
-                url: 
-                String::from(match std::env::var("SATURN_EXEC_PROFILE") {
-                    Ok(val) => match val.as_str() {
-                        "LOCAL" => "localhost:8080/api/auth/login",
-                        _ => "https://joinsaturn.net/api/auth/login",
-                    }
+        Self {
+            link,
+            url: String::from(match std::env::var("SATURN_EXEC_PROFILE") {
+                Ok(val) => match val.as_str() {
+                    "LOCAL" => "localhost:8080/api/auth/login",
+                    _ => "https://joinsaturn.net/api/auth/login",
+                },
 
-                    Err(_) => "https://joinsaturn.net/api/auth/login",
-            }) 
+                Err(_) => "https://joinsaturn.net/api/auth/login",
+            }),
         }
     }
 
