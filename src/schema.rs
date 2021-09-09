@@ -3,7 +3,7 @@ table! {
         id -> Int4,
         user_id -> Int4,
         club_id -> Int4,
-        is_moderator -> Bool,
+        is_moderator -> Text,
     }
 }
 
