@@ -33,20 +33,40 @@ pub struct ClubDetails{
 }
 
 impl Club {
-    pub fn to_club_details(self, user_id: i32, conn: &PgConnection) -> ClubDetails {
-        ClubDetails::from_club(self, user_id, conn)
+    pub fn to_club_details(self, conn: &PgConnection, user_id: &i32)  -> ClubDetails {
+        ClubDetails::from_club(conn, self, user_id)
+    }
+
+    pub fn get_by_id(conn: &PgConnection, req_id: &i32) -> Option<Club>{
+        use crate::schema::clubs::dsl::{clubs, id};
+        let value = clubs.filter(id.eq(req_id)).first(conn);
+
+        if let Ok(value) = value {
+            Some(value)
+        }else{
+            None
+        }
+    }
+
+    pub async fn get_by_id_async(db: &Db, req_id: &i32) -> Option<Club>{
+        let req_id = req_id.clone();
+        let result = db.run( move |conn| {
+            Self::get_by_id(conn, &req_id)
+        }).await;
+
+        result
     }
 }
 
 impl ClubDetails {
-    pub fn from_club(club : Club, user_id: i32, conn: &PgConnection) -> Self{
+    pub fn from_club(conn: &PgConnection, club : Club, user_id: &i32) -> Self{
         use crate::schema::club_members::dsl::{club_members, club_id, is_moderator, user_id as club_members_user_id};
 
         let member_count = club_members.filter(club_id.eq(club.id)).count().first::<i64>(conn).unwrap();
 
         let req_id = club_members.filter(club_id.eq(club.id)).filter(is_moderator.eq("head")).select(club_members_user_id).first::<i32>(conn).unwrap();
-        let user = User::get_by_id(req_id, conn).unwrap();
-        let status = User::get_by_id(user_id, conn).unwrap()
+        let user = User::get_by_id(conn, &req_id).unwrap();
+        let status = User::get_by_id(conn, user_id).unwrap()
             .get_membership_status(conn, &club.id);
 
         Self {
@@ -89,7 +109,7 @@ impl ClubDetails {
         let member_count = club_members.filter(club_id.eq(arg_club_id)).count().first::<i64>(conn).unwrap();
 
         let req_id = club_members.filter(club_id.eq(arg_club_id)).filter(is_moderator.eq("head")).select(club_members_user_id).first::<i32>(conn).unwrap();
-        let user = User::get_by_id(req_id, conn).unwrap();
+        let user = User::get_by_id(conn, &req_id).unwrap();
 
         ClubDetails {
             id: join.1.id,

@@ -20,7 +20,7 @@ pub struct UserDetails{
 }
 
 impl User{
-    pub fn get_by_id(req_id: i32, conn: &PgConnection) -> Option<User>{
+    pub fn get_by_id(conn: &PgConnection, req_id: &i32) -> Option<User>{
         use crate::schema::users::dsl::{users, id};
         let value = users.filter(id.eq(req_id)).first(conn);
 
@@ -29,6 +29,15 @@ impl User{
         }else{
             None
         }
+    }
+
+    pub async fn get_by_id_async(db: &Db, req_id: &i32) -> Option<User>{
+        let req_id = req_id.clone();
+        let result = db.run( move |conn| {
+            Self::get_by_id(conn, &req_id)
+        }).await;
+
+        result
     }
 
     pub fn get_membership_status(self, conn: &PgConnection, club_id: &i32) -> MembershipStatus {

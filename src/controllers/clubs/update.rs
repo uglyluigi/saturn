@@ -125,7 +125,7 @@ pub async fn appoint(user: User, db: Db, id: i32, request: Json<AppointModerator
                 let club_exists = clubs.find(id).get_result::<Club>(conn);        
                 if club_exists.is_ok() {
                     if is_head{
-                        if let Some(fetched_user) = User::get_by_id(request.user_id, conn){
+                        if let Some(fetched_user) = User::get_by_id(conn, &request.user_id){
                             match fetched_user.get_membership_status(conn, &request.user_id){
                                 MembershipStatus::Moderator(fetched_user_is_head) => {
                                     if request.appoint_to_head == true && fetched_user_is_head == false{
@@ -173,7 +173,7 @@ pub async fn appoint(user: User, db: Db, id: i32, request: Json<AppointModerator
                                 }
                             }
                             let club = clubs.find(id).get_result::<Club>(conn).unwrap();
-                            Ok(status::Accepted(Some(Json(club.to_club_details(user_id_copy, &conn)))))
+                            Ok(status::Accepted(Some(Json(club.to_club_details(&conn, &user_id_copy)))))
                         }else{
                             Err(status::Custom(Status::BadRequest, Some(Json(JsonError {error: "User does not exist.".to_owned()}))))
                         }
