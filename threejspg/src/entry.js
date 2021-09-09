@@ -1,6 +1,12 @@
 import { WebGLRenderer, PerspectiveCamera, Scene, Vector3 } from 'three';
 import * as THREE from 'three';
 import StarScene from './objects/Scene.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass';
+
+let effectComposer;
 
 export function init() {
   const scene = new Scene();
@@ -11,12 +17,16 @@ export function init() {
 
   if (canvas) {
     console.log("Found canvas");
-    renderer = new WebGLRenderer({ antialias: true, canvas: canvas });
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    renderer = new WebGLRenderer({ canvas: canvas });
   } else {
     console.log("Didn't find canvas.");
-    renderer = new WebGLRenderer({ antialias: true });
+    renderer = new WebGLRenderer();
     document.body.appendChild(renderer.domElement);
   }
+
+
   const seedScene = new StarScene(function (pos) {
     camera.updateMatrix();
     camera.updateMatrixWorld();
@@ -36,11 +46,24 @@ export function init() {
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setClearColor(0x000000, 1);
 
+  //Init postprocessing effects
+  effectComposer = new EffectComposer(renderer);
+
+  const renderPass = new RenderPass(scene, camera);
+  effectComposer.addPass(renderPass);
+
+  const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth * renderer.getPixelRatio(), window.innerHeight * renderer.getPixelRatio()), 1.5, 0, 1);
+  effectComposer.addPass(bloomPass);
+
+  const SMAApass = new SMAAPass(window.innerWidth * renderer.getPixelRatio(), window.innerHeight * renderer.getPixelRatio());
+  effectComposer.addPass(SMAApass);
+
   // render loop
   const onAnimationFrameHandler = (timeStamp) => {
     renderer.render(scene, camera);
     seedScene.update && seedScene.update(timeStamp, renderer);
     window.requestAnimationFrame(onAnimationFrameHandler);
+    effectComposer.render();
   }
 
   window.requestAnimationFrame(onAnimationFrameHandler);
