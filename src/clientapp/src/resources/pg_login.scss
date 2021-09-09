@@ -1,9 +1,12 @@
 @import "./consts.scss";
 
-#login-canvas {
-    position: relative;
-    z-index: -1 !important;
+#login-canvas { 
+    display: block; 
+    width: 100%; 
+    height: 100%;  
+    position: fixed;
 }
+  
 .login-page {
     .soft-grey-rect {
         width: 40%;

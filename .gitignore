@@ -5,3 +5,12 @@ src/clientapp/target
 src/clientapp/Cargo.lock
 .vscode
 .env
+rustfmt.toml
+node_modules
+./threejspg/build/
+*.log*
+.DS_Store
+*.code-workspace
+*/dist/*
+src/clientapp/src/resources/bg.js
+package-lock.json
