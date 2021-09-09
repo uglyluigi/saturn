@@ -29,16 +29,15 @@ export function init() {
   scene.add(seedScene);
 
   // camera
-  camera.position.set(0, 0, 100);
-  camera.lookAt(new Vector3(0, 0, 0));
+  camera.position.set(45, window.innerWidth / window.innerHeight, 1, 1000);
+  camera.position.z = 5;
 
   // renderer
   renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setClearColor(0xFFFFFF, 1);
+  renderer.setClearColor(0x000000, 1);
 
   // render loop
   const onAnimationFrameHandler = (timeStamp) => {
-    console.log("Rendering");
     renderer.render(scene, camera);
     seedScene.update && seedScene.update(timeStamp, renderer);
     window.requestAnimationFrame(onAnimationFrameHandler);

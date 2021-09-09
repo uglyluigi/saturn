@@ -26,7 +26,7 @@ impl Component for LoginPageComponent {
         html! {
             <div class="login-page">
                 <canvas height="100" width="100" id="login-canvas"></canvas>
-                <script src="./assets/bg.js"/>
+                <script src="bg.js"/>
 
                 <div class="auth-header">
                     <img class="saturn-logo" src="assets/saturn-logo.svg" alt="Saturn logo"/>

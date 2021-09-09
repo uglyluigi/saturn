@@ -1,5 +1,5 @@
 import { Group, Matrix4, Scene } from 'three';
-import BasicLights from './Lights.js';
+import * as THREE from 'three';
 import Star from './Star/Star.js';
 
 export default class StarScene extends Group {
@@ -9,12 +9,62 @@ export default class StarScene extends Group {
     super();
     this.frustum_check = frustum_check;
     this.scene = scene;
+    this.t = 0;
+    this.makePointStars();
+  }
 
-    const lights = new BasicLights();
-    this.add(lights);
+  randomNumber(min, max) {
+    return Math.random() * (max - min) + min;
+  }
 
-    for (const s of StarScene.stars) {
-      this.add(s);
+  HSVtoRGB(h, s, v) {
+    var r, g, b, i, f, p, q, t;
+    if (arguments.length === 1) {
+      s = h.s, v = h.v, h = h.h;
+    }
+    i = Math.floor(h * 6);
+    f = h * 6 - i;
+    p = v * (1 - s);
+    q = v * (1 - f * s);
+    t = v * (1 - (1 - f) * s);
+    switch (i % 6) {
+      case 0: r = v, g = t, b = p; break;
+      case 1: r = q, g = v, b = p; break;
+      case 2: r = p, g = v, b = t; break;
+      case 3: r = p, g = q, b = v; break;
+      case 4: r = t, g = p, b = v; break;
+      case 5: r = v, g = p, b = q; break;
+    }
+    return {
+      r: Math.round(r * 255),
+      g: Math.round(g * 255),
+      b: Math.round(b * 255)
+    };
+  }
+
+  rainbow(p) {
+    var rgb = this.HSVtoRGB(p / 100.0 * 0.85, 1.0, 1.0);
+    return [rgb.r, rgb.g, rgb.b];
+  }
+
+  updateMatColor(star) {
+    let rainbow = this.rainbow(this.t);
+    star.material.color.setRGB(rainbow[0], rainbow[1], rainbow[2]);
+  }
+
+  makePointStars() {
+    for (let z = -1000; z < 1000; z += 10) {
+      const lilSphere = new THREE.SphereGeometry(this.randomNumber(0.5, 1.0), 32, 32);
+      const mat = new THREE.MeshBasicMaterial({ color: this.rainbow(this.t) });
+      this.mat = mat;
+      const mesh = new THREE.Mesh(lilSphere, mat);
+
+      mesh.position.x = Math.random() * 1000 - 500;
+      mesh.position.y = Math.random() * 1000 - 500;
+
+      mesh.position.z = z;
+      this.add(mesh);
+      StarScene.stars.push(mesh);
     }
   }
 
@@ -32,26 +82,28 @@ export default class StarScene extends Group {
   }
 
   removeStar(star) {
-      star.geometry.dispose();
-      star.mat.dispose();
-      this.remove(star);
-      StarScene.stars = StarScene.stars.filter(e => e != star);
+    star.geometry.dispose();
+    star.mat.dispose();
+    this.remove(star);
+    StarScene.stars = StarScene.stars.filter(e => e != star);
   }
 
   update(timestamp, renderer) {
-    for (const e of StarScene.stars) {
-      e.playAnim();
-    }
+    this.t += 0.001;
 
-    let rand = Math.random();
+    for (let i = 0; i < StarScene.stars.length; i++) {
+      let star = StarScene.stars[i];
+      star.position.z += i / 10;
+      this.updateMatColor(star);
 
-    if (Math.random() > .8) {
-      this.makeStar();
+      if (star.position.z > 1000) {
+        star.position.z -= 2000;
+      }
     }
   }
 
 
-  randomNumber = function(min, max) {
+  randomNumber = function (min, max) {
     return Math.random() * (max - min) + min;
   }
 }
