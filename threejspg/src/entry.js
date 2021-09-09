@@ -34,7 +34,7 @@ export function init() {
 
   // renderer
   renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setClearColor(0x7ec0ee, 1);
+  renderer.setClearColor(0xFFFFFF, 1);
 
   // render loop
   const onAnimationFrameHandler = (timeStamp) => {

@@ -11,4 +11,5 @@ node_modules
 *.log*
 .DS_Store
 *.code-workspace
-./threejspg/dist
+*/dist/*
+src/clientapp/src/assets/bg.js
