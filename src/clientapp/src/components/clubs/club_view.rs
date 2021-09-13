@@ -96,6 +96,7 @@ impl ClubView {
     fn generate_club_list(&self) -> Html {
         let container: Element = document().create_element("div").unwrap();
         container.set_attribute("class", "club-list").unwrap();
+        tell!("clubs = {:?}", self.clubs);
 
         for (i, club) in self.clubs.iter().enumerate() {
             match html! { <ClubCard vote_count=69 club_name=club.name.clone() club_description=club.body.clone() organizer_name=String::from("TODO")/> } {
