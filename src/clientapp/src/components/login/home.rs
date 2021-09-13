@@ -61,7 +61,7 @@ impl Component for Home {
 
                                         match body {
                                             Ok(deets) => match deets.auth_level {
-                                                Guest => Msg::FailToReceiveUserInfo(Some(anyhow!(
+                                                AuthLevel::Guest => Msg::FailToReceiveUserInfo(Some(anyhow!(
                                                     "Guests must log in"
                                                 ))),
                                                 _ => Msg::ReceieveUserInfo(deets),
