@@ -27,7 +27,7 @@ pub struct Home {
 
 pub enum FetchState {
     Waiting,
-    Succeeded,
+    Succeeded(AuthDetails),
     Failed(Option<anyhow::Error>),
 }
 
@@ -89,9 +89,8 @@ impl Component for Home {
             }
 
             Msg::ReceieveUserInfo(data) => {
-                self.fetch_state = Some(FetchState::Succeeded);
+                self.fetch_state = Some(FetchState::Succeeded(data));
                 self.fetch_task = None;
-                tell!("User info received: {:?}", data);
             }
 
             Msg::FailToReceiveUserInfo(maybe_error) => {
@@ -136,9 +135,9 @@ impl Home {
                         <h1> {"Waiting..."} </h1>
                     },
 
-                    FetchState::Succeeded => html! {
+                    FetchState::Succeeded(details) => html! {
                         //TODO handle token timeout. Just send Msg::RequestUserData again
-                        <ClubView first_name=please!(self.details, first_name) last_name=please!(self.details, last_name)/>
+                        <ClubView first_name=details.first_name.clone().unwrap() last_name=details.last_name.clone().unwrap()/>
                     },
 
                     FetchState::Failed(maybe_error) => {
