@@ -101,8 +101,8 @@ impl ClubView {
         match html! { <ClubCard vote_count=69 club_name=String::from("Name") club_description=String::from("Description") organizer_name=String::from("TODO")/> } {
             VNode::VRef(n) => tell!("Good!"),
             VNode::VTag(_) => tell!("A"),
-            VNode::VComp(_) => tell!("A"),
-            VNode::VList(_) => tell!("A"),
+            VNode::VComp(_) => tell!("B"),
+            VNode::VList(_) => tell!("C"),
             _ => (),
         }
 
