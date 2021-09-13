@@ -45,6 +45,23 @@ impl ClubView {
     pub fn push_task(&mut self, task: FetchTask) {
         self.fetch_tasks.push(task);
     }
+
+    pub fn clean_tasks(&mut self) {
+        use yew::services::Task;
+        let mut index: Option<usize> = None;
+
+        for (i, e) in self.fetch_tasks.iter().enumerate() {
+            if !e.is_active() {
+                index = Some(i);
+                break;
+            }
+        }
+
+        if let Some(i) = index {
+            drop(self.fetch_tasks.remove(i));
+            self.clean_tasks();
+        }
+    }
 }
 
 impl Component for ClubView {
@@ -57,6 +74,8 @@ impl Component for ClubView {
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         use Msg::*;
+
+        self.clean_tasks();
 
         match msg {
             GetUserDetails => {
@@ -88,7 +107,9 @@ impl Component for ClubView {
                         );
 
                         match yew::services::fetch::FetchService::fetch(req, callback) {
-                            Ok(task) => {},
+                            Ok(task) => {
+                                self.push_task(task);
+                            },
                             Err(err) => {}
                         }
                     },
@@ -129,7 +150,9 @@ impl Component for ClubView {
                         );
 
                         match yew::services::fetch::FetchService::fetch(req, callback) {
-                            Ok(task) => {},
+                            Ok(task) => {
+                                self.push_task(task);
+                            },
                             Err(err) => {}
                         }
                     },
@@ -168,8 +191,16 @@ impl Component for ClubView {
                                         Msg::ReceiveClubDetails(None)
                                     }
                                 }
+
                             },
                         );
+
+                        match yew::services::fetch::FetchService::fetch(req, callback) {
+                            Ok(task) => {
+                                self.push_task(task);
+                            },
+                            Err(err) => {}
+                        }
                     },
 
                     Err(err) => {
