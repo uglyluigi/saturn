@@ -99,8 +99,8 @@ impl ClubView {
 
         for (i, club) in self.clubs.iter().enumerate() {
             match html! { <ClubCard vote_count=69 club_name=club.name.clone() club_description=club.body.clone() organizer_name=String::from("TODO")/> } {
-                VNode::VRef(n) => println!("Good!"),
-                _ => println!("Bad!!"),
+                VNode::VRef(n) => tell!("Good!"),
+                _ => tell!("Bad!!"),
             }
         }
 
