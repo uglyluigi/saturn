@@ -1,5 +1,6 @@
 use yew::prelude::*;
 mod components;
+mod types;
 use components::{
     coolshit::ThreeJSViewport,
     core::{router::*, NotFound},

@@ -9,40 +9,8 @@ use yew::{
 use crate::{
     components::{core::*, ClubView},
     please, tell,
+    types::*
 };
-
-#[derive(Deserialize, Debug, Clone)]
-pub struct User {
-    pub id: i32,
-    pub email: String,
-    pub picture: String,
-    pub first_name: String,
-    pub last_name: String,
-    pub is_admin: bool,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub enum AuthLevel {
-    Admin,
-    User,
-    Guest,
-}
-
-impl Default for AuthLevel {
-    fn default() -> Self {
-        AuthLevel::Guest
-    }
-}
-
-#[derive(Serialize, Deserialize, Default, Debug)]
-pub struct AuthDetails {
-    pub auth_level: AuthLevel,
-    pub id: Option<i32>,
-    pub email: Option<String>,
-    pub picture: Option<String>,
-    pub first_name: Option<String>,
-    pub last_name: Option<String>,
-}
 
 pub enum Msg {
     FetchUserInfo,
