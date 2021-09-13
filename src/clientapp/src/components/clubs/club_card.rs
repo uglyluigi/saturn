@@ -50,9 +50,7 @@ impl Component for ClubCard {
     }
 
     fn view(&self) -> Html {
-        let callback = self
-            .link
-            .callback(|_: MouseEvent| Msg::ToggleLikeButton);
+        let callback = self.link.callback(|_: MouseEvent| Msg::ToggleLikeButton);
 
         html! {
             <div class="club-card">

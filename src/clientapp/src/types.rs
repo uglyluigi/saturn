@@ -1,5 +1,7 @@
-use chrono::{ DateTime, Utc };
-use serde::{Serialize, Deserialize};
+use std::fmt::{self, Display};
+
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct UserDetails {
@@ -22,7 +24,6 @@ pub struct ClubDetails {
     pub head_moderator: UserDetails,
 }
 
-
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct AuthDetails {
     pub auth_level: AuthLevel,
@@ -44,4 +45,11 @@ pub enum AuthLevel {
     Admin,
     User,
     Guest,
+}
+
+
+impl Display for ClubDetails {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> fmt::Result {
+        write!(f, "<></>")
+    }
 }

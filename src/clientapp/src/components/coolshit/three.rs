@@ -1,5 +1,5 @@
-use yew::prelude::*;
 use wasm_bindgen::prelude::*;
+use yew::prelude::*;
 
 pub struct ThreeJSViewport {
     link: ComponentLink<Self>,
@@ -27,17 +27,13 @@ impl Component for ThreeJSViewport {
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         //TODO like button is already toggled based on if the user liked this club
-        Self {
-            link,
-            props,
-        }
+        Self { link, props }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
         match msg {
             Msg::InitThree => match &self.props.effect {
-                ThreeJSEffect::VertexStar => {
-                },
+                ThreeJSEffect::VertexStar => {}
             },
         };
 

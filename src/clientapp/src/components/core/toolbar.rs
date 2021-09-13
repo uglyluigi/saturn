@@ -1,6 +1,4 @@
-use yew::{
-    html, Component, ComponentLink, Html, Properties, ShouldRender,
-};
+use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 pub struct ToolbarComponent {
     link: ComponentLink<Self>,

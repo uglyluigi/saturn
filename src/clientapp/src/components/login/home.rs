@@ -9,7 +9,7 @@ use yew::{
 use crate::{
     components::{core::*, ClubView},
     please, tell,
-    types::*
+    types::*,
 };
 
 pub enum Msg {
@@ -115,7 +115,7 @@ impl Component for Home {
     }
 
     fn view(&self) -> Html {
-        let THIS_SHOULDNT_BE_TRUE = true;
+        let THIS_SHOULDNT_BE_TRUE = false;
 
         if THIS_SHOULDNT_BE_TRUE == true {
             html! {
