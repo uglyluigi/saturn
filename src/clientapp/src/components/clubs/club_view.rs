@@ -95,12 +95,15 @@ impl ClubView {
 
     fn generate_club_list(&self) -> Html {
         let container: Element = document().create_element("div").unwrap();
-        container.set_attribute("class", "club-list").unwrap();
+        container.set_class_name("club-list");
         tell!("clubs = {:?}", self.clubs);
 
         match html! { <ClubCard vote_count=69 club_name=String::from("Name") club_description=String::from("Description") organizer_name=String::from("TODO")/> } {
             VNode::VRef(n) => tell!("Good!"),
-            _ => tell!("Bad!!"),
+            VNode::VTag(_) => tell!("A"),
+            VNode::VComp(_) => tell!("A"),
+            VNode::VList(_) => tell!("A"),
+            _ => (),
         }
 
         Html::VRef(container.into())
