@@ -98,11 +98,9 @@ impl ClubView {
         container.set_attribute("class", "club-list").unwrap();
         tell!("clubs = {:?}", self.clubs);
 
-        for (i, club) in self.clubs.iter().enumerate() {
-            match html! { <ClubCard vote_count=69 club_name=club.name.clone() club_description=club.body.clone() organizer_name=String::from("TODO")/> } {
-                VNode::VRef(n) => tell!("Good!"),
-                _ => tell!("Bad!!"),
-            }
+        match html! { <ClubCard vote_count=69 club_name=String::from("Name") club_description=String::from("Description") organizer_name=String::from("TODO")/> } {
+            VNode::VRef(n) => tell!("Good!"),
+            _ => tell!("Bad!!"),
         }
 
         Html::VRef(container.into())
