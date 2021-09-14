@@ -1,6 +1,6 @@
-use yew::{html, Component, ComponentLink, Html, ShouldRender};
+use crate::components::GoogleLoginButton;
 use js_sys::eval;
-use crate::components::{GoogleLoginButton};
+use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
 pub struct LoginPageComponent {
     link: ComponentLink<Self>,
@@ -22,7 +22,7 @@ impl Component for LoginPageComponent {
         false
     }
 
-    fn view(&self) -> Html {        
+    fn view(&self) -> Html {
         html! {
             <div class="login-page">
                 <canvas height="100" width="100" id="login-canvas"></canvas>
@@ -32,7 +32,7 @@ impl Component for LoginPageComponent {
                     <img class="saturn-logo" src="assets/saturn-logo.svg" alt="Saturn logo"/>
                     <h1>{"Saturn"}</h1>
                 </div>
-                
+
                 <div class="soft-grey-rect">
                     <h1>
                         {"Hello!"}
