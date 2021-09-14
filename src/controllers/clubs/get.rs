@@ -2,14 +2,13 @@ use crate::prelude::*;
 
 #[get("/clubs")]
 pub async fn get_all(user: User, db: Db) -> Result<Json<Vec<ClubDetails>>> {
-    use crate::schema::clubs::dsl::{clubs};
-    use crate::schema::club_members::dsl::{club_members, user_id};
+    use crate::schema::clubs::dsl::{clubs, id};
+    use crate::schema::club_members::dsl::{club_members, club_id, user_id};
 
     let loaded_clubs: Vec<ClubDetails> = db.run(move |conn| {
         let join = clubs
-            .left_outer_join(club_members)
-            .filter(user_id.nullable().eq(user.id))
-            .or_filter(user_id.nullable().is_null())
+            .left_outer_join(club_members.on(id.eq(club_id)))
+            //.filter(user_id.nullable().eq(user.id).or(user_id.nullable().is_null()))
             .load::<(Club, Option<ClubMember>)>(conn)
             .expect("Couldn't perform left outer join with clubs from database.");
         
