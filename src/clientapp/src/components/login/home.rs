@@ -7,7 +7,7 @@ use yew::{
 };
 
 use crate::{
-    components::{core::*, ClubView},
+    components::{core::*, ClubView, club_fab::CreateClubFloatingActionButton},
     please, tell,
     types::*,
 };
@@ -61,9 +61,9 @@ impl Component for Home {
 
                                         match body {
                                             Ok(deets) => match deets.auth_level {
-                                                AuthLevel::Guest => Msg::FailToReceiveUserInfo(Some(anyhow!(
-                                                    "Guests must log in"
-                                                ))),
+                                                AuthLevel::Guest => Msg::FailToReceiveUserInfo(
+                                                    Some(anyhow!("Guests must log in")),
+                                                ),
                                                 _ => Msg::ReceieveUserInfo(deets),
                                             },
                                             Err(err) => Msg::FailToReceiveUserInfo(Some(err)),
@@ -114,7 +114,7 @@ impl Component for Home {
     }
 
     fn view(&self) -> Html {
-        let THIS_SHOULDNT_BE_TRUE = false;
+        let THIS_SHOULDNT_BE_TRUE = true;
 
         if THIS_SHOULDNT_BE_TRUE == true {
             html! {

@@ -1,17 +1,20 @@
 use yew::{prelude::*, Properties};
 
-use crate::components::{core::router::*, core::Toolbar, ClubCard};
+use crate::components::{core::router::*, core::Toolbar, ClubCard, ClubDialog, clubs::CreateClubFloatingActionButton as Fab};
 
 use anyhow::*;
 use serde::{Deserialize, Serialize};
+use yew::virtual_dom::VNode;
 use yew::{
     format::{Json, Nothing},
     prelude::*,
     services::fetch::{FetchService, FetchTask, Request, Response, StatusCode},
 };
-use yew::{utils::document, web_sys::{Element, Node}, Html};
-use yew::virtual_dom::VNode;
-
+use yew::{
+    utils::document,
+    web_sys::{Element, Node},
+    Html,
+};
 
 use crate::{tell, types::*};
 
@@ -29,6 +32,8 @@ pub struct ClubView {
     props: Props,
     redirect: Redirect,
 
+    show_dialog: bool,
+
     // Collections
     fetch_tasks: Vec<FetchTask>,
     clubs: Vec<ClubDetails>,
@@ -40,7 +45,6 @@ pub struct ClubView {
     clubs_fetch_state: FetchState,
     auth_details_fetch_state: FetchState,
     user_details_fetch_state: FetchState,
-
 }
 
 #[derive(Properties, PartialEq, Clone)]
@@ -62,11 +66,13 @@ pub enum Msg {
 
     // Other
     RequestLogin,
+    ShowDialog,
+    HideDialog,
 }
 
 enum Redirect {
     No,
-    Yes(AppRoute)
+    Yes(AppRoute),
 }
 
 use Redirect::*;
@@ -123,6 +129,7 @@ impl Component for ClubView {
             fetch_tasks: vec![],
             clubs: vec![],
             redirect: No,
+            show_dialog: false,
             clubs_fetch_state: NotStarted,
             auth_details_fetch_state: NotStarted,
             user_details_fetch_state: NotStarted,
@@ -153,9 +160,7 @@ impl Component for ClubView {
                                         let Json(body) = response.into_body();
 
                                         match body {
-                                            Ok(deets) => {
-                                                ReceiveUserDetails(Some(deets))
-                                            },
+                                            Ok(deets) => ReceiveUserDetails(Some(deets)),
                                             Err(err) => {
                                                 tell!("Failed to deser user data: {}", err);
                                                 Msg::ReceiveUserDetails(None)
@@ -210,11 +215,9 @@ impl Component for ClubView {
                                                 Msg::ReceiveUserDetails(None)
                                             }
                                         }
-                                    },
+                                    }
 
-                                    StatusCode::FORBIDDEN => {
-                                        Msg::RequestLogin
-                                    },
+                                    StatusCode::FORBIDDEN => Msg::RequestLogin,
 
                                     _ => {
                                         tell!(
@@ -262,11 +265,9 @@ impl Component for ClubView {
                                                 Msg::ReceiveClubDetails(None)
                                             }
                                         }
-                                    },
+                                    }
 
-                                    StatusCode::FORBIDDEN => {
-                                        Msg::RequestLogin
-                                    },
+                                    StatusCode::FORBIDDEN => Msg::RequestLogin,
 
                                     _ => {
                                         tell!(
@@ -323,6 +324,16 @@ impl Component for ClubView {
             RequestLogin => {
                 self.redirect = Yes(AppRoute::Login);
             }
+
+            ShowDialog => {
+                tell!("HEY!");
+                self.show_dialog = true;
+            },
+
+            HideDialog => {
+                tell!("HO!");
+                self.show_dialog = false;
+            }
         }
 
         true
@@ -338,12 +349,21 @@ impl Component for ClubView {
                 <AppRedirect route=route.clone()/>
             }
         } else {
+            let fab_open_cb = self.link.callback(|_:MouseEvent| {
+                Msg::ShowDialog
+            });
+
+            ;
+
             html! {
                 <div class="club-view">
                     <Toolbar username=self.props.first_name.clone()/>
                     <ClubCard vote_count=0 organizer_name=String::from("Sans Undertale") club_name=String::from("Southeastern Undertale Club") club_description=String::from("The coolest club ever")/>
 
                     { self.generate_club_list() }
+
+                    <Fab parent_link=self.link.clone()/>
+                    <ClubDialog show=self.show_dialog parent_link=self.link.clone()/>
                 </div>
             }
         }

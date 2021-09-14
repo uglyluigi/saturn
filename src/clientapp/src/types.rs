@@ -47,7 +47,6 @@ pub enum AuthLevel {
     Guest,
 }
 
-
 impl Display for ClubDetails {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> fmt::Result {
         write!(f, "<></>")
