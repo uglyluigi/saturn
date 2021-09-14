@@ -7,7 +7,7 @@ pub async fn get_all(user: User, db: Db) -> Result<Json<Vec<ClubDetails>>> {
 
     let loaded_clubs: Vec<ClubDetails> = db.run(move |conn| {
         let join = clubs
-            .left_outer_join(club_members.on(id.eq(club_id)))
+            .left_outer_join(club_members.on(id.eq(club_id).or(club_id.nullable().is_null())))
             //.filter(user_id.nullable().eq(user.id).or(user_id.nullable().is_null()))
             .load::<(Club, Option<ClubMember>)>(conn)
             .expect("Couldn't perform left outer join with clubs from database.");
