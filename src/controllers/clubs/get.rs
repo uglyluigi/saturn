@@ -2,18 +2,19 @@ use crate::prelude::*;
 
 #[get("/clubs")]
 pub async fn get_all(user: User, db: Db) -> Result<Json<Vec<ClubDetails>>> {
-    use crate::schema::clubs::dsl::{clubs, id};
+    use crate::schema::clubs::dsl::{clubs};
     use crate::schema::club_members::dsl::{club_members, club_id, user_id};
 
     let loaded_clubs: Vec<ClubDetails> = db.run(move |conn| {
-        let join = clubs
-            .left_outer_join(club_members.on(id.eq(club_id)))
-            //.filter(user_id.nullable().eq(user.id).or(user_id.nullable().is_null()))
-            .load::<(Club, Option<ClubMember>)>(conn)
+        let club_load = clubs
+            //.filter(user_id.eq(user.id).or(user_id.nullable().is_null()))
+            .load::<Club>(conn)
             .expect("Couldn't perform left outer join with clubs from database.");
         
         let mut results = Vec::new();
-        for (club, member) in join {
+        for  club  in club_load {
+            let member = club_members.filter(user_id.eq(user.id)).filter(club_id.eq(club.id)).first::<ClubMember>(conn);
+
             let member_unwrapped = member.unwrap_or(ClubMember{
                 id: -1,
                 user_id: -1,
