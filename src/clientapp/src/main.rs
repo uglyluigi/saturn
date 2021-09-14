@@ -2,71 +2,71 @@ use yew::prelude::*;
 mod components;
 mod types;
 use components::{
-    coolshit::ThreeJSViewport,
-    core::{router::*, NotFound},
-    login::{Home, LoginPage},
+	coolshit::ThreeJSViewport,
+	core::{router::*, NotFound},
+	login::{Home, LoginPage},
 };
 use yew_router::{prelude::*, switch::Permissive};
 
 struct Model {
-    link: ComponentLink<Self>,
+	link: ComponentLink<Self>,
 }
 
 impl Component for Model {
-    type Message = ();
-    type Properties = ();
+	type Message = ();
+	type Properties = ();
 
-    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link }
-    }
+	fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
+		Self { link }
+	}
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
-        true
-    }
+	fn update(&mut self, msg: Self::Message) -> ShouldRender {
+		true
+	}
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        false
-    }
+	fn change(&mut self, _props: Self::Properties) -> ShouldRender {
+		false
+	}
 
-    fn view(&self) -> Html {
-        html! {
-            <div>
-                <AppRouter
-                    render=AppRouter::render(|thing : AppRoute| {
-                        Self::switch(thing)
-                    })
+	fn view(&self) -> Html {
+		html! {
+			<div>
+				<AppRouter
+					render=AppRouter::render(|thing : AppRoute| {
+						Self::switch(thing)
+					})
 
-                    redirect=AppRouter::redirect(|route: Route| {
-                        AppRoute::NotFound(Permissive(Some(route.route)))
-                    })
-                />
-            </div>
-        }
-    }
+					redirect=AppRouter::redirect(|route: Route| {
+						AppRoute::NotFound(Permissive(Some(route.route)))
+					})
+				/>
+			</div>
+		}
+	}
 }
 
 impl Model {
-    fn switch(switch: AppRoute) -> Html {
-        match switch {
-            AppRoute::Login => {
-                html! { <LoginPage/> }
-            }
+	fn switch(switch: AppRoute) -> Html {
+		match switch {
+			AppRoute::Login => {
+				html! { <LoginPage/> }
+			}
 
-            AppRoute::Home => {
-                html! { <Home/> }
-            }
+			AppRoute::Home => {
+				html! { <Home/> }
+			}
 
-            AppRoute::NotFound(Permissive(route)) => {
-                html! { <NotFound route=route /> }
-            }
+			AppRoute::NotFound(Permissive(route)) => {
+				html! { <NotFound route=route /> }
+			}
 
-            AppRoute::Test => {
-                html! { <ThreeJSViewport/> }
-            }
-        }
-    }
+			AppRoute::Test => {
+				html! { <ThreeJSViewport/> }
+			}
+		}
+	}
 }
 
 fn main() {
-    yew::start_app::<Model>();
+	yew::start_app::<Model>();
 }

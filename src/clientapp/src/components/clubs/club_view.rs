@@ -1,377 +1,377 @@
-use yew::{prelude::*, Properties};
-
-use crate::components::{core::router::*, core::Toolbar, ClubCard, ClubDialog, clubs::CreateClubFloatingActionButton as Fab};
-
 use anyhow::*;
 use serde::{Deserialize, Serialize};
-use yew::virtual_dom::VNode;
 use yew::{
-    format::{Json, Nothing},
-    prelude::*,
-    services::fetch::{FetchService, FetchTask, Request, Response, StatusCode},
-};
-use yew::{
-    utils::document,
-    web_sys::{Element, Node},
-    Html,
+	format::{Json, Nothing},
+	prelude::*,
+	services::fetch::{FetchService, FetchTask, Request, Response, StatusCode},
+	utils::document,
+	virtual_dom::VNode,
+	web_sys::{Element, Node},
+	Html,
+	Properties,
 };
 
-use crate::{tell, types::*};
+use crate::{
+	components::{
+		clubs::CreateClubFloatingActionButton as Fab,
+		core::{router::*, Toolbar},
+		ClubCard,
+		ClubDialog,
+	},
+	tell,
+	types::*,
+};
 
 enum FetchState {
-    NotStarted,
-    Waiting,
-    Done,
-    Failed,
+	NotStarted,
+	Waiting,
+	Done,
+	Failed,
 }
 
 use FetchState::*;
 
 pub struct ClubView {
-    link: ComponentLink<Self>,
-    props: Props,
-    redirect: Redirect,
+	link: ComponentLink<Self>,
+	props: Props,
+	redirect: Redirect,
 
-    show_dialog: bool,
+	show_dialog: bool,
 
-    // Collections
-    fetch_tasks: Vec<FetchTask>,
-    clubs: Vec<ClubDetails>,
+	// Collections
+	fetch_tasks: Vec<FetchTask>,
+	clubs: Vec<ClubDetails>,
 
-    // API Data
-    user_details: Option<UserDetails>,
-    auth_details: Option<AuthDetails>,
+	// API Data
+	user_details: Option<UserDetails>,
+	auth_details: Option<AuthDetails>,
 
-    clubs_fetch_state: FetchState,
-    auth_details_fetch_state: FetchState,
-    user_details_fetch_state: FetchState,
+	clubs_fetch_state: FetchState,
+	auth_details_fetch_state: FetchState,
+	user_details_fetch_state: FetchState,
 }
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct Props {
-    pub first_name: String,
-    pub last_name: String,
+	pub first_name: String,
+	pub last_name: String,
 }
 
 pub enum Msg {
-    // Gets
-    GetUserDetails,
-    GetAuthDetails,
-    GetClubDetails(Option<i32>),
+	// Gets
+	GetUserDetails,
+	GetAuthDetails,
+	GetClubDetails(Option<i32>),
 
-    // Receives
-    ReceiveUserDetails(Option<UserDetails>),
-    ReceiveAuthDetails(Option<AuthDetails>),
-    ReceiveClubDetails(Option<Vec<ClubDetails>>),
+	// Receives
+	ReceiveUserDetails(Option<UserDetails>),
+	ReceiveAuthDetails(Option<AuthDetails>),
+	ReceiveClubDetails(Option<Vec<ClubDetails>>),
 
-    // Other
-    RequestLogin,
-    ShowDialog,
-    HideDialog,
+	// Other
+	RequestLogin,
+	ShowDialog,
+	HideDialog,
 }
 
 enum Redirect {
-    No,
-    Yes(AppRoute),
+	No,
+	Yes(AppRoute),
 }
 
 use Redirect::*;
 
 impl ClubView {
-    pub fn push_task(&mut self, task: FetchTask) {
-        self.fetch_tasks.push(task);
-    }
+	pub fn push_task(&mut self, task: FetchTask) {
+		self.fetch_tasks.push(task);
+	}
 
-    pub fn clean_tasks(&mut self) {
-        use yew::services::Task;
-        let mut index: Option<usize> = None;
+	pub fn clean_tasks(&mut self) {
+		use yew::services::Task;
+		let mut index: Option<usize> = None;
 
-        for (i, e) in self.fetch_tasks.iter().enumerate() {
-            if !e.is_active() {
-                index = Some(i);
-                break;
-            }
-        }
+		for (i, e) in self.fetch_tasks.iter().enumerate() {
+			if !e.is_active() {
+				index = Some(i);
+				break;
+			}
+		}
 
-        if let Some(i) = index {
-            drop(self.fetch_tasks.remove(i));
-            self.clean_tasks();
-        }
-    }
+		if let Some(i) = index {
+			drop(self.fetch_tasks.remove(i));
+			self.clean_tasks();
+		}
+	}
 
-    fn generate_club_list(&self) -> Html {
-        if self.clubs.len() > 0 {
-            html! {
-                {
-                    for self.clubs.iter().map(|x| {
-                        html! {
-                            <ClubCard vote_count=x.member_count.clone() as i32 club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
-                        }
-                    })
-                }
-            }
-        } else {
-            html! {
-                <h2>{ "Be the first to make a club!" }</h2>
-            }
-        }
-    }
+	fn generate_club_list(&self) -> Html {
+		if self.clubs.len() > 0 {
+			html! {
+				{
+					for self.clubs.iter().map(|x| {
+						html! {
+							<ClubCard vote_count=x.member_count.clone() as i32 club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
+						}
+					})
+				}
+			}
+		} else {
+			html! {
+				<h2>{ "Be the first to make a club!" }</h2>
+			}
+		}
+	}
 }
 
 impl Component for ClubView {
-    type Message = Msg;
-    type Properties = Props;
+	type Message = Msg;
+	type Properties = Props;
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self {
-            link,
-            props,
-            fetch_tasks: vec![],
-            clubs: vec![],
-            redirect: No,
-            show_dialog: false,
-            clubs_fetch_state: NotStarted,
-            auth_details_fetch_state: NotStarted,
-            user_details_fetch_state: NotStarted,
-            auth_details: None,
-            user_details: None,
-        }
-    }
+	fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+		Self {
+			link,
+			props,
+			fetch_tasks: vec![],
+			clubs: vec![],
+			redirect: No,
+			show_dialog: false,
+			clubs_fetch_state: NotStarted,
+			auth_details_fetch_state: NotStarted,
+			user_details_fetch_state: NotStarted,
+			auth_details: None,
+			user_details: None,
+		}
+	}
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
-        use Msg::*;
+	fn update(&mut self, msg: Self::Message) -> ShouldRender {
+		use Msg::*;
 
-        self.clean_tasks();
+		self.clean_tasks();
 
-        match msg {
-            GetUserDetails => {
-                let req = yew::services::fetch::Request::get("/api/user/details")
-                    .body(yew::format::Nothing);
+		match msg {
+			GetUserDetails => {
+				let req = yew::services::fetch::Request::get("/api/user/details")
+					.body(yew::format::Nothing);
 
-                self.user_details_fetch_state = Waiting;
+				self.user_details_fetch_state = Waiting;
 
-                match req {
-                    Ok(req) => {
-                        let callback = self.link.callback(
-                            |response: Response<Json<Result<UserDetails, anyhow::Error>>>| {
-                                match response.status() {
-                                    StatusCode::OK => {
-                                        tell!("Got user details");
-                                        let Json(body) = response.into_body();
+				match req {
+					Ok(req) => {
+						let callback = self.link.callback(
+							|response: Response<Json<Result<UserDetails, anyhow::Error>>>| {
+								match response.status() {
+									StatusCode::OK => {
+										tell!("Got user details");
+										let Json(body) = response.into_body();
 
-                                        match body {
-                                            Ok(deets) => ReceiveUserDetails(Some(deets)),
-                                            Err(err) => {
-                                                tell!("Failed to deser user data: {}", err);
-                                                Msg::ReceiveUserDetails(None)
-                                            }
-                                        }
-                                    }
+										match body {
+											Ok(deets) => ReceiveUserDetails(Some(deets)),
+											Err(err) => {
+												tell!("Failed to deser user data: {}", err);
+												Msg::ReceiveUserDetails(None)
+											}
+										}
+									}
 
-                                    StatusCode::FORBIDDEN => Msg::RequestLogin,
+									StatusCode::FORBIDDEN => Msg::RequestLogin,
 
-                                    _ => {
-                                        tell!(
-                                            "Failed to receive user data: status code {}",
-                                            response.status()
-                                        );
-                                        Msg::ReceiveUserDetails(None)
-                                    }
-                                }
-                            },
-                        );
+									_ => {
+										tell!(
+											"Failed to receive user data: status code {}",
+											response.status()
+										);
+										Msg::ReceiveUserDetails(None)
+									}
+								}
+							},
+						);
 
-                        match yew::services::fetch::FetchService::fetch(req, callback) {
-                            Ok(task) => {
-                                self.push_task(task);
-                            }
-                            Err(err) => {}
-                        }
-                    }
+						match yew::services::fetch::FetchService::fetch(req, callback) {
+							Ok(task) => {
+								self.push_task(task);
+							}
+							Err(err) => {}
+						}
+					}
 
-                    Err(err) => {
-                        tell!("Failed to build request for user details: {:?}", err);
-                    }
-                }
-            }
+					Err(err) => {
+						tell!("Failed to build request for user details: {:?}", err);
+					}
+				}
+			}
 
-            GetAuthDetails => {
-                let req = yew::services::fetch::Request::get("/api/auth/details")
-                    .body(yew::format::Nothing);
+			GetAuthDetails => {
+				let req = yew::services::fetch::Request::get("/api/auth/details")
+					.body(yew::format::Nothing);
 
-                match req {
-                    Ok(req) => {
-                        let callback = self.link.callback(
-                            |response: Response<Json<Result<UserDetails, anyhow::Error>>>| {
-                                match response.status() {
-                                    StatusCode::OK => {
-                                        tell!("Got auth details");
-                                        let Json(body) = response.into_body();
+				match req {
+					Ok(req) => {
+						let callback = self.link.callback(
+							|response: Response<Json<Result<UserDetails, anyhow::Error>>>| {
+								match response.status() {
+									StatusCode::OK => {
+										tell!("Got auth details");
+										let Json(body) = response.into_body();
 
-                                        match body {
-                                            Ok(deets) => ReceiveUserDetails(Some(deets)),
-                                            Err(err) => {
-                                                tell!("Failed to deser auth data: {}", err);
-                                                Msg::ReceiveUserDetails(None)
-                                            }
-                                        }
-                                    }
+										match body {
+											Ok(deets) => ReceiveUserDetails(Some(deets)),
+											Err(err) => {
+												tell!("Failed to deser auth data: {}", err);
+												Msg::ReceiveUserDetails(None)
+											}
+										}
+									}
 
-                                    StatusCode::FORBIDDEN => Msg::RequestLogin,
+									StatusCode::FORBIDDEN => Msg::RequestLogin,
 
-                                    _ => {
-                                        tell!(
-                                            "Failed to receive auth data: status code {}",
-                                            response.status()
-                                        );
-                                        Msg::ReceiveUserDetails(None)
-                                    }
-                                }
-                            },
-                        );
+									_ => {
+										tell!(
+											"Failed to receive auth data: status code {}",
+											response.status()
+										);
+										Msg::ReceiveUserDetails(None)
+									}
+								}
+							},
+						);
 
-                        match yew::services::fetch::FetchService::fetch(req, callback) {
-                            Ok(task) => {
-                                self.push_task(task);
-                            }
-                            Err(err) => {}
-                        }
-                    }
+						match yew::services::fetch::FetchService::fetch(req, callback) {
+							Ok(task) => {
+								self.push_task(task);
+							}
+							Err(err) => {}
+						}
+					}
 
-                    Err(err) => {
-                        tell!("Failed to build request for auth details: {:?}", err);
-                    }
-                }
-            }
+					Err(err) => {
+						tell!("Failed to build request for auth details: {:?}", err);
+					}
+				}
+			}
 
-            GetClubDetails(id) => {
-                let req =
-                    yew::services::fetch::Request::get("/api/clubs").body(yew::format::Nothing);
+			GetClubDetails(id) => {
+				let req =
+					yew::services::fetch::Request::get("/api/clubs").body(yew::format::Nothing);
 
-                match req {
-                    Ok(req) => {
-                        // TODO the response type in this callback is probably gonna have to change when all clubs are gotten from backend
-                        let callback = self.link.callback(
-                            |response: Response<Json<Result<Vec<ClubDetails>, anyhow::Error>>>| {
-                                match response.status() {
-                                    StatusCode::OK => {
-                                        tell!("Got club details");
-                                        let Json(body) = response.into_body();
+				match req {
+					Ok(req) => {
+						// TODO the response type in this callback is probably gonna have to change when all clubs are gotten from backend
+						let callback = self.link.callback(
+							|response: Response<Json<Result<Vec<ClubDetails>, anyhow::Error>>>| {
+								match response.status() {
+									StatusCode::OK => {
+										tell!("Got club details");
+										let Json(body) = response.into_body();
 
-                                        match body {
-                                            Ok(deets) => ReceiveClubDetails(Some(deets)),
-                                            Err(err) => {
-                                                tell!("Failed to deser auth data: {}", err);
-                                                Msg::ReceiveClubDetails(None)
-                                            }
-                                        }
-                                    }
+										match body {
+											Ok(deets) => ReceiveClubDetails(Some(deets)),
+											Err(err) => {
+												tell!("Failed to deser auth data: {}", err);
+												Msg::ReceiveClubDetails(None)
+											}
+										}
+									}
 
-                                    StatusCode::FORBIDDEN => Msg::RequestLogin,
+									StatusCode::FORBIDDEN => Msg::RequestLogin,
 
-                                    _ => {
-                                        tell!(
-                                            "Failed to receive auth data: status code {}",
-                                            response.status()
-                                        );
-                                        Msg::ReceiveClubDetails(None)
-                                    }
-                                }
-                            },
-                        );
+									_ => {
+										tell!(
+											"Failed to receive auth data: status code {}",
+											response.status()
+										);
+										Msg::ReceiveClubDetails(None)
+									}
+								}
+							},
+						);
 
-                        match yew::services::fetch::FetchService::fetch(req, callback) {
-                            Ok(task) => {
-                                self.push_task(task);
-                            }
-                            Err(err) => {}
-                        }
-                    }
+						match yew::services::fetch::FetchService::fetch(req, callback) {
+							Ok(task) => {
+								self.push_task(task);
+							}
+							Err(err) => {}
+						}
+					}
 
-                    Err(err) => {
-                        tell!("Failed to build request for auth details: {:?}", err);
-                    }
-                }
-            }
+					Err(err) => {
+						tell!("Failed to build request for auth details: {:?}", err);
+					}
+				}
+			}
 
-            ReceiveUserDetails(deets) => {
-                if let Some(deet) = deets {
-                    self.user_details_fetch_state = Done;
-                    self.user_details = Some(deet);
-                } else {
-                    self.user_details_fetch_state = Failed;
-                }
-            }
+			ReceiveUserDetails(deets) => {
+				if let Some(deet) = deets {
+					self.user_details_fetch_state = Done;
+					self.user_details = Some(deet);
+				} else {
+					self.user_details_fetch_state = Failed;
+				}
+			}
 
-            ReceiveAuthDetails(deets) => {
-                if let Some(deet) = deets {
-                    self.auth_details_fetch_state = Done;
-                    self.auth_details = Some(deet);
-                } else {
-                    self.auth_details_fetch_state = Failed;
-                }
-            }
+			ReceiveAuthDetails(deets) => {
+				if let Some(deet) = deets {
+					self.auth_details_fetch_state = Done;
+					self.auth_details = Some(deet);
+				} else {
+					self.auth_details_fetch_state = Failed;
+				}
+			}
 
-            ReceiveClubDetails(deets) => {
-                if let Some(deet) = deets {
-                    self.clubs_fetch_state = Done;
-                    self.clubs = deet;
-                } else {
-                    self.clubs_fetch_state = Failed;
-                }
-            }
+			ReceiveClubDetails(deets) => {
+				if let Some(deet) = deets {
+					self.clubs_fetch_state = Done;
+					self.clubs = deet;
+				} else {
+					self.clubs_fetch_state = Failed;
+				}
+			}
 
-            RequestLogin => {
-                self.redirect = Yes(AppRoute::Login);
-            }
+			RequestLogin => {
+				self.redirect = Yes(AppRoute::Login);
+			}
 
-            ShowDialog => {
-                tell!("HEY!");
-                self.show_dialog = true;
-            },
+			ShowDialog => {
+				tell!("HEY!");
+				self.show_dialog = true;
+			}
 
-            HideDialog => {
-                tell!("HO!");
-                self.show_dialog = false;
-            }
-        }
+			HideDialog => {
+				tell!("HO!");
+				self.show_dialog = false;
+			}
+		}
 
-        true
-    }
+		true
+	}
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-        false
-    }
+	fn change(&mut self, _props: Self::Properties) -> ShouldRender {
+		false
+	}
 
-    fn view(&self) -> Html {
-        if let Yes(route) = &self.redirect {
-            html! {
-                <AppRedirect route=route.clone()/>
-            }
-        } else {
-            let fab_open_cb = self.link.callback(|_:MouseEvent| {
-                Msg::ShowDialog
-            });
+	fn view(&self) -> Html {
+		if let Yes(route) = &self.redirect {
+			html! {
+				<AppRedirect route=route.clone()/>
+			}
+		} else {
+			let fab_open_cb = self.link.callback(|_: MouseEvent| Msg::ShowDialog);
 
-            ;
+			html! {
+				<div class="club-view">
+					<Toolbar username=self.props.first_name.clone()/>
+					<ClubCard vote_count=0 organizer_name=String::from("Sans Undertale") club_name=String::from("Southeastern Undertale Club") club_description=String::from("The coolest club ever")/>
 
-            html! {
-                <div class="club-view">
-                    <Toolbar username=self.props.first_name.clone()/>
-                    <ClubCard vote_count=0 organizer_name=String::from("Sans Undertale") club_name=String::from("Southeastern Undertale Club") club_description=String::from("The coolest club ever")/>
+					{ self.generate_club_list() }
 
-                    { self.generate_club_list() }
+					<Fab parent_link=self.link.clone()/>
+					<ClubDialog show=self.show_dialog parent_link=self.link.clone()/>
+				</div>
+			}
+		}
+	}
 
-                    <Fab parent_link=self.link.clone()/>
-                    <ClubDialog show=self.show_dialog parent_link=self.link.clone()/>
-                </div>
-            }
-        }
-    }
-
-    fn rendered(&mut self, first: bool) {
-        if first {
-            self.link.send_message(Msg::GetClubDetails(None));
-        }
-    }
+	fn rendered(&mut self, first: bool) {
+		if first {
+			self.link.send_message(Msg::GetClubDetails(None));
+		}
+	}
 }
