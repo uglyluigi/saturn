@@ -39,7 +39,7 @@ export function init() {
   scene.add(seedScene);
 
   // camera
-  camera.position.set(45, window.innerWidth / window.innerHeight, 1, 1000);
+  camera.position.set(75, window.innerWidth / window.innerHeight, 1, 1000);
   camera.position.z = 5;
 
   // renderer
@@ -48,14 +48,15 @@ export function init() {
 
   //Init postprocessing effects
   effectComposer = new EffectComposer(renderer);
+  effectComposer.renderToScreen = true;
 
   const renderPass = new RenderPass(scene, camera);
   effectComposer.addPass(renderPass);
 
-  const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth * renderer.getPixelRatio(), window.innerHeight * renderer.getPixelRatio()), 1.5, 0, 1);
+  const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 3, 0.4, -1);
   effectComposer.addPass(bloomPass);
 
-  const SMAApass = new SMAAPass(window.innerWidth * renderer.getPixelRatio(), window.innerHeight * renderer.getPixelRatio());
+  const SMAApass = new SMAAPass(window.innerWidth, window.innerHeight);
   effectComposer.addPass(SMAApass);
 
   // render loop

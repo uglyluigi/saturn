@@ -17,8 +17,8 @@ export default class StarScene extends THREE.Group {
   }
 
   makePointStars() {
-    for (let z = -1500; z < 1000; z += 7) {
-      const lilSphere = new THREE.SphereGeometry(1.7, 32, 32);
+    for (let z = -1500; z < 1000; z += 13) {
+      const lilSphere = new THREE.SphereGeometry(1.3, 32, 32);
       const mat = new THREE.MeshBasicMaterial();
       
       mat.color.setRGB(Math.random(), Math.random(), Math.random());
@@ -39,7 +39,7 @@ export default class StarScene extends THREE.Group {
 
     for (let i = 0; i < StarScene.stars.length; i++) {
       let star = StarScene.stars[i];
-      star.position.z += i / 10;
+      star.position.z += i / 25;
 
       if (star.position.z > 1000) {
         star.position.z -= 2000;
