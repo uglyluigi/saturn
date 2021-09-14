@@ -94,19 +94,21 @@ impl ClubView {
     }
 
     fn generate_club_list(&self) -> Html {
-        let container: Element = document().create_element("div").unwrap();
-        container.set_class_name("club-list");
-        tell!("clubs = {:?}", self.clubs);
-
-        match html! { <ClubCard vote_count=69 club_name=String::from("Name") club_description=String::from("Description") organizer_name=String::from("TODO")/> } {
-            VNode::VRef(n) => tell!("Good!"),
-            VNode::VTag(_) => tell!("A"),
-            VNode::VComp(_) => tell!("B"),
-            VNode::VList(_) => tell!("C"),
-            _ => (),
+        if self.clubs.len() > 0 {
+            html! {
+                {
+                    for self.clubs.iter().map(|x| {
+                        html! {
+                            <ClubCard vote_count=x.member_count.clone() as i32 club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
+                        }
+                    })
+                }
+            }
+        } else {
+            html! {
+                <h2>{ "Be the first to make a club!" }</h2>
+            }
         }
-
-        Html::VRef(container.into())
     }
 }
 
