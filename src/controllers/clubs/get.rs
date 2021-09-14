@@ -3,7 +3,7 @@ use crate::prelude::*;
 #[get("/clubs")]
 pub async fn get_all(user: User, db: Db) -> Result<Json<Vec<ClubDetails>>> {
     use crate::schema::clubs::dsl::{clubs};
-    use crate::schema::club_members::dsl::{club_members, user_id};
+    use crate::schema::club_members::dsl::{club_members, club_id, user_id};
 
     let loaded_clubs: Vec<ClubDetails> = db.run(move |conn| {
         let club_load = clubs
@@ -13,7 +13,7 @@ pub async fn get_all(user: User, db: Db) -> Result<Json<Vec<ClubDetails>>> {
         
         let mut results = Vec::new();
         for  club  in club_load {
-            let member = club_members.filter(user_id.eq(club.id)).first::<ClubMember>(conn);
+            let member = club_members.filter(user_id.eq(user.id)).filter(club_id.eq(club.id)).first::<ClubMember>(conn);
 
             let member_unwrapped = member.unwrap_or(ClubMember{
                 id: -1,
