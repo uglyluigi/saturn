@@ -11,6 +11,7 @@ js-sys = "0.3.53"
 yew-router = "0.15.0"
 anyhow = "1.0.43"
 serde = "1.0.129"
+serde_json = "*"
 
 [dependencies.chrono]
 version = "*"
