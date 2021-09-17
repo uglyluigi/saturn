@@ -52,3 +52,9 @@ impl Display for ClubDetails {
 		write!(f, "<></>")
 	}
 }
+
+pub enum FetchState<T> {
+	Waiting,
+	Done(T),
+	Failed(Option<anyhow::Error>),
+}

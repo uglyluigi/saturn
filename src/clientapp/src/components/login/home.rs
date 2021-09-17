@@ -1,5 +1,4 @@
 use anyhow::*;
-use serde::{Deserialize, Serialize};
 use yew::{
 	format::{Json, Nothing},
 	prelude::*,
@@ -7,8 +6,7 @@ use yew::{
 };
 
 use crate::{
-	components::{club_fab::CreateClubFloatingActionButton, core::*, ClubView},
-	please,
+	components::{core::*, ClubView},
 	tell,
 	types::*,
 };
@@ -22,14 +20,8 @@ pub enum Msg {
 pub struct Home {
 	link: ComponentLink<Self>,
 	fetch_task: Option<FetchTask>,
-	fetch_state: Option<FetchState>,
+	fetch_state: FetchState<AuthDetails>,
 	details: Option<AuthDetails>,
-}
-
-pub enum FetchState {
-	Waiting,
-	Succeeded(AuthDetails),
-	Failed(Option<anyhow::Error>),
 }
 
 impl Component for Home {
@@ -41,14 +33,14 @@ impl Component for Home {
 			link,
 			fetch_task: None,
 			details: None,
-			fetch_state: None,
+			fetch_state: FetchState::Waiting,
 		}
 	}
 
 	fn update(&mut self, msg: Self::Message) -> ShouldRender {
 		match msg {
 			Msg::FetchUserInfo => {
-				self.fetch_state = Some(FetchState::Waiting);
+				self.fetch_state = FetchState::Waiting;
 				let req = Request::get("/api/auth/details").body(Nothing);
 
 				match req {
@@ -90,7 +82,7 @@ impl Component for Home {
 			}
 
 			Msg::ReceieveUserInfo(data) => {
-				self.fetch_state = Some(FetchState::Succeeded(data));
+				self.fetch_state = FetchState::Done(data);
 				self.fetch_task = None;
 			}
 
@@ -99,10 +91,10 @@ impl Component for Home {
 
 				if let Some(error) = maybe_error {
 					tell!("Error getting user details: {:?}", error);
-					self.fetch_state = Some(FetchState::Failed(Some(error)));
+					self.fetch_state = FetchState::Failed(Some(error));
 				} else {
 					tell!("Unspecified error getting user details");
-					self.fetch_state = Some(FetchState::Failed(None));
+					self.fetch_state = FetchState::Failed(None);
 				}
 			}
 		}
@@ -130,35 +122,23 @@ impl Component for Home {
 impl Home {
 	fn normal_view(&self) -> Html {
 		match &self.fetch_state {
-			Some(state) => {
-				match state {
-					FetchState::Waiting => html! {
-						<h1> {"Waiting..."} </h1>
-					},
+			FetchState::Waiting => html! {
+				<h1> {"Waiting..."} </h1>
+			},
 
-					FetchState::Succeeded(details) => html! {
-						//TODO handle token timeout. Just send Msg::RequestUserData again
-						<ClubView first_name=details.first_name.clone().unwrap() last_name=details.last_name.clone().unwrap()/>
-					},
+			FetchState::Done(details) => html! {
+				//TODO handle token timeout. Just send Msg::RequestUserData again
+				<ClubView first_name=details.first_name.clone().unwrap() last_name=details.last_name.clone().unwrap()/>
+			},
 
-					FetchState::Failed(maybe_error) => {
-						match maybe_error {
-							Some(err) => tell!("Error: {:?}", err),
-							None => tell!("Unspecified error occurred."),
-						};
-
-						html! {
-							<AppRedirect route=AppRoute::Login/>
-						}
-					}
-				}
-			}
-
-			None => {
-				self.link.send_message(Msg::FetchUserInfo);
+			FetchState::Failed(maybe_error) => {
+				match maybe_error {
+					Some(err) => tell!("Error: {:?}", err),
+					None => tell!("Unspecified error occurred."),
+				};
 
 				html! {
-					<h1> {"Getting user data..."} </h1>
+					<AppRedirect route=AppRoute::Login/>
 				}
 			}
 		}

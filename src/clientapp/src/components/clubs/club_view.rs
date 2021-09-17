@@ -22,14 +22,7 @@ use crate::{
 	types::*,
 };
 
-enum FetchState {
-	NotStarted,
-	Waiting,
-	Done,
-	Failed,
-}
 
-use FetchState::*;
 
 pub struct ClubView {
 	link: ComponentLink<Self>,
@@ -40,15 +33,10 @@ pub struct ClubView {
 
 	// Collections
 	fetch_tasks: Vec<FetchTask>,
-	clubs: Vec<ClubDetails>,
 
-	// API Data
-	user_details: Option<UserDetails>,
-	auth_details: Option<AuthDetails>,
-
-	clubs_fetch_state: FetchState,
-	auth_details_fetch_state: FetchState,
-	user_details_fetch_state: FetchState,
+	clubs_fetch_state: FetchState<Vec<ClubDetails>>,
+	auth_details_fetch_state: FetchState<AuthDetails>,
+	user_details_fetch_state: FetchState<UserDetails>,
 }
 
 #[derive(Properties, PartialEq, Clone)]
@@ -104,19 +92,25 @@ impl ClubView {
 	}
 
 	fn generate_club_list(&self) -> Html {
-		if self.clubs.len() > 0 {
-			html! {
-				{
-					for self.clubs.iter().map(|x| {
-						html! {
-							<ClubCard vote_count=x.member_count.clone() as i32 club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
-						}
-					})
+		if let FetchState::Done(clubs) = &self.clubs_fetch_state {
+			if clubs.len() > 0 {
+				html! {
+					{
+						for clubs.iter().map(|x| {
+							html! {
+								<ClubCard vote_count=x.member_count.clone() as i32 club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
+							}
+						})
+					}
+				}
+			} else {
+				html! {
+					<h2>{ "Be the first to make a club!" }</h2>
 				}
 			}
 		} else {
 			html! {
-				<h2>{ "Be the first to make a club!" }</h2>
+				<h2>{"Failed to load clubs!"}</h2>
 			}
 		}
 	}
@@ -131,14 +125,11 @@ impl Component for ClubView {
 			link,
 			props,
 			fetch_tasks: vec![],
-			clubs: vec![],
 			redirect: No,
 			show_dialog: false,
-			clubs_fetch_state: NotStarted,
-			auth_details_fetch_state: NotStarted,
-			user_details_fetch_state: NotStarted,
-			auth_details: None,
-			user_details: None,
+			clubs_fetch_state: FetchState::Waiting,
+			auth_details_fetch_state: FetchState::Waiting,
+			user_details_fetch_state: FetchState::Waiting,
 		}
 	}
 
@@ -152,7 +143,7 @@ impl Component for ClubView {
 				let req = yew::services::fetch::Request::get("/api/user/details")
 					.body(yew::format::Nothing);
 
-				self.user_details_fetch_state = Waiting;
+				self.user_details_fetch_state = FetchState::Waiting;
 
 				match req {
 					Ok(req) => {
@@ -299,43 +290,40 @@ impl Component for ClubView {
 			}
 
 			ReceiveUserDetails(deets) => {
-				if let Some(deet) = deets {
-					self.user_details_fetch_state = Done;
-					self.user_details = Some(deet);
+				self.user_details_fetch_state = if let Some(deet) = deets {
+					FetchState::Done(deet)
 				} else {
-					self.user_details_fetch_state = Failed;
+					FetchState::Failed(Some(anyhow!("Failed to get user details (struct was none)")))
 				}
 			}
 
 			ReceiveAuthDetails(deets) => {
-				if let Some(deet) = deets {
-					self.auth_details_fetch_state = Done;
-					self.auth_details = Some(deet);
+				self.auth_details_fetch_state = if let Some(deet) = deets {
+					FetchState::Done(deet)
 				} else {
-					self.auth_details_fetch_state = Failed;
+					FetchState::Failed(Some(anyhow!("Failed to get auth details (struct was none)")))
 				}
 			}
 
 			ReceiveClubDetails(deets) => {
-				if let Some(deet) = deets {
-					self.clubs_fetch_state = Done;
-					self.clubs = deet;
+				self.clubs_fetch_state = if let Some(deet) = deets {
+					FetchState::Done(deet)
 				} else {
-					self.clubs_fetch_state = Failed;
+					FetchState::Failed(Some(anyhow!("Failed to get club details (struct was none)")))
 				}
 			}
 
 			RequestLogin => {
+				// I like how this really looks like a stupid pseudocode example.
+				// I need coffee haha = Laughter(Kind::Insincere)
 				self.redirect = Yes(AppRoute::Login);
 			}
 
 			ShowDialog => {
-				tell!("HEY!");
 				self.show_dialog = true;
 			}
 
 			HideDialog => {
-				tell!("HO!");
 				self.show_dialog = false;
 			}
 		}
