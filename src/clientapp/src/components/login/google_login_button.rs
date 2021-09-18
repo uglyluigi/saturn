@@ -52,9 +52,9 @@ impl Component for GoogleLoginButton {
 					</div>
 					<div class="g_id_signin"
 							data-size="large"
-							data-theme="filled_black"
+							data-theme="outline"
 							data-text="sign_in_with"
-							data-shape="circle"
+							data-shape="square"
 							data-logo_alignment="left">
 					</div>
 				</div>

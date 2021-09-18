@@ -1,0 +1,450 @@
+/**
+$BLACK_BG:        #26282C;
+$PLEASING_BG_COLOR:    #519872;
+$ACCENT_1_PURPLE: #4C1A88;
+$ACCENT_2_RUST:   #CF5C36;
+$ACCENT_3_TEAL:   #2BC29F;
+$ACCENT_4_YELLOW: #FFAF47;
+$TEXT_1_OFF_WHITE:#D2DDDE;
+**/
+
+/**$FONT_HEADER: "Coda", cursive;
+$FONT_BODY: 'Poppins', sans-serif;
+**/
+@import url('https://fonts.googleapis.com/css2?family=Coda&effect=anaglyph&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap%27');
+
+h1, h2, h3, p, body {
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-family: Coda;
+}
+
+h2 {
+    font-family: Coda;
+    font-size: 30pt;
+}
+
+/* Horizontal line */
+hr {
+    border-top: 1px solid #D2DDDE;
+    width: 90%;
+}
+
+p {
+    font-family: Poppins;
+}
+
+/* <--------- LOGIN ---------> */
+#login-canvas { 
+    display: block; 
+    width: 100%; 
+    height: 100%;  
+    position: fixed;
+    z-index: -1;
+}
+
+.login-page body {
+    background-color: black;
+}
+
+.login-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-page #google-button-container {
+    width: 10em;
+}
+
+.login-page .soft-grey-rect {
+    width: auto;
+    height: auto;
+    border-radius: 8px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: middle;
+
+    background-color: 	hsla(267, 100%, 50%, 0.30);
+    backdrop-filter: blur(6px);
+
+    padding: 2em;
+
+    animation-name: drop_fade_in;
+    animation-duration: .7s;
+    animation-delay: 0.1s;
+    animation-fill-mode: forwards;
+    position: relative;
+    overflow: hidden;
+    opacity: 0%;
+}
+
+.login-page .soft-grey-rect h1 {
+    text-align: center;
+    color: #D2DDDE;
+    font-size: 40pt;
+    margin: 0;
+}
+
+.login-page .please-login-text {
+    font-family: Poppins;
+    color: #D2DDDE;
+    font-size: 20pt;
+    text-align: center;
+    padding-bottom: 0.5em;
+}
+
+.auth-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    animation-name: drop_fade_in;
+    animation-duration: .7s;
+    animation-fill-mode: forwards;
+    position: relative;
+    overflow: hidden;
+    opacity: 0%;
+    margin-top: 5em;
+}
+
+.auth-header h1 {
+    position: relative;
+    left: 10px;
+    font-size: 120pt;
+    white-space: nowrap;
+    background-color: white;
+    
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: textAnimate 5s linear infinite alternate;
+}
+
+.auth-header img {
+    justify-content: center;
+    width: 10em;
+    height: 10em;
+}
+
+#google-button-container {
+    margin: auto;
+    padding-top: 1em;
+}
+
+.g_id_signin .label {
+    font-size: 60px;
+}
+
+@keyframes drop_fade_in {
+    from {
+        opacity: 0%;
+        top: -500px;
+    }
+
+    66% {
+        opacity: 0%;
+    }
+
+    to {
+        top: 0px;
+        opacity: 100%;
+    }
+}
+
+/* <--------- 404 PAGE ---------> */
+
+.not-found {
+    text-align: center;
+    color: black;
+}
+
+.not-found h1 {
+    font-size: 6em;
+    color: black;
+}
+
+.not-found h2 {
+    font-size: 1.5em;
+    color: black;
+}
+
+.not-found h3 {
+    font-size: 1.17em;
+}
+
+.not-found .logo {
+    height: 15em;
+    width: 15em;
+}
+
+/* <--------- CREATE CLUB BUTTON ---------> */
+
+.club-fab button {
+    position: sticky;
+    text-align: center;
+    vertical-align: middle;
+    margin: auto;
+    border: none;
+    background-color: transparent;
+    font-size: 40px;
+    color: white;
+}
+
+
+#fab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 5em;
+    right: 5em;
+    z-index: 1;
+    height: 5em;
+    width: 5em;
+    border: 0;
+    background-color: purple;
+    border-radius: 5em;
+    transition: transform 0.33s;
+}
+
+#fab:hover {
+    transform: translateY(-1em);
+}
+
+#modal-bg {
+    display: flex;
+    position: fixed;
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+
+#new-club-dialog {
+    background-color: #26282C;
+    margin: auto;
+    top: 30em;
+    padding: 20px 20px 20px 20px;
+    border: 1px solid;
+    width: 20%;
+    height: 10em;
+    z-index: 2;
+    border-radius: 5px;
+}
+
+#dialog-content input {
+    width: 100%;
+    height: 2em;
+    margin-bottom: 1em;
+}
+
+
+#dialog-header {
+    padding-bottom: 1em;
+}
+
+#dialog-header h3 {
+    display: inline;
+    font-family: Coda;
+    color: #D2DDDE;
+    padding-bottom: 1em;
+}
+
+#close-x-button {
+    float: right;
+    background-color: transparent;
+    border: none;
+    font-size: 25px;
+    color: white;
+    min-height: 1em;
+    min-width: 1em;
+    width: 1em;
+    height: 1em;
+    transition: color 0.5s;
+}
+
+#close-x-button:hover {
+    color: red;
+}
+
+.dialog-button {
+    border: none;
+    background-color: transparent;
+    font-family: Coda;
+    font-size: 20px;
+    height: 1em;
+    width: auto;
+    color: #D2DDDE;
+}
+
+#dialog-buttons {
+    float: right;
+}
+
+/* TOOLBAR */
+
+.toolbar {
+    width: 100%;
+    background-color: #26282C;
+    display: flex;
+    flex-direction: row;   
+}
+
+.toolbar a, h1 {
+    font-family: Poppins;
+    color: #D2DDDE;
+    text-align: center;
+    padding: 14px 16px;
+    font-size: 17px;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.toolbar a:hover {
+    background-color: #D2DDDE;
+    color: #26282C;
+}
+
+.toolbar a.active {
+    background-color: #2bc29f;
+    color: #D2DDDE;
+}
+
+.toolbar #logo {
+    height: 3em;
+    width: 3em;
+    padding: 0.25em 0.25em 0.25em 0.25em;
+    align-self: center;
+}
+
+.toolbar #txt-logo {
+    align-self: center;
+    width: 5em;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.club-view body {
+    background-color: white;
+}
+
+.club-card {
+    height: auto;
+    width: 35em;
+    border-radius: 8px;
+    background-color: #26282C;
+    padding: 1em 1em 1em 1em;
+    margin: 1em;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.5s;
+}
+
+.club-card p, h1 {
+    color: #D2DDDE;
+}
+
+.club-card hr {
+    width: 100%;
+}
+
+.club-card div {
+    transform: scaleY(-0.25em);
+}
+
+.club-card-header h1 {
+    text-align: center;
+}
+
+.club-card-action-bar {
+    font-size: 30px;
+    flex-direction: row;
+}
+
+.club-card-action-bar button {
+    font-size: 30px;
+    background-color: transparent;
+    border: none;
+    margin: none;
+    padding-right: none;
+    padding-left: none;
+    min-height: 1em;
+    min-width: 1em;
+
+    transition: transform 0.33s;
+}
+
+.club-card-action-bar button:hover {
+    transform: translateY(-0.25em) !important;
+}
+
+.club-card-body {
+    display: flex;
+    flex: 50%;
+    text-align: center;
+    color: #D2DDDE;
+}
+
+.club-card-body #right-col {
+    flex: 50%;
+}
+
+.club-card-body #right-col h2 {
+    font-size: 20pt;
+}
+
+.club-card-body #right-col p {
+    display: flex;
+    flex-direction: row;
+}
+
+.club-card-body #right-col p:before, p:after {
+    content: "";
+    flex: 1 1;
+    border-bottom: 1px solid;
+    margin: auto;
+}
+
+.club-card-body #right-col p:before {
+    margin-right: 1em;
+}
+
+.club-card-body #right-col p:after {
+    margin-left: 1em;
+}
+
+#left-col {
+    margin: auto;
+    flex: 50%
+}
+
+.club-card img {
+    padding-top: 1em;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 10em;
+    height: 10em;
+    border-radius: 50%;
+    padding-bottom: 1em;
+}

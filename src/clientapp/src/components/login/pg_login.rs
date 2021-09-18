@@ -27,7 +27,7 @@ impl Component for LoginPageComponent {
 		html! {
 			<div class="login-page">
 				<canvas height="100" width="100" id="login-canvas"></canvas>
-				<script src="bg.js"/>
+				<script defer=true src="bg.js"/>
 
 				<div class="auth-header">
 					<img class="saturn-logo" src="assets/saturn-logo.svg" alt="Saturn logo"/>
@@ -36,9 +36,8 @@ impl Component for LoginPageComponent {
 
 				<div class="soft-grey-rect">
 					<h1>
-						{"Hello!"}
+						{"Welcome to Saturn!"}
 					</h1>
-					<hr/>
 					<div class="please-login-text">
 						{"Please log in to proceed."}
 						<GoogleLoginButton/>
