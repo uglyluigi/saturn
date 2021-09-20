@@ -15,6 +15,7 @@ use crate::{
 	components::{
 		clubs::CreateClubFloatingActionButton as Fab,
 		core::{router::*, Toolbar},
+		coolshit::Spinner,
 		ClubCard,
 		ClubDialog,
 	},
@@ -30,6 +31,7 @@ pub struct ClubView {
 	redirect: Redirect,
 
 	show_dialog: bool,
+	dialog_display_class: Option<String>,
 
 	// Collections
 	fetch_tasks: Vec<FetchTask>,
@@ -70,6 +72,15 @@ enum Redirect {
 use Redirect::*;
 
 impl ClubView {
+	pub fn do_thing(&self) -> Html {
+		web_sys::window().unwrap().document().unwrap().get_element_by_id("new-club-dialog").unwrap().set_class_name("cock");
+
+		html! {
+			<>
+			</>
+		}
+	}
+
 	pub fn push_task(&mut self, task: FetchTask) {
 		self.fetch_tasks.push(task);
 	}
@@ -105,12 +116,16 @@ impl ClubView {
 				}
 			} else {
 				html! {
-					<h2>{ "Be the first to make a club!" }</h2>
+					<div class="club-fetch-status-msg" id="be-first-msg">
+						<h2>{ "Be the first to post your own club!" }</h2>
+					</div>
 				}
 			}
 		} else {
 			html! {
-				<h2>{"Failed to load clubs!"}</h2>
+				<div class="club-fetch-status-msg" id="club-load-failed">
+					<h2>{"Failed to load clubs!"}</h2>
+				</div>
 			}
 		}
 	}
@@ -127,6 +142,7 @@ impl Component for ClubView {
 			fetch_tasks: vec![],
 			redirect: No,
 			show_dialog: false,
+			dialog_display_class: None,
 			clubs_fetch_state: FetchState::Waiting,
 			auth_details_fetch_state: FetchState::Waiting,
 			user_details_fetch_state: FetchState::Waiting,
@@ -344,15 +360,50 @@ impl Component for ClubView {
 			let fab_open_cb = self.link.callback(|_: MouseEvent| Msg::ShowDialog);
 
 			html! {
-				<div class="club-view">
+				<>
 					<Toolbar username=self.props.first_name.clone()/>
-					<ClubCard vote_count=0 organizer_name=String::from("Sans Undertale") club_name=String::from("Southeastern Undertale Club") club_description=String::from("The coolest club ever")/>
 
-					{ self.generate_club_list() }
+					<div class="club-view">
+						<ClubCard vote_count=0 organizer_name=String::from("Sans Undertale") club_name=String::from("Southeastern Undertale Club") club_description=String::from("The coolest club ever")/>
 
-					<Fab parent_link=self.link.clone()/>
-					<ClubDialog show=self.show_dialog parent_link=self.link.clone()/>
-				</div>
+						{ 
+							self.generate_club_list()
+						}
+
+						{
+							match self.clubs_fetch_state {
+								FetchState::Waiting => {
+									html! {
+										<div class="club-fetch-status-msg" id="club-spinner">
+											<h2>{"Fetching clubs"}</h2>
+											<Spinner/>
+										</div>
+									}
+								},
+
+								_ => html! {
+									<>
+									</>
+								},
+							}
+						}
+
+						<Fab parent_link=self.link.clone()/>
+
+						{
+							if self.show_dialog {
+								html! {
+									<ClubDialog dialog_anim_class=String::from("new-club-dialog-anim-in") bg_anim_class=String::from("modal-bg-anim-in") show=self.show_dialog parent_link=self.link.clone()/>
+								}
+							} else {
+
+								html! {
+									
+								}
+							}
+						}
+					</div>
+				</>
 			}
 		}
 	}

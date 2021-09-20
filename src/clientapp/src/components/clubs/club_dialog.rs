@@ -23,6 +23,8 @@ pub struct ClubDialog {
 pub struct Props {
 	pub parent_link: ComponentLink<ClubView>,
 	pub show: bool,
+	pub dialog_anim_class: String,
+	pub bg_anim_class: String,
 }
 
 pub enum Msg {
@@ -78,7 +80,9 @@ impl Component for ClubDialog {
 		match msg {
 			Msg::Open => (),
 			Msg::Close => {
-				self.close();
+				self.props.dialog_anim_class = String::from("new-club-dialog-anim-out");
+				self.props.bg_anim_class = String::from("modal-bg-anim-out");
+				self.reset();
 			},
 			Msg::Ignore => (),
 			Msg::UpdateInfoState(which, value) => {
@@ -156,7 +160,7 @@ impl Component for ClubDialog {
 	fn view(&self) -> Html {
 		let close_cb = self
 			.link
-			.callback(move |_: MouseEvent| {
+			.callback( |_: MouseEvent| {
 				Msg::Close
 			});
 
@@ -170,8 +174,8 @@ impl Component for ClubDialog {
 
 		html! {
 			<div>
-				<div style={if self.props.show.clone() {"visibility: visible;"} else {"visibility: hidden;"}} id="modal-bg">
-					<div id="new-club-dialog">
+				<div class={self.props.bg_anim_class.clone()} id="modal-bg">
+					<div class={self.props.dialog_anim_class.clone()} id="new-club-dialog">
 						<div id="dialog-header">
 							<h3>{"Create new club"}</h3>
 							<button id="close-x-button" onclick=close_cb.clone()>{"X"}</button>
@@ -183,8 +187,8 @@ impl Component for ClubDialog {
 						</div>
 
 						<div id="dialog-buttons">
-							<button class="dialog-button" onclick=close_cb>{"Close"}</button>
-							<button class="dialog-button" onclick=self.link.callback(|_: MouseEvent| Msg::ValidateForm)>{"OK"}</button>
+							<button class="dialog-button" id="club-dialog-close-btn" onclick=close_cb>{"Close"}</button>
+							<button class="dialog-button" id="club-dialog-ok-btn" onclick=self.link.callback(|_: MouseEvent| Msg::ValidateForm)>{"OK"}</button>
 						</div>
 					</div>
 				</div>

@@ -34,7 +34,6 @@ impl Component for ToolbarComponent {
 		html! {
 			<div class="toolbar">
 				<img id="logo" src="./assets/saturn-logo.svg"/>
-				<img id="txt-logo" src="./assets/saturn-text-logo.PNG"/>
 				<h1>{"Hi, "} {self.props.username.clone()}</h1>
 				<a class="active" href="/">{"Home"}</a>
 				<a href="#smth">{"Something"}</a>

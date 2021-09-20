@@ -11,8 +11,8 @@ $TEXT_1_OFF_WHITE:#D2DDDE;
 /**$FONT_HEADER: "Coda", cursive;
 $FONT_BODY: 'Poppins', sans-serif;
 **/
-@import url('https://fonts.googleapis.com/css2?family=Coda&effect=anaglyph&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap%27');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;600;700&display=swap');
 
 h1, h2, h3, p, body {
     margin: 0;
@@ -20,11 +20,11 @@ h1, h2, h3, p, body {
 }
 
 h1 {
-    font-family: Coda;
+    font-family: Poppins;
 }
 
 h2 {
-    font-family: Coda;
+    font-family: Poppins;
     font-size: 30pt;
 }
 
@@ -36,6 +36,14 @@ hr {
 
 p {
     font-family: Poppins;
+}
+
+body {
+    background: linear-gradient(#2bc29f, #4C1A88);
+}
+
+html {
+    height: 100%;
 }
 
 /* <--------- LOGIN ---------> */
@@ -85,7 +93,9 @@ p {
     opacity: 0%;
 }
 
-.login-page .soft-grey-rect h1 {
+.soft-grey-rect h1 {
+    font-family: 'Open Sans';
+    font-weight: 700;
     text-align: center;
     color: #D2DDDE;
     font-size: 40pt;
@@ -93,7 +103,7 @@ p {
 }
 
 .login-page .please-login-text {
-    font-family: Poppins;
+    font-family: 'Open Sans';
     color: #D2DDDE;
     font-size: 20pt;
     text-align: center;
@@ -185,16 +195,19 @@ p {
 /* <--------- CREATE CLUB BUTTON ---------> */
 
 .club-fab button {
+    width: auto;
+    height: auto;
     position: sticky;
     text-align: center;
     vertical-align: middle;
-    margin: auto;
     border: none;
     background-color: transparent;
     font-size: 40px;
-    color: white;
+    color: #7300FF;
+    padding: 20px 20px;
+    cursor: pointer;
+    transition: color 0.3s;
 }
-
 
 #fab {
     display: flex;
@@ -207,13 +220,17 @@ p {
     height: 5em;
     width: 5em;
     border: 0;
-    background-color: purple;
+    background-color: #171738;
     border-radius: 5em;
     transition: transform 0.33s;
 }
 
 #fab:hover {
-    transform: translateY(-1em);
+    transform: translateY(-0.25em);
+}
+
+#fab:hover button {
+    color: #2bc29f;
 }
 
 #modal-bg {
@@ -230,21 +247,106 @@ p {
 }
 
 #new-club-dialog {
-    background-color: #26282C;
+    background-color: #171738;
     margin: auto;
-    top: 30em;
     padding: 20px 20px 20px 20px;
-    border: 1px solid;
-    width: 20%;
-    height: 10em;
+    min-width: 30em;
+    height: auto;
     z-index: 2;
-    border-radius: 5px;
+    border-radius: 8px;
+}
+
+.new-club-dialog-anim-in {
+    animation-name: slidein;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+.new-club-dialog-anim-out {
+    animation-name: slideout;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+.modal-bg-anim-in {
+    animation: modal-fade-in;
+    animation-duration: 0.25s;
+    animation-fill-mode: forwards;
+}
+
+.modal-bg-anim-out {
+    animation: modal-fade-out;
+    animation-duration: 0.25s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes modal-fade-in {
+    from {
+        opacity: 0%;
+    }
+
+    to {
+        opacity: 100%;
+    }
+}
+
+@keyframes modal-fade-out {
+    from {
+        opacity: 100%;
+    }
+
+    to {
+        opacity: 0%;
+        visibility: hidden;
+    }
+}
+
+@keyframes slideout {
+    from {
+        transform: translateY(0%);
+        opacity: 100%;
+    }
+
+    to {
+        transform: translateY(100%);
+        opacity: 0%;
+        visibility: hidden;
+    }
+}
+
+@keyframes slidein {
+    from {
+        transform: translateY(100%);
+        opacity: 0%;
+    }
+
+    to {
+        transform: translateY(0%);
+        opacity: 100%;
+    }
 }
 
 #dialog-content input {
     width: 100%;
     height: 2em;
     margin-bottom: 1em;
+    border: none;
+    background-color: transparent;
+    color: white;
+    border-bottom: 1px solid white;
+}
+
+#dialog-content input::placeholder {
+    font-family: 'Open Sans';
+    font-weight: 600;
+}
+
+#dialog-content input:focus {
+    outline: none;
+}
+
+#dialog-content input:focus::placeholder {
+    visibility: hidden;
 }
 
 
@@ -253,10 +355,12 @@ p {
 }
 
 #dialog-header h3 {
+    font-size: 40px;
     display: inline;
-    font-family: Coda;
     color: #D2DDDE;
     padding-bottom: 1em;
+    font-family: 'Open Sans';
+    font-weight: 600;
 }
 
 #close-x-button {
@@ -270,6 +374,7 @@ p {
     width: 1em;
     height: 1em;
     transition: color 0.5s;
+    cursor: pointer;
 }
 
 #close-x-button:hover {
@@ -279,7 +384,8 @@ p {
 .dialog-button {
     border: none;
     background-color: transparent;
-    font-family: Coda;
+    font-family: 'Open Sans';
+    font-weight: 600;
     font-size: 20px;
     height: 1em;
     width: auto;
@@ -290,23 +396,42 @@ p {
     float: right;
 }
 
+#club-dialog-close-btn:hover {
+    color: red;
+    cursor: pointer;
+}
+
+#club-dialog-ok-btn:hover {
+    color: green;
+    cursor: pointer;
+
+}
+
 /* TOOLBAR */
 
 .toolbar {
     width: 100%;
-    background-color: #26282C;
+    background-color: #171738;
     display: flex;
     flex-direction: row;   
 }
 
 .toolbar a, h1 {
-    font-family: Poppins;
+    font-family: 'Open Sans';
     color: #D2DDDE;
     text-align: center;
     padding: 14px 16px;
     font-size: 17px;
     text-decoration: none;
     vertical-align: middle;
+}
+
+.toolbar h1 {
+
+}
+
+.toolbar a {
+    font-weight: 600;
 }
 
 .toolbar a:hover {
@@ -343,16 +468,40 @@ p {
 
 
 
-
-.club-view body {
-    background-color: white;
+.club-view {
+    display: flex;
+    flex-direction: column;
 }
 
+.club-fetch-status-msg {
+    background-color: #171738;
+    padding: 1em;
+    margin: 1em;
+    border-radius: 8px;
+    align-self: center;
+    vertical-align: middle;
+    width: auto;
+    height: auto;
+}
+
+#club-load-failed h2 {
+    color: #EF626C;
+}
+
+#be-first-msg {
+    color: #2E933C;
+}
+
+/*
+Colors I really like for variants of the club card
+EF626C
+FFFD77
+*/
 .club-card {
     height: auto;
-    width: 35em;
+    width: auto;
     border-radius: 8px;
-    background-color: #26282C;
+    background-color: #171738;
     padding: 1em 1em 1em 1em;
     margin: 1em;
     display: flex;
@@ -360,8 +509,14 @@ p {
     transition: transform 0.5s;
 }
 
-.club-card p, h1 {
-    color: #D2DDDE;
+.club-card * {
+    color: #619B8A;
+    font-family: 'Open Sans';
+    font-weight: 700;
+}
+
+.club-card h1 {
+    font-size: 40px;
 }
 
 .club-card hr {
@@ -448,3 +603,77 @@ p {
     border-radius: 50%;
     padding-bottom: 1em;
 }
+
+#club-spinner {
+    align-self: center;
+    display: flex;
+    flex-direction: row;
+    color:#7300FF;
+}
+
+#club-spinner h2 {
+    margin-right: 0.25em;
+}
+
+
+
+
+
+
+
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    position: relative;
+    transform: scale(0.65);
+  }
+  
+  .cube1, .cube2 {
+    background-color: hsla(267, 100%, 50%);
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    
+    -webkit-animation: sk-cubemove 1.8s infinite ease-in-out;
+    animation: sk-cubemove 1.8s infinite ease-in-out;
+  }
+  
+  .cube2 {
+    -webkit-animation-delay: -0.9s;
+    animation-delay: -0.9s;
+  }
+  
+  @-webkit-keyframes sk-cubemove {
+    25% { -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5) }
+    50% { -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg) }
+    75% { -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5) }
+    100% { -webkit-transform: rotate(-360deg) }
+  }
+  
+  @keyframes sk-cubemove {
+    25% { 
+      transform: translateX(42px) rotate(-90deg) scale(0.5);
+      -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5);
+    } 50% { 
+      transform: translateX(42px) translateY(42px) rotate(-179deg);
+      -webkit-transform: translateX(42px) translateY(42px) rotate(-179deg);
+    } 50.1% { 
+      transform: translateX(42px) translateY(42px) rotate(-180deg);
+      -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg);
+    } 75% { 
+      transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5);
+      -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5);
+    } 100% { 
+      transform: rotate(-360deg);
+      -webkit-transform: rotate(-360deg);
+    }
+  }
+
+
+
+
+
+
