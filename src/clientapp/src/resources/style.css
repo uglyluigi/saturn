@@ -557,6 +557,16 @@ html {
     color: #2E933C;
 }
 
+#fetching-msg {
+    display: flex;
+    flex-direction: row;
+}
+
+#fetching-msg h2 {
+    color: #7300FF;
+    right: 1em;
+}
+
 /*
 Colors I really like for variants of the club card
 EF626C

@@ -403,14 +403,12 @@ impl Component for ClubView {
 
 							FetchState::Waiting => {
 								html! {
-									<>
-										<div class="club-view-msgs">
-											<div class="club-fetch-status-msg">
-												<h2>{"Fetching clubs"}</h2>
-												<Spinner/>
-											</div>
+									<div class="club-view-msgs" >
+										<div class="club-fetch-status-msg" id="fetching-msg">
+											<h2>{"Fetching clubs"}</h2>
+											<Spinner/>
 										</div>
-									</>
+									</div>
 								}
 							}
 						}
