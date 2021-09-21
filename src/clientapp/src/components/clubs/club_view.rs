@@ -95,7 +95,7 @@ impl ClubView {
 		let mut dummies = vec![];
 
 		if modu != 0 {
-			for _ in 1..3 - modu {
+			for _ in 0..3 - modu {
 				dummies.push(html!{});
 			}
 		}
