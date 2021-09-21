@@ -43,7 +43,7 @@ body {
 }
 
 html {
-    height: 100%;
+    min-height: 100%;
 }
 
 /* <--------- LOGIN ---------> */
@@ -142,12 +142,9 @@ html {
 }
 
 #google-button-container {
+    display: block;
     margin: auto;
     padding-top: 1em;
-}
-
-.g_id_signin .label {
-    font-size: 60px;
 }
 
 @keyframes drop_fade_in {
@@ -204,7 +201,7 @@ html {
     background-color: transparent;
     font-size: 40px;
     color: #7300FF;
-    padding: 20px 20px;
+    padding: 20px 40px;
     cursor: pointer;
     transition: color 0.3s;
 }
@@ -223,10 +220,71 @@ html {
     background-color: #171738;
     border-radius: 5em;
     transition: transform 0.33s;
+    box-shadow: 0.1em 0.1em 5px #7300FF, -0.1em -0.1em 5px #2bc29f;
+
+    transition: transform .5s ease;
+}
+
+.fab-reveal {
+    transform: translateX(0%);
+}
+
+.fab-conceal {
+    transform: translateX(200%);
+}
+
+@keyframes fab-gradient-shift {
+    from {
+        box-shadow: 0.1em 0.1em 5px #7300FF, -0.1em -0.1em 5px #2bc29f;
+
+    }
+
+    to {
+        box-shadow: 0.1em 0.1em 5px #2bc29f, -0.1em -0.1em 5px #7300FF;
+    }
+}
+
+@keyframes fab-gradient-shift-reverse {
+    from {
+        box-shadow: 0.1em 0.1em 5px #2bc29f, -0.1em -0.1em 5px #7300FF;
+    }
+
+    to {
+        box-shadow: 0.1em 0.1em 5px #7300FF, -0.1em -0.1em 5px #2bc29f;
+    }
+}
+
+@keyframes fab-gradient-feather {
+    from {
+        box-shadow: 0.1em 0.1em 5px #2bc29f, -0.1em -0.1em 5px #7300FF;
+    }
+
+    to {
+        box-shadow: 0.1em 0.1em 10px #2bc29f, -0.1em -0.1em 10px #7300FF;
+    }
+}
+
+@keyframes fab-gradient-feather-reverse {
+    from {
+        box-shadow: 0.1em 0.1em 10px #2bc29f, -0.1em -0.1em 10px #7300FF;
+    }
+
+    to {
+        box-shadow: 0.1em 0.1em 5px #2bc29f, -0.1em -0.1em 5px #7300FF;
+    }
 }
 
 #fab:hover {
     transform: translateY(-0.25em);
+    animation: fab-gradient-feather;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+}
+
+#fab:not(:hover) {
+    animation: fab-gradient-feather-reverse;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
 }
 
 #fab:hover button {
@@ -470,18 +528,24 @@ html {
 
 .club-view {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .club-fetch-status-msg {
     background-color: #171738;
     padding: 1em;
-    margin: 1em;
+    margin: auto;
+    margin-top: 1em;
     border-radius: 8px;
-    align-self: center;
-    vertical-align: middle;
     width: auto;
     height: auto;
+    text-align: center;
+}
+
+.club-view-msgs {
+    display: flex;
+    flex-direction: column;
 }
 
 #club-load-failed h2 {
@@ -507,10 +571,14 @@ FFFD77
     display: flex;
     flex-direction: column;
     transition: transform 0.5s;
+
+    animation-name: drop_fade_in;
+    animation-duration: .7s;
+    animation-fill-mode: forwards;
 }
 
 .club-card * {
-    color: #619B8A;
+    color: #FFFFFF;
     font-family: 'Open Sans';
     font-weight: 700;
 }
@@ -605,22 +673,15 @@ FFFD77
 }
 
 #club-spinner {
-    align-self: center;
     display: flex;
     flex-direction: row;
     color:#7300FF;
+    justify-content: center;
 }
 
 #club-spinner h2 {
-    margin-right: 0.25em;
+    margin-right: 0.50em;
 }
-
-
-
-
-
-
-
 
 .spinner {
     width: 40px;

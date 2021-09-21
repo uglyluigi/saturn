@@ -7,23 +7,19 @@ use yew::{
 	utils::document,
 	virtual_dom::VNode,
 	web_sys::{Element, Node},
-	Html,
-	Properties,
+	Html, Properties,
 };
 
 use crate::{
 	components::{
 		clubs::CreateClubFloatingActionButton as Fab,
-		core::{router::*, Toolbar},
 		coolshit::Spinner,
-		ClubCard,
-		ClubDialog,
+		core::{router::*, Toolbar},
+		ClubCard, ClubDialog,
 	},
 	tell,
 	types::*,
 };
-
-
 
 pub struct ClubView {
 	link: ComponentLink<Self>,
@@ -72,15 +68,6 @@ enum Redirect {
 use Redirect::*;
 
 impl ClubView {
-	pub fn do_thing(&self) -> Html {
-		web_sys::window().unwrap().document().unwrap().get_element_by_id("new-club-dialog").unwrap().set_class_name("cock");
-
-		html! {
-			<>
-			</>
-		}
-	}
-
 	pub fn push_task(&mut self, task: FetchTask) {
 		self.fetch_tasks.push(task);
 	}
@@ -99,34 +86,6 @@ impl ClubView {
 		if let Some(i) = index {
 			drop(self.fetch_tasks.remove(i));
 			self.clean_tasks();
-		}
-	}
-
-	fn generate_club_list(&self) -> Html {
-		if let FetchState::Done(clubs) = &self.clubs_fetch_state {
-			if clubs.len() > 0 {
-				html! {
-					{
-						for clubs.iter().map(|x| {
-							html! {
-								<ClubCard vote_count=x.member_count.clone() as i32 club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
-							}
-						})
-					}
-				}
-			} else {
-				html! {
-					<div class="club-fetch-status-msg" id="be-first-msg">
-						<h2>{ "Be the first to post your own club!" }</h2>
-					</div>
-				}
-			}
-		} else {
-			html! {
-				<div class="club-fetch-status-msg" id="club-load-failed">
-					<h2>{"Failed to load clubs!"}</h2>
-				</div>
-			}
 		}
 	}
 }
@@ -309,7 +268,9 @@ impl Component for ClubView {
 				self.user_details_fetch_state = if let Some(deet) = deets {
 					FetchState::Done(deet)
 				} else {
-					FetchState::Failed(Some(anyhow!("Failed to get user details (struct was none)")))
+					FetchState::Failed(Some(anyhow!(
+						"Failed to get user details (struct was none)"
+					)))
 				}
 			}
 
@@ -317,7 +278,9 @@ impl Component for ClubView {
 				self.auth_details_fetch_state = if let Some(deet) = deets {
 					FetchState::Done(deet)
 				} else {
-					FetchState::Failed(Some(anyhow!("Failed to get auth details (struct was none)")))
+					FetchState::Failed(Some(anyhow!(
+						"Failed to get auth details (struct was none)"
+					)))
 				}
 			}
 
@@ -325,7 +288,9 @@ impl Component for ClubView {
 				self.clubs_fetch_state = if let Some(deet) = deets {
 					FetchState::Done(deet)
 				} else {
-					FetchState::Failed(Some(anyhow!("Failed to get club details (struct was none)")))
+					FetchState::Failed(Some(anyhow!(
+						"Failed to get club details (struct was none)"
+					)))
 				}
 			}
 
@@ -357,51 +322,91 @@ impl Component for ClubView {
 				<AppRedirect route=route.clone()/>
 			}
 		} else {
-			let fab_open_cb = self.link.callback(|_: MouseEvent| Msg::ShowDialog);
+			let mut delay: f32 = 0.1;
+			let mut dummy_clubs = Vec::<VNode>::new();
+
+			for _ in 0..100 {
+				dummy_clubs.push(
+					html! {
+						<ClubCard vote_count=69 as i32 club_name=String::from("Sans Undertale") club_description="You wanna have a bad time?" organizer_name=String::from("TODO")/>
+					}
+				);
+			}
 
 			html! {
 				<>
 					<Toolbar username=self.props.first_name.clone()/>
 
-					<div class="club-view">
-						<ClubCard vote_count=0 organizer_name=String::from("Sans Undertale") club_name=String::from("Southeastern Undertale Club") club_description=String::from("The coolest club ever")/>
-
-						{ 
-							self.generate_club_list()
-						}
-
-						{
-							match self.clubs_fetch_state {
-								FetchState::Waiting => {
+					{
+						match &self.clubs_fetch_state {
+							FetchState::Done(clubs) => {
+								if clubs.len() > 0 {
 									html! {
-										<div class="club-fetch-status-msg" id="club-spinner">
-											<h2>{"Fetching clubs"}</h2>
-											<Spinner/>
-										</div>
-									}
-								},
+										{
+											for clubs.iter().map(|x| {
 
-								_ => html! {
+												html! {
+													<div style={format!("
+														animation-name: drop_fade_in;
+														animation-duration: .7s;
+														animation-fill-mode: forwards;
+														animation-delay: {}s,
+													", {delay += 0.1; delay})}>
+														<ClubCard vote_count=x.member_count.clone() as i32 club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
+													</div>
+												}
+											})
+										}
+									}
+								} else {
+									html! {
+										<div class="club-view-msgs">
+											<div class="club-fetch-status-msg">
+												<div class="club-fetch-status-msg" id="be-first-msg">
+												<h2>{ "Be the first to post your own club!" }</h2>
+												</div>
+											</div>
+										</div>
+
+									}
+								}
+							},
+
+							FetchState::Failed(maybe_msg) => {
+								html! {
+									<div class="club-view-msgs">
+										<div class="club-fetch-status-msg">
+											<div id="club-load-failed">
+												<h2>{"Failed to get clubs."}</h2>
+											</div>
+										</div>
+									</div>
+
+								}
+							},
+
+							FetchState::Waiting => {
+								html! {
 									<>
+										<h2>{"Fetching clubs"}</h2>
+										<Spinner/>
 									</>
-								},
+								}
 							}
 						}
+					}
+
+
+
+
+
+					<div class="club-view">
+						
+
+
 
 						<Fab parent_link=self.link.clone()/>
-
-						{
-							if self.show_dialog {
-								html! {
-									<ClubDialog dialog_anim_class=String::from("new-club-dialog-anim-in") bg_anim_class=String::from("modal-bg-anim-in") show=self.show_dialog parent_link=self.link.clone()/>
-								}
-							} else {
-
-								html! {
-									
-								}
-							}
-						}
+						<ClubDialog dialog_anim_class=String::from("new-club-dialog-anim-in") bg_anim_class=String::from("modal-bg-anim-in") show=self.show_dialog parent_link=self.link.clone()/>
 					</div>
 				</>
 			}

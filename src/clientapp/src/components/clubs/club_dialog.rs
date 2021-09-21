@@ -1,10 +1,11 @@
-use yew::format::Json;
-use yew::services::FetchService;
-use yew::services::fetch::{FetchTask, Request, Response, StatusCode};
-use yew::{prelude::*, Html, ShouldRender};
+use anyhow::anyhow;
+use js_sys::Function;
 use serde_json::json;
 use serde_json::Value;
-use anyhow::anyhow;
+use yew::format::Json;
+use yew::services::fetch::{FetchTask, Request, Response, StatusCode};
+use yew::services::FetchService;
+use yew::{prelude::*, Html, ShouldRender};
 
 use crate::components::ClubView;
 use crate::tell;
@@ -40,8 +41,10 @@ pub enum Msg {
 
 pub enum WhichTextField {
 	TheNameOne,
-	TheBodyOne
+	TheBodyOne,
 }
+
+fn on_scroll(e: MouseEvent) {}
 
 impl ClubDialog {
 	fn close(&self) {
@@ -72,7 +75,7 @@ impl Component for ClubDialog {
 			club_body_field_contents: None,
 			props,
 			post_task: None,
-			post_task_state: FetchState::Waiting
+			post_task_state: FetchState::Waiting,
 		}
 	}
 
@@ -83,64 +86,62 @@ impl Component for ClubDialog {
 				self.props.dialog_anim_class = String::from("new-club-dialog-anim-out");
 				self.props.bg_anim_class = String::from("modal-bg-anim-out");
 				self.reset();
-			},
+			}
 			Msg::Ignore => (),
-			Msg::UpdateInfoState(which, value) => {
-				match which {
-					WhichTextField::TheBodyOne => {
-						self.club_body_field_contents = if value.len() > 0 {
-							Some(value)
-						} else {
-							None
-						}
-					},
+			Msg::UpdateInfoState(which, value) => match which {
+				WhichTextField::TheBodyOne => {
+					self.club_body_field_contents = if value.len() > 0 { Some(value) } else { None }
+				}
 
-					WhichTextField::TheNameOne => {
-						self.club_name_field_contents = if value.len() > 0 {
-							Some(value)
-						} else {
-							None
-						}
-					}
+				WhichTextField::TheNameOne => {
+					self.club_name_field_contents = if value.len() > 0 { Some(value) } else { None }
 				}
 			},
 
 			Msg::ValidateForm => {
 				// TODO
 				self.link.send_message(Msg::PostClub);
-			},
+			}
 
 			Msg::PostClub => {
 				self.post_task_state = FetchState::Waiting;
-				
-				if let (Some(name), Some(body)) = (self.club_name_field_contents.clone(), self.club_body_field_contents.clone()) {
-					let json = json!({"name": Value::String(name), "body": Value::String(body)});
-					let request = Request::post("/api/clubs/create").body(Json(&json)).unwrap();
 
-					let response_callback = self.link.callback(|response: Response<Json<Result<(), anyhow::Error>>>| {
-						match response.status() {
-							StatusCode::OK => {
-								tell!("Successfully posted club");
-								Msg::PostClubDone
-							},
-	
-							_ => {
-								tell!("Bad status receieved: {:?}", response.status());
-								//Error stuff
-								Msg::Ignore
+				if let (Some(name), Some(body)) = (
+					self.club_name_field_contents.clone(),
+					self.club_body_field_contents.clone(),
+				) {
+					let json = json!({"name": Value::String(name), "body": Value::String(body)});
+					let request = Request::post("/api/clubs/create")
+						.body(Json(&json))
+						.unwrap();
+
+					let response_callback = self.link.callback(
+						|response: Response<Json<Result<(), anyhow::Error>>>| {
+							match response.status() {
+								StatusCode::OK => {
+									tell!("Successfully posted club");
+									Msg::PostClubDone
+								}
+
+								_ => {
+									tell!("Bad status receieved: {:?}", response.status());
+									//Error stuff
+									Msg::Ignore
+								}
 							}
-						}
-					});
+						},
+					);
 
 					match FetchService::fetch(request, response_callback) {
 						Ok(task) => self.post_task = Some(task),
 						Err(err) => {
 							tell!("Failed to post club: {}", err);
-							self.post_task_state = FetchState::Failed(Some(anyhow!(format!("{:?}", err))));
+							self.post_task_state =
+								FetchState::Failed(Some(anyhow!(format!("{:?}", err))));
 						}
 					}
 				}
-			},
+			}
 
 			Msg::PostClubDone => {
 				tell!("Post club done!");
@@ -158,11 +159,7 @@ impl Component for ClubDialog {
 	}
 
 	fn view(&self) -> Html {
-		let close_cb = self
-			.link
-			.callback( |_: MouseEvent| {
-				Msg::Close
-			});
+		let close_cb = self.link.callback(|_: MouseEvent| Msg::Close);
 
 		let club_name_field_callback = self.link.callback(|data: yew::html::InputData| {
 			Msg::UpdateInfoState(WhichTextField::TheNameOne, data.value)
@@ -172,27 +169,61 @@ impl Component for ClubDialog {
 			Msg::UpdateInfoState(WhichTextField::TheBodyOne, data.value)
 		});
 
-		html! {
-			<div>
-				<div class={self.props.bg_anim_class.clone()} id="modal-bg">
-					<div class={self.props.dialog_anim_class.clone()} id="new-club-dialog">
-						<div id="dialog-header">
-							<h3>{"Create new club"}</h3>
-							<button id="close-x-button" onclick=close_cb.clone()>{"X"}</button>
-						</div>
+		// Hook that listens to scroll events and hides the fab after scrolling down a little
+		yew::utils::window()
+			.document()
+			.unwrap()
+			.set_onscroll(Some(&Function::new_with_args(
+				"event",
+				stringify! {
+					console.log(window.scrollY);
+					let scroll = window.scrollY;
+					let fab = document.getElementById("fab");
 
-						<div id="dialog-content">
-							<input type="text" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
-							<input type="text" oninput=club_body_field_callback value=self.club_body_field_contents.clone() placeholder="Club Body"/>
-						</div>
+					const UPPER_BOUND = 150; // height in px (?) of how far the user has to scroll down to hide the fab
+					const reveal = "fab-reveal";
+					const conceal = "fab-conceal";
 
-						<div id="dialog-buttons">
-							<button class="dialog-button" id="club-dialog-close-btn" onclick=close_cb>{"Close"}</button>
-							<button class="dialog-button" id="club-dialog-ok-btn" onclick=self.link.callback(|_: MouseEvent| Msg::ValidateForm)>{"OK"}</button>
+					if (scroll > 0 && scroll < 150) {
+						fab.classList.remove(conceal);
+						fab.classList.add(reveal);
+						console.log(fab.classList);
+					} else if (scroll > UPPER_BOUND) {
+						fab.classList.remove(reveal);
+						fab.classList.add(conceal);
+						console.log(fab.classList);
+					}
+				},
+			)));
+
+		if self.props.show {
+			html! {
+				<div>
+					<div class={self.props.bg_anim_class.clone()} id="modal-bg">
+						<div class={self.props.dialog_anim_class.clone()} id="new-club-dialog">
+							<div id="dialog-header">
+								<h3>{"Create new club"}</h3>
+								<button id="close-x-button" onclick=close_cb.clone()>{"X"}</button>
+							</div>
+
+							<div id="dialog-content">
+								<input type="text" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
+								<input type="text" oninput=club_body_field_callback value=self.club_body_field_contents.clone() placeholder="Club Body"/>
+							</div>
+
+							<div id="dialog-buttons">
+								<button class="dialog-button" id="club-dialog-close-btn" onclick=close_cb>{"Close"}</button>
+								<button class="dialog-button" id="club-dialog-ok-btn" onclick=self.link.callback(|_: MouseEvent| Msg::ValidateForm)>{"OK"}</button>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
+			}
+		} else {
+			html! {
+				<>
+				</>
+			}
 		}
 	}
 }
