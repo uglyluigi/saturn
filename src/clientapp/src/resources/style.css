@@ -571,10 +571,6 @@ FFFD77
     display: flex;
     flex-direction: column;
     transition: transform 0.5s;
-
-    animation-name: drop_fade_in;
-    animation-duration: .7s;
-    animation-fill-mode: forwards;
 }
 
 .club-card * {

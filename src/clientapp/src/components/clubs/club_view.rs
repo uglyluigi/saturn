@@ -342,21 +342,24 @@ impl Component for ClubView {
 							FetchState::Done(clubs) => {
 								if clubs.len() > 0 {
 									html! {
-										{
-											for clubs.iter().map(|x| {
+										<div class="club-view">
+											{
+												for clubs.iter().map(|x| {
 
-												html! {
-													<div style={format!("
-														animation-name: drop_fade_in;
-														animation-duration: .7s;
-														animation-fill-mode: forwards;
-														animation-delay: {}s,
-													", {delay += 0.1; delay})}>
-														<ClubCard vote_count=x.member_count.clone() as i32 club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
-													</div>
-												}
-											})
-										}
+													html! {
+														<div style={format!("
+															animation-name: drop_fade_in;
+															animation-duration: .7s;
+															animation-fill-mode: forwards;
+															animation-delay: {}s,
+														", {delay += 0.1; delay})}>
+															<ClubCard vote_count=x.member_count.clone() as i32 club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
+														</div>
+													}
+												})
+											}
+										</div>
+										
 									}
 								} else {
 									html! {
@@ -396,18 +399,8 @@ impl Component for ClubView {
 						}
 					}
 
-
-
-
-
-					<div class="club-view">
-						
-
-
-
-						<Fab parent_link=self.link.clone()/>
-						<ClubDialog dialog_anim_class=String::from("new-club-dialog-anim-in") bg_anim_class=String::from("modal-bg-anim-in") show=self.show_dialog parent_link=self.link.clone()/>
-					</div>
+					<Fab parent_link=self.link.clone()/>
+					<ClubDialog dialog_anim_class=String::from("new-club-dialog-anim-in") bg_anim_class=String::from("modal-bg-anim-in") show=self.show_dialog parent_link=self.link.clone()/>
 				</>
 			}
 		}
