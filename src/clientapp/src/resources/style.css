@@ -743,4 +743,12 @@ FFFD77
         flex-direction: column;
         transition: transform 0.5s;
     }
+
+    
+    .club-view {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
 }
