@@ -384,7 +384,6 @@ impl Component for ClubView {
 											</div>
 										</div>
 									</div>
-
 								}
 							},
 
@@ -392,11 +391,11 @@ impl Component for ClubView {
 								html! {
 									<>
 										<div class="club-view-msgs">
-										<div class="club-fetch-status-msg">
-											<h2>{"Fetching clubs"}</h2>
-											<Spinner/>
+											<div class="club-fetch-status-msg">
+												<h2>{"Fetching clubs"}</h2>
+												<Spinner/>
+											</div>
 										</div>
-									</div>
 									</>
 								}
 							}
