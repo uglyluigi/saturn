@@ -88,6 +88,43 @@ impl ClubView {
 			self.clean_tasks();
 		}
 	}
+
+	pub fn make_cards(vec: &Vec<ClubDetails>) -> Html {
+		
+		let modu = vec.len() % 3;
+		let mut dummies = vec![];
+
+		if modu != 0 {
+			for _ in 1..3 - modu {
+				dummies.push(html!{});
+			}
+		}
+
+		html! {
+			<>
+				<>
+					{
+						for vec.iter().map(|x| {
+
+							html! {
+								<ClubCard vote_count=x.member_count.clone() as i32 club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
+							}
+						})
+					}
+				</>
+				
+				<>
+					{
+						for dummies.iter().map(|_| {
+							html! {
+								<div class="club-card" style="visibility: hidden;"></div>
+							}
+						})
+					}
+				</>
+			</>
+		}
+	}
 }
 
 impl Component for ClubView {
@@ -322,17 +359,6 @@ impl Component for ClubView {
 				<AppRedirect route=route.clone()/>
 			}
 		} else {
-			let mut delay: f32 = 0.1;
-			let mut dummy_clubs = Vec::<VNode>::new();
-
-			for _ in 0..100 {
-				dummy_clubs.push(
-					html! {
-						<ClubCard vote_count=69 as i32 club_name=String::from("Sans Undertale") club_description="You wanna have a bad time?" organizer_name=String::from("TODO")/>
-					}
-				);
-			}
-
 			html! {
 				<>
 					<Toolbar username=self.props.first_name.clone()/>
@@ -344,15 +370,9 @@ impl Component for ClubView {
 									html! {
 										<div class="club-view">
 											{
-												for clubs.iter().map(|x| {
-
-													html! {
-														<ClubCard vote_count=x.member_count.clone() as i32 club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
-													}
-												})
+												ClubView::make_cards(clubs)
 											}
 										</div>
-										
 									}
 								} else {
 									html! {
