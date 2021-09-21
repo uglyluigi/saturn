@@ -562,32 +562,16 @@ Colors I really like for variants of the club card
 EF626C
 FFFD77
 */
-@media only screen and (max-width: 2000px) {
-    .club-card {
-        height: auto;
-        width: 30%;
-        border-radius: 8px;
-        background-color: #171738;
-        padding: 1em 1em 1em 1em;
-        margin: 1em;
-        display: flex;
-        flex-direction: column;
-        transition: transform 0.5s;
-    }
-}
-
-@media only screen and (max-width: 20em) {
-    .club-card {
-        height: auto;
-        width: 50%;
-        border-radius: 8px;
-        background-color: #171738;
-        padding: 1em 1em 1em 1em;
-        margin: 1em;
-        display: flex;
-        flex-direction: column;
-        transition: transform 0.5s;
-    }
+.club-card {
+    height: auto;
+    width: 30%;
+    border-radius: 8px;
+    background-color: #171738;
+    padding: 1em 1em 1em 1em;
+    margin: 1em;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.5s;
 }
 
 .club-card * {
@@ -746,8 +730,16 @@ FFFD77
     }
   }
 
-
-
-
-
-
+@media only screen and (max-width: 1200em) {
+    .club-card {
+        height: auto;
+        width: 50%;
+        border-radius: 8px;
+        background-color: #171738;
+        padding: 1em 1em 1em 1em;
+        margin: 1em;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.5s;
+    }
+}
