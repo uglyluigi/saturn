@@ -730,7 +730,7 @@ FFFD77
     }
   }
 
-@media only screen and (max-width: 1200em) {
+@media only screen and (max-width: 1200px) {
     .club-card {
         height: auto;
         width: 50%;
