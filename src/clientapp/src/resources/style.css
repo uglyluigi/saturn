@@ -530,6 +530,8 @@ html {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    flex-basis: 33%;
+
 }
 
 .club-fetch-status-msg {
@@ -562,7 +564,6 @@ EF626C
 FFFD77
 */
 .club-card {
-    flex-basis: 33%;
     height: auto;
     width: auto;
     max-width: 100%;
