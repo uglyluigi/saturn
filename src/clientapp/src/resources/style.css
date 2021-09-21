@@ -733,7 +733,7 @@ FFFD77
 @media only screen and (max-width: 1930px) {
     .club-card {
         height: auto;
-        min-width: 45%;
+        min-width: 520px;
         height: 480px;
         border-radius: 8px;
         background-color: #171738;
