@@ -734,7 +734,7 @@ FFFD77
     .club-card {
         height: auto;
         width: 45%;
-        min-width: 300px;
+        min-width: 100px;
         height: 480px;
         border-radius: 8px;
         background-color: #171738;
