@@ -564,7 +564,7 @@ FFFD77
 */
 .club-card {
     height: auto;
-    width: 30%;
+    min-width: 30%;
     border-radius: 8px;
     background-color: #171738;
     padding: 1em 1em 1em 1em;
@@ -730,14 +730,15 @@ FFFD77
     }
   }
 
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1930px) {
     .club-card {
         height: auto;
-        width: 45%;
+        min-width: 45%;
+        height: 480px;
         border-radius: 8px;
         background-color: #171738;
         padding: 1em 1em 1em 1em;
-        margin: auto;
+        margin: 1em;
         display: flex;
         flex-direction: column;
         transition: transform 0.5s;
