@@ -564,7 +564,7 @@ FFFD77
 */
 .club-card {
     height: auto;
-    min-width: 30%;
+    width: 30%;
     border-radius: 8px;
     background-color: #171738;
     padding: 1em 1em 1em 1em;
