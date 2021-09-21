@@ -347,14 +347,7 @@ impl Component for ClubView {
 												for clubs.iter().map(|x| {
 
 													html! {
-														<div style={format!("
-															animation-name: drop_fade_in;
-															animation-duration: .7s;
-															animation-fill-mode: forwards;
-															animation-delay: {}s,
-														", {delay += 0.1; delay})}>
-															<ClubCard vote_count=x.member_count.clone() as i32 club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
-														</div>
+														<ClubCard vote_count=x.member_count.clone() as i32 club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
 													}
 												})
 											}
@@ -384,6 +377,7 @@ impl Component for ClubView {
 											</div>
 										</div>
 									</div>
+
 								}
 							},
 
