@@ -562,6 +562,7 @@ EF626C
 FFFD77
 */
 .club-card {
+    flex-basis: 33%;
     height: auto;
     width: auto;
     max-width: 100%;
