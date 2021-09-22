@@ -114,6 +114,12 @@ impl Component for Home {
 			self.normal_view()
 		}
 	}
+
+	fn rendered(&mut self, first: bool) {
+		if first {
+			self.link.send_message(Msg::FetchUserInfo);
+		}
+	}
 }
 
 impl Home {
@@ -124,8 +130,6 @@ impl Home {
 	}
 
 	fn normal_view(&self) -> Html {
-		self.link.send_message(Msg::FetchUserInfo);
-
 		match &self.fetch_state {
 			FetchState::Waiting => html! {
 				<h1> {"Waiting..."} </h1>
