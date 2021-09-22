@@ -92,7 +92,7 @@ impl DummyData {
         for i in 0..20 {
             details.push(ClubDetails {
                 id: i,
-                name: get_name(),
+                name: get_club_name(),
                 body: get_body(),
                 member_count: get_rand(0, 15),
                 publish_date: DateTime::parse_from_rfc2822("Tue, 1 Jul 2003 10:52:37 +0200").unwrap().into(),
