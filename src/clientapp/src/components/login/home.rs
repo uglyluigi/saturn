@@ -124,6 +124,8 @@ impl Home {
 	}
 
 	fn normal_view(&self) -> Html {
+		self.link.send_message(Msg::FetchUserInfo);
+
 		match &self.fetch_state {
 			FetchState::Waiting => html! {
 				<h1> {"Waiting..."} </h1>
