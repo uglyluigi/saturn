@@ -8,10 +8,12 @@ pub struct ClubCard {
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {
-	pub vote_count: i32,
+	pub member_count: i32,
 	pub club_name: String,
 	pub club_description: String,
 	pub organizer_name: String,
+	#[prop_or(String::from("./assets/sans.jpg"))]
+	pub organizer_pfp_url: String,
 }
 
 pub enum Msg {
@@ -60,18 +62,17 @@ impl Component for ClubCard {
 				<hr/>
 				<div class="club-card-body">
 					<div id="left-col">
-						<h2>{self.props.vote_count.clone()} {" votes"}</h2>
+						<h2>{self.props.member_count.clone()} {" members"}</h2>
 					</div>
 
 					<div id="right-col">
-						<img src="./assets/sans.jpg"/>
+						<img src={self.props.organizer_pfp_url.clone()}/>
 						<p>{"Organizer"}</p>
 						<h2>{self.props.organizer_name.clone()}</h2>
 					</div>
 				</div>
 				<div class="club-card-action-bar">
 					<button onclick=callback>{self.like_button_char.clone()}</button>
-					<button>{"😂🍆👊💦😫"}</button>
 				</div>
 			</div>
 		}

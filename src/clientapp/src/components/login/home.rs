@@ -9,6 +9,7 @@ use crate::{
 	components::{core::*, ClubView},
 	tell,
 	types::*,
+	flags::*,
 };
 
 pub enum Msg {
@@ -107,12 +108,8 @@ impl Component for Home {
 	}
 
 	fn view(&self) -> Html {
-		let THIS_SHOULDNT_BE_TRUE = true;
-
-		if THIS_SHOULDNT_BE_TRUE == true {
-			html! {
-				<ClubView first_name=String::from("DEBUG") last_name=String::from("GUY")/>
-			}
+		if *IS_DEBUG_MODE {
+			self.debug_view()
 		} else {
 			self.normal_view()
 		}
@@ -120,6 +117,12 @@ impl Component for Home {
 }
 
 impl Home {
+	fn debug_view(&self) -> Html {
+		html! {
+			<ClubView first_name=String::from("Adrian") last_name=String::from("Brody")/>
+		}
+	}
+
 	fn normal_view(&self) -> Html {
 		match &self.fetch_state {
 			FetchState::Waiting => html! {

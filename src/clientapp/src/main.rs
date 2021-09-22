@@ -1,6 +1,7 @@
 use yew::prelude::*;
 mod components;
 mod types;
+mod flags;
 use components::{
 	coolshit::ThreeJSViewport,
 	core::{router::*, NotFound},
@@ -68,5 +69,14 @@ impl Model {
 }
 
 fn main() {
+	match yew::utils::host() {
+		Ok(host) => {
+			if host.starts_with("localhost") {
+				tell!("Starting UI in test mode");
+			}
+		},
+		Err(err) => tell!("Error getting host: {}", err),
+	}
+
 	yew::start_app::<Model>();
 }

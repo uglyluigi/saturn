@@ -19,6 +19,7 @@ use crate::{
 	},
 	tell,
 	types::*,
+	flags::*,
 };
 
 pub struct ClubView {
@@ -90,39 +91,82 @@ impl ClubView {
 	}
 
 	pub fn make_cards(vec: &Vec<ClubDetails>) -> Html {
-		
-		let modu = vec.len() % 3;
-		let mut dummies = vec![];
-
-		if modu != 0 {
-			for _ in 0..3 - modu {
-				dummies.push(html!{});
-			}
-		}
-
 		html! {
 			<>
-				<>
-					{
-						for vec.iter().map(|x| {
-
-							html! {
-								<ClubCard vote_count=x.member_count.clone() as i32 club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
-							}
-						})
-					}
-				</>
-				
-				<>
-					{
-						for dummies.iter().map(|_| {
-							html! {
-								<div class="club-card" style="visibility: hidden;"></div>
-							}
-						})
-					}
-				</>
+				{
+					for vec.iter().map(|x| {
+						html! {
+							<ClubCard member_count=x.member_count.clone() as i32 club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
+						}
+					})
+				}
 			</>
+		}
+	}
+
+	pub fn normal_view(&self) -> Html {
+		match &self.clubs_fetch_state {
+			FetchState::Done(clubs) => {
+				if clubs.len() > 0 {
+					html! {
+						<div class="club-view">
+							{
+								ClubView::make_cards(clubs)
+							}
+						</div>
+					}
+				} else {
+					html! {
+						<div class="club-view-msgs">
+							<div class="club-fetch-status-msg">
+								<div class="club-fetch-status-msg" id="be-first-msg">
+								<h2>{ "Be the first to post your own club!" }</h2>
+								</div>
+							</div>
+						</div>
+
+					}
+				}
+			},
+
+			FetchState::Failed(maybe_msg) => {
+				html! {
+					<div class="club-view-msgs">
+						<div class="club-fetch-status-msg">
+							<div id="club-load-failed">
+								<h2>{"Failed to get clubs."}</h2>
+							</div>
+						</div>
+					</div>
+
+				}
+			},
+
+			FetchState::Waiting => {
+				html! {
+					<div class="club-view-msgs" >
+						<div class="club-fetch-status-msg" id="fetching-msg">
+							<h2>{"Fetching clubs"}</h2>
+							<Spinner/>
+						</div>
+					</div>
+				}
+			}
+		}
+	}
+
+	pub fn debug_view(&self) -> Html {
+		// Make fake cards
+		use crate::components::clubs::dummy_data::DummyData;
+
+		let fake_info = DummyData::new();
+
+		html! {
+			for fake_info.club_details.iter().map(|x| {
+				html! {
+					<ClubCard member_count=x.member_count as i32 club_name=x.name.clone() club_description=x.body.clone() organizer_name=format!("{} {}", x.head_moderator.first_name, x.head_moderator.last_name) organizer_pfp_url=x.head_moderator.picture.clone()/>
+				}
+			})
 		}
 	}
 }
@@ -363,56 +407,15 @@ impl Component for ClubView {
 				<>
 					<Toolbar username=self.props.first_name.clone()/>
 
-					{
-						match &self.clubs_fetch_state {
-							FetchState::Done(clubs) => {
-								if clubs.len() > 0 {
-									html! {
-										<div class="club-view">
-											{
-												ClubView::make_cards(clubs)
-											}
-										</div>
-									}
-								} else {
-									html! {
-										<div class="club-view-msgs">
-											<div class="club-fetch-status-msg">
-												<div class="club-fetch-status-msg" id="be-first-msg">
-												<h2>{ "Be the first to post your own club!" }</h2>
-												</div>
-											</div>
-										</div>
-
-									}
-								}
-							},
-
-							FetchState::Failed(maybe_msg) => {
-								html! {
-									<div class="club-view-msgs">
-										<div class="club-fetch-status-msg">
-											<div id="club-load-failed">
-												<h2>{"Failed to get clubs."}</h2>
-											</div>
-										</div>
-									</div>
-
-								}
-							},
-
-							FetchState::Waiting => {
-								html! {
-									<div class="club-view-msgs" >
-										<div class="club-fetch-status-msg" id="fetching-msg">
-											<h2>{"Fetching clubs"}</h2>
-											<Spinner/>
-										</div>
-									</div>
-								}
+					<div class="club-view">
+						{
+							if *IS_DEBUG_MODE {
+								self.debug_view()
+							} else {
+								self.normal_view()
 							}
 						}
-					}
+					</div>
 
 					<Fab parent_link=self.link.clone()/>
 					<ClubDialog dialog_anim_class=String::from("new-club-dialog-anim-in") bg_anim_class=String::from("modal-bg-anim-in") show=self.show_dialog parent_link=self.link.clone()/>

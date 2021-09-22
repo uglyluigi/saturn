@@ -12,6 +12,9 @@ yew-router = "0.15.0"
 anyhow = "1.0.43"
 serde = "1.0.129"
 serde_json = "*"
+lazy_static = "*"
+rand = "*"
+getrandom = { version = "0.2", features = ["js"] }
 
 [dependencies.chrono]
 version = "*"
