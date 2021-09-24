@@ -97,7 +97,7 @@ impl ClubView {
 				{
 					for vec.iter().map(|x| {
 						html! {
-							<ClubCard id=x.id show_delete_button={x.is_moderator != "false"}  parent_link=Mlk::new(self.link.clone()) member_count=x.member_count club_name=x.name.clone() club_description=x.body.clone() organizer_name=format!("{} {}", x.head_moderator.first_name, x.head_moderator.last_name) organizer_pfp_url=x.head_moderator.picture.clone()/>
+							<ClubCard id=x.id show_delete_button={x.is_moderator != "false"} parent_link=Mlk::new(self.link.clone()) member_count=x.member_count club_name=x.name.clone() club_description=x.body.clone() organizer_name=format!("{} {}", x.head_moderator.first_name, x.head_moderator.last_name) organizer_pfp_url=x.head_moderator.picture.clone()/>
 						}
 					})
 				}

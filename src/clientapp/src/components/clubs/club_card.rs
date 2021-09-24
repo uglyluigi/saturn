@@ -13,6 +13,9 @@ pub struct ClubCard {
 	delete_button_char: char,
 	delete_fetch_state: Option<FetchState<()>>,
 	delete_fetch_task: Option<FetchTask>,
+
+	join_fetch_state: Option<FetchState<()>>,
+	join_fetch_task: Option<FetchTask>,
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -33,6 +36,25 @@ pub enum Msg {
 	ToggleLikeButton,
 	Delet,
 	DoneDelet,
+
+	Join,
+	DoneJoin,
+}
+
+impl ClubCard {
+	pub fn delete_btn(&self) -> Html {
+		let delete = self.link.callback(|_: MouseEvent| Msg::Delet);
+
+		if self.props.show_delete_button {
+			html! {
+				<button onclick=delete>{self.delete_button_char.clone()}</button>
+			}
+		} else {
+			html! {
+				<></>
+			}
+		}
+	}
 }
 
 impl Component for ClubCard {
@@ -48,6 +70,8 @@ impl Component for ClubCard {
 			delete_button_char: '❌',
 			delete_fetch_state: None,
 			delete_fetch_task: None,
+			join_fetch_state: None,
+			join_fetch_task: None,
 		}
 	}
 
@@ -100,6 +124,14 @@ impl Component for ClubCard {
 				self.delete_fetch_state = Some(FetchState::Done(()));
 				self.delete_fetch_task = None;
 				self.props.parent_link.unwrap().send_message(crate::components::club_view::Msg::GetClubDetails(None));
+			},
+
+			Msg::Join => {
+
+			},
+
+			Msg::DoneJoin => {
+				
 			}
 		}
 
@@ -112,7 +144,6 @@ impl Component for ClubCard {
 
 	fn view(&self) -> Html {
 		let like = self.link.callback(|_: MouseEvent| Msg::ToggleLikeButton);
-		let delete = self.link.callback(|_: MouseEvent| Msg::Delet);
 
 		html! {
 			<div class="club-card">
@@ -138,20 +169,17 @@ impl Component for ClubCard {
 						if let Some(state) = &self.delete_fetch_state {
 							match state {
 								FetchState::Done(_) => {
-									html! {
-
-									}
+									self.delete_btn()
 								},
+
 								_ => {
 									html! {
-										<button disabled=true>{"..."}</button>
+										<button class="loader" disabled=true>{"..."}</button>
 									}
 								}
 							}
 						} else {
-							html! {
-								<button onclick=delete>{self.delete_button_char.clone()}</button>
-							}
+							self.delete_btn()
 						}
 					}
 				</div>
