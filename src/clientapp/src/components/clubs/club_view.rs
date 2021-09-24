@@ -9,6 +9,7 @@ use yew::{
 	web_sys::{Element, Node},
 	Html, Properties,
 };
+use js_sys::Function;
 
 use crate::{
 	components::{
@@ -90,13 +91,13 @@ impl ClubView {
 		}
 	}
 
-	pub fn make_cards(vec: &Vec<ClubDetails>) -> Html {
+	pub fn make_cards(&self, vec: &Vec<ClubDetails>) -> Html {
 		html! {
 			<>
 				{
 					for vec.iter().map(|x| {
 						html! {
-							<ClubCard member_count=x.member_count.clone() as i32 club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
+							<ClubCard id=x.id parent_link=crate::types::Mlk::new(self.link.clone()) member_count=x.member_count club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
 						}
 					})
 				}
@@ -111,7 +112,7 @@ impl ClubView {
 					html! {
 						<div class="club-view">
 							{
-								ClubView::make_cards(clubs)
+								self.make_cards(clubs)
 							}
 						</div>
 					}
@@ -164,7 +165,7 @@ impl ClubView {
 		html! {
 			for fake_info.club_details.iter().map(|x| {
 				html! {
-					<ClubCard member_count=x.member_count as i32 club_name=x.name.clone() club_description=x.body.clone() organizer_name=format!("{} {}", x.head_moderator.first_name, x.head_moderator.last_name) organizer_pfp_url=x.head_moderator.picture.clone()/>
+					<ClubCard id=x.id parent_link=Mlk::new(self.link.clone()) member_count=x.member_count club_name=x.name.clone() club_description=x.body.clone() organizer_name=format!("{} {}", x.head_moderator.first_name, x.head_moderator.last_name) organizer_pfp_url=x.head_moderator.picture.clone()/>
 				}
 			})
 		}
@@ -398,6 +399,34 @@ impl Component for ClubView {
 	}
 
 	fn view(&self) -> Html {
+		// Hook that listens to scroll events and hides the fab after scrolling down a little
+		yew::utils::window()
+			.set_onscroll(Some(&Function::new_with_args(
+				"event",
+				stringify! {
+					let scroll = window.scrollY;
+					let fab = document.getElementById("fab");
+
+					const UPPER_BOUND = 150; // height in px (?) of how far the user has to scroll down to hide the fab
+					const reveal = "fab-reveal";
+					const conceal = "fab-conceal";
+
+					if (scroll > 0 && scroll < 150) {
+						fab.classList.remove(conceal);
+						fab.classList.add(reveal);
+					} else if (scroll > UPPER_BOUND) {
+						fab.classList.remove(reveal);
+						fab.classList.add(conceal);
+					}
+				},
+			)));
+			
+		yew::utils::window()
+			.set_onresize(Some(&Function::new_no_args(
+				stringify! {
+					// todo
+				})));
+		
 		if let Yes(route) = &self.redirect {
 			html! {
 				<AppRedirect route=route.clone()/>

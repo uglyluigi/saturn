@@ -58,3 +58,43 @@ pub enum FetchState<T> {
 	Done(T),
 	Failed(Option<anyhow::Error>),
 }
+
+// Wrapper type for components whose properties must derive PartialEq but must also
+// store a ComponentLink to its parent. PartialEq is derived for props that may
+// change; it stands to reason that the ComponentLink's state will not "change" in
+// a way that should necessitate re-rendering the page at any point, so eq will
+// always say that any PartialEqDummy<T> == PartialEqDummy<T>.
+
+pub struct PartialEqDummy<T> {
+	t: T,
+}
+
+impl<T> PartialEqDummy<T> {
+	pub fn new(t: T) -> Self {
+		Self {
+			t
+		}
+	}
+
+	pub fn unwrap(&self) -> &T {
+		&self.t
+	}
+}
+
+use yew::ComponentLink;
+use crate::components::ClubView;
+
+impl<T> PartialEq for PartialEqDummy<T> {
+	fn eq(&self, _: &PartialEqDummy<T>) -> bool {
+		true
+	}
+}
+
+impl<T: Clone> Clone for PartialEqDummy<T> {
+	fn clone(&self) -> Self { 
+		PartialEqDummy::new(self.t.clone())
+	}
+}
+
+// All PartialEqDummy<T>'s are created equal (to other PartialEqDummy<T>'s)
+pub type Mlk<T> = PartialEqDummy<T>;

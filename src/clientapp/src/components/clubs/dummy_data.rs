@@ -45,17 +45,14 @@ lazy_static! {
 			"Ouran High School Host Club",
 			"Billy Club",
 			"Tentacle Enthusiasts",
-			"Seedless Watermelons Against Catholics",
 			"B.U.R.P.",
 			"Bring Us The Beef",
-			"Catholics Against Seedless Watermelons",
 			"Bring back the red stick that used to be in the pizza lunchables",
 			"Ice Cream Enjoyers",
 			"People People",
 			"The International Association of Hot Doggers",
 			"Cool Guys",
 			"Nintendo Fans",
-			"Nintendo Fans (Non-Smoking)",
     ];
 }
 

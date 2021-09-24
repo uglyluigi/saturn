@@ -1,23 +1,35 @@
 use yew::{prelude::*, Properties};
+use crate::types::*;
+use crate::components::ClubView;
+use crate::tell;
+use yew::services::fetch::{FetchService, FetchTask, Request, Response, StatusCode};
+
 
 pub struct ClubCard {
 	link: ComponentLink<Self>,
 	props: Props,
 	like_button_char: char,
+	
+	delete_button_char: char,
+	delete_fetch_state: Option<FetchState<()>>,
 }
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {
-	pub member_count: i32,
+	pub id: i32,
+	pub member_count: i64,
 	pub club_name: String,
 	pub club_description: String,
 	pub organizer_name: String,
 	#[prop_or(String::from("./assets/sans.jpg"))]
 	pub organizer_pfp_url: String,
+	pub parent_link: Mlk<ComponentLink<ClubView>>,
 }
 
 pub enum Msg {
 	ToggleLikeButton,
+	Delet,
+	DoneDelet,
 }
 
 impl Component for ClubCard {
@@ -30,6 +42,8 @@ impl Component for ClubCard {
 			link,
 			props,
 			like_button_char: '💛',
+			delete_button_char: '❌',
+			delete_fetch_state: None,
 		}
 	}
 
@@ -41,6 +55,40 @@ impl Component for ClubCard {
 					'💖' => '💛',
 					_ => panic!("WTF?"),
 				};
+			},
+
+			Msg::Delet => {
+				let req = Request::delete(format!("/api/clubs/delete/{}", self.props.id)).body(yew::format::Nothing);
+
+				match req {
+					Ok(req) => {
+						let callback = self.link.callback(|response: Response<Result<String, anyhow::Error>>| {
+							match response.status() {
+								StatusCode::OK => {
+									tell!("Successfully deleted club");
+								},
+
+								_ => {
+									tell!("Weird status received: {}", response.status());
+								}
+							};
+
+							Msg::DoneDelet
+						});
+
+						match FetchService::fetch(req, callback) {
+							Ok(_) => (),
+							Err(_) => (),
+						}
+					},
+					Err(err) => (),
+				}
+
+				self.props.parent_link.unwrap().send_message(crate::components::club_view::Msg::GetClubDetails(None));
+			},
+
+			Msg::DoneDelet => {
+
 			}
 		}
 
@@ -52,7 +100,8 @@ impl Component for ClubCard {
 	}
 
 	fn view(&self) -> Html {
-		let callback = self.link.callback(|_: MouseEvent| Msg::ToggleLikeButton);
+		let like = self.link.callback(|_: MouseEvent| Msg::ToggleLikeButton);
+		let delete = self.link.callback(|_: MouseEvent| Msg::Delet);
 
 		html! {
 			<div class="club-card">
@@ -72,7 +121,28 @@ impl Component for ClubCard {
 					</div>
 				</div>
 				<div class="club-card-action-bar">
-					<button onclick=callback>{self.like_button_char.clone()}</button>
+					<button onclick=like>{self.like_button_char.clone()}</button>
+					
+					{
+						if let Some(state) = &self.delete_fetch_state {
+							match state {
+								FetchState::Done(_) => {
+									html! {
+
+									}
+								},
+								_ => {
+									html! {
+										<button disabled=true>{"..."}</button>
+									}
+								}
+							}
+						} else {
+							html! {
+								<button onclick=delete>{self.delete_button_char.clone()}</button>
+							}
+						}
+					}
 				</div>
 			</div>
 		}

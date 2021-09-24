@@ -1,5 +1,4 @@
 use anyhow::anyhow;
-use js_sys::Function;
 use serde_json::json;
 use serde_json::Value;
 use yew::format::Json;
@@ -48,12 +47,7 @@ fn on_scroll(e: MouseEvent) {}
 
 impl ClubDialog {
 	fn close(&self) {
-		let close_cb = self
-			.props
-			.parent_link
-			.callback(move |_: Option<()>| crate::components::club_view::Msg::HideDialog);
-
-		close_cb.emit(None);
+		self.props.parent_link.send_message(crate::components::club_view::Msg::HideDialog);
 	}
 
 	fn reset(&mut self) {
@@ -168,33 +162,6 @@ impl Component for ClubDialog {
 		let club_body_field_callback = self.link.callback(|data: yew::html::InputData| {
 			Msg::UpdateInfoState(WhichTextField::TheBodyOne, data.value)
 		});
-
-		// Hook that listens to scroll events and hides the fab after scrolling down a little
-		yew::utils::window()
-			.document()
-			.unwrap()
-			.set_onscroll(Some(&Function::new_with_args(
-				"event",
-				stringify! {
-					console.log(window.scrollY);
-					let scroll = window.scrollY;
-					let fab = document.getElementById("fab");
-
-					const UPPER_BOUND = 150; // height in px (?) of how far the user has to scroll down to hide the fab
-					const reveal = "fab-reveal";
-					const conceal = "fab-conceal";
-
-					if (scroll > 0 && scroll < 150) {
-						fab.classList.remove(conceal);
-						fab.classList.add(reveal);
-						console.log(fab.classList);
-					} else if (scroll > UPPER_BOUND) {
-						fab.classList.remove(reveal);
-						fab.classList.add(conceal);
-						console.log(fab.classList);
-					}
-				},
-			)));
 
 		if self.props.show {
 			html! {
