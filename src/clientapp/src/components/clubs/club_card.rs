@@ -12,6 +12,7 @@ pub struct ClubCard {
 	
 	delete_button_char: char,
 	delete_fetch_state: Option<FetchState<()>>,
+	delete_fetch_task: Option<FetchTask>,
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -24,6 +25,8 @@ pub struct Props {
 	#[prop_or(String::from("./assets/sans.jpg"))]
 	pub organizer_pfp_url: String,
 	pub parent_link: Mlk<ComponentLink<ClubView>>,
+	#[prop_or(false)]
+	pub show_delete_button: bool,
 }
 
 pub enum Msg {
@@ -44,6 +47,7 @@ impl Component for ClubCard {
 			like_button_char: '💛',
 			delete_button_char: '❌',
 			delete_fetch_state: None,
+			delete_fetch_task: None,
 		}
 	}
 
@@ -58,7 +62,7 @@ impl Component for ClubCard {
 			},
 
 			Msg::Delet => {
-				let req = Request::delete(format!("/api/clubs/delete/{}", self.props.id)).body(yew::format::Nothing);
+				let req = Request::delete(format!("/api/clubs/{}", self.props.id)).body(yew::format::Nothing);
 
 				match req {
 					Ok(req) => {
@@ -77,8 +81,13 @@ impl Component for ClubCard {
 						});
 
 						match FetchService::fetch(req, callback) {
-							Ok(_) => (),
-							Err(_) => (),
+							Ok(task) => {
+								self.delete_fetch_task = Some(task);
+								self.delete_fetch_state = Some(FetchState::Waiting);
+							},
+							Err(e) => {
+								self.delete_fetch_state = Some(FetchState::Failed(Some(anyhow::anyhow!(e))));
+							},
 						}
 					},
 					Err(err) => (),
@@ -88,7 +97,9 @@ impl Component for ClubCard {
 			},
 
 			Msg::DoneDelet => {
-
+				self.delete_fetch_state = Some(FetchState::Done(()));
+				self.delete_fetch_task = None;
+				self.props.parent_link.unwrap().send_message(crate::components::club_view::Msg::GetClubDetails(None));
 			}
 		}
 

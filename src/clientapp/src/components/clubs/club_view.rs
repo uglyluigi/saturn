@@ -97,7 +97,7 @@ impl ClubView {
 				{
 					for vec.iter().map(|x| {
 						html! {
-							<ClubCard id=x.id parent_link=crate::types::Mlk::new(self.link.clone()) member_count=x.member_count club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
+							<ClubCard id=x.id show_delete_button={x.is_moderator != "false"} parent_link=crate::types::Mlk::new(self.link.clone()) member_count=x.member_count club_name=x.name.clone() club_description=x.name.clone() organizer_name=String::from("TODO")/>
 						}
 					})
 				}
