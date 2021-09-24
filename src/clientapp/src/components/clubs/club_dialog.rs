@@ -36,14 +36,13 @@ pub enum Msg {
 
 	PostClub,
 	PostClubDone,
+	UpdateClubs,
 }
 
 pub enum WhichTextField {
 	TheNameOne,
 	TheBodyOne,
 }
-
-fn on_scroll(e: MouseEvent) {}
 
 impl ClubDialog {
 	fn close(&self) {
@@ -138,9 +137,13 @@ impl Component for ClubDialog {
 			}
 
 			Msg::PostClubDone => {
-				tell!("Post club done!");
 				self.close();
 				self.reset();
+				self.link.send_message(Msg::UpdateClubs)
+			},
+
+			Msg::UpdateClubs => {
+				self.props.parent_link.send_message(crate::components::club_view::Msg::GetClubDetails(None))
 			}
 		}
 
@@ -180,12 +183,12 @@ impl Component for ClubDialog {
 
 							<div id="dialog-buttons">
 								<button class="dialog-button" id="club-dialog-close-btn" onclick=close_cb>{"Close"}</button>
-								<button class="dialog-button" id="club-dialog-ok-btn" onclick=self.link.callback(|_: MouseEvent| Msg::ValidateForm)>{"OK"}</button>
+								<button class="dialog-button" id="club-dialog-ok-btn" onclick=self.link.callback(|_: MouseEvent| {Msg::ValidateForm})>{"OK"}</button>
 							</div>
 						</div>
 					</div>
 				</div>
-			}
+			} 
 		} else {
 			html! {
 				<>
