@@ -95,7 +95,6 @@ impl ClubView {
 
 	pub fn make_cards(&self, vec: &Vec<ClubDetails>) -> Html {
 		let mut i = 0.1;
-		let spacers = vec.len() % 3;
 
 		html! {
 			<>
@@ -124,11 +123,9 @@ impl ClubView {
 			FetchState::Done(clubs) => {
 				if clubs.len() > 0 {
 					html! {
-						<div class="club-view">
-							{
-								self.make_cards(clubs)
-							}
-						</div>
+						{
+							self.make_cards(clubs)
+						}
 					}
 				} else {
 					html! {
@@ -175,23 +172,11 @@ impl ClubView {
 		use crate::components::clubs::dummy_data::DummyData;
 
 		let fake_info = DummyData::new();
-		let mut i = 0.1;
 
 		html! {
-			for fake_info.club_details.into_iter().map(|x| {
-				html! {
-					<ClubCard style=String::from(format!("
-						animation-name: reveal-cards;
-						animation-duration: 0.65s;
-						animation-delay: {}s;
-						animation-fill-mode: forwards;
-						", {i += 0.1; i})) 
-						
-						details=Mlk::new(x)
-						parent_link=Mlk::new(self.link.clone())
-					/>
-				}
-			})
+			{
+				self.make_cards(&fake_info.club_details)
+			}
 		}
 	}
 }
