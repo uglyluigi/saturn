@@ -179,7 +179,7 @@ impl Component for ClubCard {
 								}
 							};
 
-							Msg::DoneDelet
+							Msg::DoneLeave
 						});
 
 						match FetchService::fetch(req, callback) {
@@ -254,24 +254,6 @@ impl Component for ClubCard {
 								<>
 								</>
 							}
-						}
-					}
-				
-					{
-						if let Some(state) = &self.delete_fetch_state {
-							match state {
-								FetchState::Done(_) => {
-									self.delete_btn()
-								},
-
-								_ => {
-									html! {
-										<button class="loader" disabled=true>{"..."}</button>
-									}
-								}
-							}
-						} else {
-							self.delete_btn()
 						}
 					}
 				</div>
