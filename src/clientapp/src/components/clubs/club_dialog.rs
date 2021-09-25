@@ -177,7 +177,7 @@ impl Component for ClubDialog {
 							</div>
 
 							<div id="dialog-content">
-								<input type="text" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
+								<input id="club-name-field" type="text" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
 								<input type="text" oninput=club_body_field_callback value=self.club_body_field_contents.clone() placeholder="Club Body"/>
 							</div>
 
@@ -187,6 +187,14 @@ impl Component for ClubDialog {
 							</div>
 						</div>
 					</div>
+					
+					<script>
+						{
+							stringify! {
+								document.getElementById("club-name-field").focus();
+							}
+						}
+					</script>
 				</div>
 			} 
 		} else {

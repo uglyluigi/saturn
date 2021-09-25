@@ -1,5 +1,6 @@
 use anyhow::*;
 use serde::{Deserialize, Serialize};
+use web_sys::HtmlElement;
 use yew::{
 	format::{Json, Nothing},
 	prelude::*,
@@ -60,6 +61,7 @@ pub enum Msg {
 	RequestLogin,
 	ShowDialog,
 	HideDialog,
+	FakeGettingClubs,
 }
 
 enum Redirect {
@@ -92,12 +94,23 @@ impl ClubView {
 	}
 
 	pub fn make_cards(&self, vec: &Vec<ClubDetails>) -> Html {
+		let mut i = 0.1;
+
 		html! {
 			<>
 				{
 					for vec.iter().map(|x| {
 						html! {
-							<ClubCard id=x.id show_delete_button={x.is_moderator != "false"} parent_link=Mlk::new(self.link.clone()) member_count=x.member_count club_name=x.name.clone() club_description=x.body.clone() organizer_name=format!("{} {}", x.head_moderator.first_name, x.head_moderator.last_name) organizer_pfp_url=x.head_moderator.picture.clone()/>
+							<ClubCard style=String::from(format!("
+								animation-name: reveal-cards;
+								animation-duration: 0.65s;
+								animation-delay: {}s;
+								animation-fill-mode: forwards;
+								", {i += 0.1; i})) 
+								
+								details=Mlk::new(x.clone())
+								parent_link=Mlk::new(self.link.clone())
+							/>
 						}
 					})
 				}
@@ -161,11 +174,21 @@ impl ClubView {
 		use crate::components::clubs::dummy_data::DummyData;
 
 		let fake_info = DummyData::new();
+		let mut i = 0.1;
 
 		html! {
-			for fake_info.club_details.iter().map(|x| {
+			for fake_info.club_details.into_iter().map(|x| {
 				html! {
-					<ClubCard id=x.id parent_link=Mlk::new(self.link.clone()) member_count=x.member_count club_name=x.name.clone() club_description=x.body.clone() organizer_name=format!("{} {}", x.head_moderator.first_name, x.head_moderator.last_name) organizer_pfp_url=x.head_moderator.picture.clone()/>
+					<ClubCard style=String::from(format!("
+						animation-name: reveal-cards;
+						animation-duration: 0.65s;
+						animation-delay: {}s;
+						animation-fill-mode: forwards;
+						", {i += 0.1; i})) 
+						
+						details=Mlk::new(x)
+						parent_link=Mlk::new(self.link.clone())
+					/>
 				}
 			})
 		}
@@ -388,6 +411,10 @@ impl Component for ClubView {
 
 			HideDialog => {
 				self.show_dialog = false;
+			},
+
+			FakeGettingClubs => {
+				self.clubs_fetch_state = FetchState::Done(vec![]);
 			}
 		}
 
@@ -426,6 +453,7 @@ impl Component for ClubView {
 				stringify! {
 					// todo
 				})));
+
 		
 		if let Yes(route) = &self.redirect {
 			html! {
@@ -434,6 +462,7 @@ impl Component for ClubView {
 		} else {
 			html! {
 				<>
+					// Script that animates the clubs as they fill the screen
 					<Toolbar username=self.props.first_name.clone()/>
 
 					<div class="club-view">

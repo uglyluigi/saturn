@@ -3,7 +3,7 @@ use std::fmt::{self, Display};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct UserDetails {
 	pub email: String,
 	pub picture: String,
@@ -11,7 +11,7 @@ pub struct UserDetails {
 	pub last_name: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ClubDetails {
 	pub id: i32,
 	pub name: String,
@@ -78,6 +78,10 @@ impl<T> PartialEqDummy<T> {
 
 	pub fn unwrap(&self) -> &T {
 		&self.t
+	}
+
+	pub fn unwrap_into(self) -> T {
+		self.t
 	}
 }
 

@@ -24,7 +24,7 @@ features = ["serde"]
 debug = true
 
 [dependencies.web-sys]
-version = "0.3"
+version = "*"
 features = [
   'HtmlCanvasElement',
   'WebGlBuffer',
@@ -32,4 +32,8 @@ features = [
   'WebGlRenderingContext',
   'WebGlShader',
   'WebGlUniformLocation',
+  'Document',
+  'Window',
+  'HtmlCollection',
+  'CssStyleDeclaration'
 ]
