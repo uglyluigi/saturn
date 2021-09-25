@@ -95,6 +95,7 @@ impl ClubView {
 
 	pub fn make_cards(&self, vec: &Vec<ClubDetails>) -> Html {
 		let mut i = 0.1;
+		let spacers = vec.len() % 3;
 
 		html! {
 			<>

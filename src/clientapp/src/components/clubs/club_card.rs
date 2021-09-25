@@ -232,7 +232,7 @@ impl Component for ClubCard {
 				</div>
 
 				<div class="club-card-action-bar">
-					<button id="club-card-join-btn" onclick={if self.show_login_or_logout == "login" { join_club } else { leave_club} }><span class="material-icons">{self.show_login_or_logout.clone()}</span></button>
+					<button id="club-card-join-btn" onclick={if self.show_login_or_logout == "login" { join_club } else { leave_club }}><span class="material-icons">{self.show_login_or_logout.clone()}</span></button>
 
 					{
 						if self.props.details.unwrap().is_moderator != "false" || * crate::flags::IS_DEBUG_MODE {
