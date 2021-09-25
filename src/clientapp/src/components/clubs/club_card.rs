@@ -8,7 +8,7 @@ use yew::services::fetch::{FetchService, FetchTask, Request, Response, StatusCod
 pub struct ClubCard {
 	link: ComponentLink<Self>,
 	props: Props,
-	show_leave_button: bool,
+	show_login_or_logout: String,
 	
 	delete_fetch_state: Option<FetchState<()>>,
 	delete_fetch_task: Option<FetchTask>,
@@ -65,8 +65,8 @@ impl Component for ClubCard {
 		//TODO like button is already toggled based on if the user liked this club
 		Self {
 			link,
+			show_login_or_logout: if props.details.unwrap().is_member { String::from("logout") } else { String::from("login") },
 			props,
-			show_leave_button: false,
 
 			delete_fetch_state: None,
 			delete_fetch_task: None,
@@ -160,7 +160,7 @@ impl Component for ClubCard {
 			},
 
 			Msg::DoneJoin => {
-				self.show_leave_button = true;
+				self.show_login_or_logout = String::from("logout");
 			},
 
 			Msg::Leave => {
@@ -197,7 +197,7 @@ impl Component for ClubCard {
 			},
 
 			Msg::DoneLeave => {
-				self.show_leave_button = false;
+				self.show_login_or_logout = String::from("login");
 			}
 		}
 
@@ -232,17 +232,7 @@ impl Component for ClubCard {
 				</div>
 
 				<div class="club-card-action-bar">
-					{
-						if self.props.details.unwrap().is_member || self.show_leave_button {
-							html! {
-								<button id="club-card-join-btn" onclick=leave_club><span class="material-icons">{"logout"}</span></button>
-							}
-						} else {
-							html! {
-								<button id="club-card-join-btn" onclick=join_club><span class="material-icons">{"login"}</span></button>
-							}
-						}
-					}
+					<button id="club-card-join-btn" onclick={if self.show_login_or_logout == "login" { join_club } else { leave_club} }><span class="material-icons">{self.show_login_or_logout.clone()}</span></button>
 
 					{
 						if self.props.details.unwrap().is_moderator != "false" || * crate::flags::IS_DEBUG_MODE {
