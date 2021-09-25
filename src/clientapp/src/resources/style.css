@@ -533,6 +533,23 @@ html {
     grid-template-rows: auto;
 }
 
+@media only screen and (max-width: 1300px) {
+    .club-view {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1em;
+        grid-template-rows: auto;
+    }
+}
+
+@media only screen and (max-width: 900px) {
+    .club-view {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+}
+
 .club-fetch-status-msg {
     background-color: #171738;
     padding: 1em;
