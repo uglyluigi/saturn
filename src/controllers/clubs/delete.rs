@@ -21,7 +21,7 @@ pub async fn delete_admin(_admin: Admin, db: Db, id: i32) -> std::result::Result
 }
 
 #[delete("/clubs/<id>", rank=2)]
-pub async fn delete_user(user: User, db: Db, id: i32) -> std::result::Result<status::Accepted<()>, status::Forbidden<()>> {
+pub async fn delete_user(user: User, db: Db, id: i32) -> std::result::Result<status::Accepted<()>, status::Custom<Option<Json<JsonError>>>> {
     use crate::schema::clubs::dsl::{clubs};
     use crate::schema::club_members::dsl::{club_members, club_id};
 
@@ -38,11 +38,11 @@ pub async fn delete_user(user: User, db: Db, id: i32) -> std::result::Result<sta
                 }).await;
                 Ok(status::Accepted(None))
             } else {
-                Err(status::Forbidden(None))
+                Err(status::Custom(Status::Forbidden, Some(Json(JsonError {error: "User is not a head moderator.".to_owned()}))))
             }
         },
         _ => {
-            Err(status::Forbidden(None))
+            Err(status::Custom(Status::BadRequest, Some(Json(JsonError {error: "User isn't even a moderator.".to_owned()}))))
         }
     }
 }
