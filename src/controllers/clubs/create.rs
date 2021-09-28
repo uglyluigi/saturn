@@ -48,5 +48,5 @@ pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Js
         is_moderator: "head".to_owned()
     };
 
-    Ok(Json(ClubDetails::from_join_async((member, created_club), user_id, db).await))
+    Ok(Json(ClubDetails::from_join_async((member, created_club), user_id, db).await.unwrap()))
 }

@@ -19,7 +19,7 @@ pub async fn renew(user: User, db: Db, id: i32) -> std::result::Result<Json<Club
                         club_id: update.id,
                         is_moderator: if is_head {"head".to_owned()} else {"true".to_owned()}
                     };
-                    Ok(Json(ClubDetails::from_join((member, update), user_id, &conn)))
+                    Ok(Json(ClubDetails::from_join((member, update), user_id, &conn).unwrap()))
                 }else{
                     Err(status::Custom(Status::BadRequest, Some(Json(JsonError {error: "The club you are trying to access does not exist.".to_owned()}))))
                 }
@@ -51,7 +51,7 @@ pub async fn join(user: User, db: Db, id: i32) -> std::result::Result<Json<ClubD
                     };
 
                     let result = insert_into(club_members).values(member).get_result(conn);
-                    Ok(Json(ClubDetails::from_join((result.unwrap(), club_exists.unwrap()), user_id, &conn)))
+                    Ok(Json(ClubDetails::from_join((result.unwrap(), club_exists.unwrap()), user_id, &conn).unwrap()))
                 }else{
                     Err(status::Custom(Status::BadRequest, Some(Json(JsonError {error: "The club you are trying to join does not exist.".to_owned()}))))
                 }
