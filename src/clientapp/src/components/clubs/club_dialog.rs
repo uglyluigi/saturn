@@ -1,4 +1,7 @@
 use anyhow::anyhow;
+use comrak::ComrakExtensionOptions;
+use comrak::ComrakParseOptions;
+use comrak::ComrakRenderOptions;
 use serde_json::json;
 use serde_json::Value;
 use yew::format::Json;
@@ -21,7 +24,6 @@ pub struct ClubDialog {
 	props: Props,
 	post_task: Option<FetchTask>,
 	post_task_state: FetchState<()>,
-
 }
 
 #[derive(Properties, Debug, Clone)]
@@ -65,7 +67,14 @@ impl ClubDialog {
 
 	fn get_preview(&self) -> Html {
 		if let Some(val) = &self.long_club_description_contents {
-			let html = comrak::markdown_to_html(val.as_str(), &ComrakOptions::default());
+			let html = comrak::markdown_to_html(val.as_str(), &ComrakOptions {
+				extension: ComrakExtensionOptions { 
+					tagfilter: true,
+					..ComrakExtensionOptions::default()
+				},
+				parse: ComrakParseOptions::default(),
+				render: ComrakRenderOptions::default(),
+			});
 			let div = yew::utils::document().create_element("preview").unwrap();
 			div.set_inner_html(html.as_str());
 
@@ -219,14 +228,10 @@ impl Component for ClubDialog {
 								</div>
 							</div>
 
-							
-
 							<div id="dialog-buttons">
 								<button class="dialog-button" id="club-dialog-close-btn" onclick=close_cb>{"Close"}</button>
 								<button class="dialog-button" id="club-dialog-ok-btn" onclick=self.link.callback(|_: MouseEvent| {Msg::ValidateForm})>{"OK"}</button>
 							</div>
-
-							
 						</div>
 					</div>
 					
