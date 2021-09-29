@@ -5,6 +5,9 @@ use yew::format::Json;
 use yew::services::fetch::{FetchTask, Request, Response, StatusCode};
 use yew::services::FetchService;
 use yew::{prelude::*, Html, ShouldRender};
+use comrak::{Arena, parse_document, format_html};
+use comrak::{markdown_to_html, ComrakOptions};
+
 
 use crate::components::ClubView;
 use crate::tell;
@@ -14,9 +17,11 @@ pub struct ClubDialog {
 	link: ComponentLink<Self>,
 	club_name_field_contents: Option<String>,
 	club_body_field_contents: Option<String>,
+	long_club_description_contents: Option<String>,
 	props: Props,
 	post_task: Option<FetchTask>,
 	post_task_state: FetchState<()>,
+
 }
 
 #[derive(Properties, Debug, Clone)]
@@ -42,6 +47,7 @@ pub enum Msg {
 pub enum WhichTextField {
 	TheNameOne,
 	TheBodyOne,
+	TheLongDescriptionOne,
 }
 
 impl ClubDialog {
@@ -52,8 +58,24 @@ impl ClubDialog {
 	fn reset(&mut self) {
 		self.club_body_field_contents = None;
 		self.club_name_field_contents = None;
+		self.long_club_description_contents = None;
 		self.post_task = None;
 		self.post_task_state = FetchState::Waiting;
+	}
+
+	fn get_preview(&self) -> Html {
+		if let Some(val) = &self.long_club_description_contents {
+			let html = comrak::markdown_to_html(val.as_str(), &ComrakOptions::default());
+			let div = yew::utils::document().create_element("preview").unwrap();
+			div.set_inner_html(html.as_str());
+
+			Html::VRef(div.into())
+		} else {
+			html! {
+				<>
+				</>
+			}
+		}
 	}
 }
 
@@ -66,6 +88,7 @@ impl Component for ClubDialog {
 			link,
 			club_name_field_contents: None,
 			club_body_field_contents: None,
+			long_club_description_contents: None,
 			props,
 			post_task: None,
 			post_task_state: FetchState::Waiting,
@@ -88,6 +111,10 @@ impl Component for ClubDialog {
 
 				WhichTextField::TheNameOne => {
 					self.club_name_field_contents = if value.len() > 0 { Some(value) } else { None }
+				}
+
+				WhichTextField::TheLongDescriptionOne => {
+					self.long_club_description_contents = if value.len() > 0 { Some(value) } else { None }
 				}
 			},
 
@@ -166,6 +193,10 @@ impl Component for ClubDialog {
 			Msg::UpdateInfoState(WhichTextField::TheBodyOne, data.value)
 		});
 
+		let long_description_field_callback = self.link.callback(|data: yew::html::InputData| {
+			Msg::UpdateInfoState(WhichTextField::TheLongDescriptionOne, data.value)
+		});
+
 		if self.props.show {
 			html! {
 				<div>
@@ -173,18 +204,29 @@ impl Component for ClubDialog {
 						<div class={self.props.dialog_anim_class.clone()} id="new-club-dialog">
 							<div id="dialog-header">
 								<h3>{"Create new club"}</h3>
-								<button id="close-x-button" onclick=close_cb.clone()>{"X"}</button>
 							</div>
 
 							<div id="dialog-content">
-								<input id="club-name-field" type="text" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
-								<input type="text" oninput=club_body_field_callback value=self.club_body_field_contents.clone() placeholder="Club Body"/>
+								<input autocomplete="off" id="club-name-field" type="text" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
+								<input autocomplete="off" type="text" oninput=club_body_field_callback value=self.club_body_field_contents.clone() placeholder="Club Body"/>
+
+								<div>
+									<textarea id="long-club-description-input" value=self.long_club_description_contents.clone() oninput=long_description_field_callback/>
+								</div>
+
+								<div id="preview">
+									{ self.get_preview() }
+								</div>
 							</div>
+
+							
 
 							<div id="dialog-buttons">
 								<button class="dialog-button" id="club-dialog-close-btn" onclick=close_cb>{"Close"}</button>
 								<button class="dialog-button" id="club-dialog-ok-btn" onclick=self.link.callback(|_: MouseEvent| {Msg::ValidateForm})>{"OK"}</button>
 							</div>
+
+							
 						</div>
 					</div>
 					
