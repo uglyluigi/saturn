@@ -93,7 +93,7 @@ impl ClubDetails {
         }
     }
 
-    pub async fn from_join_async(join: (ClubMember, Club), user_id: i32, db: Db) -> Self {
+    pub async fn from_join_async(join: (ClubMember, Club), user_id: i32, db: Db) -> Option<Self> {
         let result = db.run(move |conn| {
             Self::from_join(join, user_id, conn)
         }).await;
@@ -101,32 +101,36 @@ impl ClubDetails {
         result
     }
 
-    pub fn from_join(join: (ClubMember, Club), user_id: i32, conn: &PgConnection) -> Self {
+    pub fn from_join(join: (ClubMember, Club), user_id: i32, conn: &PgConnection) -> Option<Self> {
         use crate::schema::club_members::dsl::{club_members, club_id, is_moderator, user_id as club_members_user_id};
 
         let arg_club_id = join.1.id.clone();
 
         let member_count = club_members.filter(club_id.eq(arg_club_id)).count().first::<i64>(conn).unwrap();
 
-        let req_id = club_members.filter(club_id.eq(arg_club_id)).filter(is_moderator.eq("head")).select(club_members_user_id).first::<i32>(conn).unwrap();
-        let user = User::get_by_id(conn, &req_id).unwrap();
+        if let Ok(req_id) = club_members.filter(club_id.eq(arg_club_id)).filter(is_moderator.eq("head")).select(club_members_user_id).first::<i32>(conn){
+            let user = User::get_by_id(conn, &req_id).unwrap();
 
-        ClubDetails {
-            id: join.1.id,
-            name: join.1.name,
-            body: join.1.body,
-            publish_date: join.1.publish_date,
-            expiry_date: join.1.expiry_date,
-            member_count: member_count,
-            is_member: 
-                join.0.user_id == user_id && 
-                join.0.club_id==join.1.id,
-            is_moderator: 
-                if join.0.user_id == user_id && 
-                join.0.club_id==join.1.id {
-                join.0.is_moderator } else { "false".to_owned() },
-            head_moderator:
-                user.to_user_details()
+            Some(
+            ClubDetails {
+                id: join.1.id,
+                name: join.1.name,
+                body: join.1.body,
+                publish_date: join.1.publish_date,
+                expiry_date: join.1.expiry_date,
+                member_count: member_count,
+                is_member: 
+                    join.0.user_id == user_id && 
+                    join.0.club_id==join.1.id,
+                is_moderator: 
+                    if join.0.user_id == user_id && 
+                    join.0.club_id==join.1.id {
+                    join.0.is_moderator } else { "false".to_owned() },
+                head_moderator:
+                    user.to_user_details()
+            })
+        } else {
+            None
         }
     }
 }

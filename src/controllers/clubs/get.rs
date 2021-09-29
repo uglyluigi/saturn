@@ -21,7 +21,9 @@ pub async fn get_all(user: User, db: Db) -> Result<Json<Vec<ClubDetails>>> {
                 club_id: -1,
                 is_moderator: "false".to_owned()
             });
-            results.push(ClubDetails::from_join((member_unwrapped, club), user.id, &conn));
+            if let Some(result)=ClubDetails::from_join((member_unwrapped, club), user.id, &conn){
+                results.push(result)
+            }
         }
 
         results
@@ -44,7 +46,9 @@ pub async fn get_clubs_by_membership(user: User, db: Db) -> Result<Json<Vec<Club
         
         let mut results = Vec::new();
         for (member, club) in join {
-            results.push(ClubDetails::from_join((member, club), user.id, &conn));
+            if let Some(result)=ClubDetails::from_join((member, club), user.id, &conn){
+                results.push(result);
+            }
         }
 
         results
@@ -68,7 +72,9 @@ pub async fn get_clubs_by_moderatorship(user: User, db: Db) -> Result<Json<Vec<C
         
         let mut results = Vec::new();
         for (member, club) in join {
-            results.push(ClubDetails::from_join((member, club), user.id, &conn));
+            if let Some(result)=ClubDetails::from_join((member, club), user.id, &conn){
+                results.push(result);
+            }
         }
         
         results
