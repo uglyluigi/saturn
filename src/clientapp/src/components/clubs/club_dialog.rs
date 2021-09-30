@@ -1,15 +1,10 @@
 use anyhow::anyhow;
-use comrak::ComrakExtensionOptions;
-use comrak::ComrakParseOptions;
-use comrak::ComrakRenderOptions;
 use serde_json::json;
 use serde_json::Value;
 use yew::format::Json;
 use yew::services::fetch::{FetchTask, Request, Response, StatusCode};
 use yew::services::FetchService;
 use yew::{prelude::*, Html, ShouldRender};
-use comrak::{Arena, parse_document, format_html};
-use comrak::{markdown_to_html, ComrakOptions};
 
 
 use crate::components::ClubView;
@@ -67,16 +62,10 @@ impl ClubDialog {
 
 	fn get_preview(&self) -> Html {
 		if let Some(val) = &self.long_club_description_contents {
-			let html = comrak::markdown_to_html(val.as_str(), &ComrakOptions {
-				extension: ComrakExtensionOptions { 
-					tagfilter: true,
-					..ComrakExtensionOptions::default()
-				},
-				parse: ComrakParseOptions::default(),
-				render: ComrakRenderOptions::default(),
-			});
+			let md = markdown::to_html(val);
+			let sanitized_md = ammonia::clean(md.as_str());
 			let div = yew::utils::document().create_element("preview").unwrap();
-			div.set_inner_html(html.as_str());
+			div.set_inner_html(sanitized_md.as_str());
 
 			Html::VRef(div.into())
 		} else {

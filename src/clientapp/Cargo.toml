@@ -15,7 +15,8 @@ serde_json = "*"
 lazy_static = "*"
 rand = "*"
 getrandom = { version = "0.2", features = ["js"] }
-comrak = "0.10"
+markdown = "0.3"
+ammonia = "*"
 
 [dependencies.chrono]
 version = "*"
