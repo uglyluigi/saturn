@@ -18,6 +18,9 @@ pub struct ClubCard {
 
 	leave_fetch_state: Option<FetchState<()>>,
 	leave_fetch_task: Option<FetchTask>,
+
+	number_ref: NodeRef,
+	member_count: i64,
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -66,7 +69,6 @@ impl Component for ClubCard {
 		Self {
 			link,
 			show_login_or_logout: if props.details.unwrap().is_member { String::from("logout") } else { String::from("login") },
-			props,
 
 			delete_fetch_state: None,
 			delete_fetch_task: None,
@@ -75,7 +77,13 @@ impl Component for ClubCard {
 			join_fetch_task: None,
 
 			leave_fetch_state: None,
-			leave_fetch_task: None
+			leave_fetch_task: None,
+			
+			number_ref: NodeRef::default(),
+			member_count: props.details.unwrap().member_count.clone(),
+
+			props,
+
 		}
 	}
 
@@ -160,6 +168,23 @@ impl Component for ClubCard {
 			},
 
 			Msg::DoneJoin => {
+				let el = self.number_ref.cast::<web_sys::HtmlElement>().unwrap();
+				el.class_list().add_1("number-spin").unwrap();
+
+				el.set_ontransitionend(Some(&js_sys::Function::new_with_args("trans", stringify! {
+					setTimeout(() => {
+						const el = document.getElementById("member-number");
+						console.log(trans);
+
+						if (el.classList.contains("number-spin")) {
+							el.innerHTML = parseInt(el.innerHTML) + 1 + "";
+							el.classList.remove("number-spin");
+							el.ontransionend = null;
+						}
+					}, 100);
+
+				})));
+
 				self.show_login_or_logout = String::from("logout");
 				drop(self.delete_fetch_task.take());
 			},
@@ -199,6 +224,24 @@ impl Component for ClubCard {
 
 			Msg::DoneLeave => {
 				self.show_login_or_logout = String::from("login");
+				
+				let el = self.number_ref.cast::<web_sys::HtmlElement>().unwrap();
+				el.class_list().add_1("number-spin").unwrap();
+
+				el.set_ontransitionend(Some(&js_sys::Function::new_with_args("trans", stringify! {
+					setTimeout(() => {
+						const el = document.getElementById("member-number");
+						console.log(trans);
+
+						if (el.classList.contains("number-spin")) {
+							el.innerHTML = parseInt(el.innerHTML) - 1 + "";
+							el.classList.remove("number-spin");
+							el.ontransionend = null;
+						}
+					}, 50);
+
+				})));
+
 				drop(self.leave_fetch_task.take());
 			}
 		}
@@ -223,7 +266,7 @@ impl Component for ClubCard {
 				<hr/>
 				<div class="club-card-body">
 					<div id="left-col">
-						<h2>{self.props.details.unwrap().member_count} {" members"}</h2>
+						<h2><div ref=self.number_ref.clone() id="member-number">{self.member_count}</div> { if self.member_count == 0 || self.member_count > 1 {" members"} else { " member" }}</h2>
 					</div>
 
 					<div id="right-col">

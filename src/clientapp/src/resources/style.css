@@ -640,6 +640,13 @@ FFFD77
     color: #F7F5AD;
 }
 
+#member-number {
+    transition: transform 0.25s;
+}
+
+.number-spin {
+    transform: rotateY(90deg);
+}
 
 .club-card h1 {
     font-size: 30px;
@@ -809,3 +816,4 @@ FFFD77
       -webkit-transform: rotate(-360deg);
     }
   }
+
