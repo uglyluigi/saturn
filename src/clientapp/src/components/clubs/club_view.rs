@@ -1,15 +1,7 @@
 use anyhow::*;
 use serde::{Deserialize, Serialize};
 use web_sys::HtmlElement;
-use yew::{
-	format::{Json, Nothing},
-	prelude::*,
-	services::fetch::{FetchService, FetchTask, Request, Response, StatusCode},
-	utils::document,
-	virtual_dom::VNode,
-	web_sys::{Element, Node},
-	Html, Properties,
-};
+use yew::{Html, Properties, format::{Json, Nothing}, prelude::*, services::fetch::{FetchService, FetchTask, Request, Response, StatusCode}, utils::document, virtual_dom::{VComp, VNode}, web_sys::{Element, Node}};
 use js_sys::Function;
 
 use crate::{
@@ -433,14 +425,15 @@ impl Component for ClubView {
 					}
 				},
 			)));
-			
-		yew::utils::window()
-			.set_onresize(Some(&Function::new_no_args(
-				stringify! {
-					// todo
-				})));
 
-		
+		/*
+		let el = yew::utils::document().create_element("peen").unwrap();
+		let builder = crate::components::club_dialog::Props::builder().bg_anim_class("").dialog_anim_class("").parent_link(parent_link).show(false).build();
+		let node_ref = NodeRef::default();
+		let comp = VComp::new::<ClubDialog>(builder, node_ref, None);
+		el.append_child(comp.into()); //nope
+		 */
+				
 		if let Yes(route) = &self.redirect {
 			html! {
 				<AppRedirect route=route.clone()/>
