@@ -122,7 +122,7 @@ impl Component for ClubCard {
 
 			Msg::DoneDelet => {
 				self.delete_fetch_state = Some(FetchState::Done(()));
-				self.delete_fetch_task = None;
+				drop(self.delete_fetch_task.take());
 				self.props.parent_link.unwrap().send_message(crate::components::club_view::Msg::GetClubDetails(None));
 			},
 
@@ -161,6 +161,7 @@ impl Component for ClubCard {
 
 			Msg::DoneJoin => {
 				self.show_login_or_logout = String::from("logout");
+				drop(self.delete_fetch_task.take());
 			},
 
 			Msg::Leave => {
@@ -198,6 +199,7 @@ impl Component for ClubCard {
 
 			Msg::DoneLeave => {
 				self.show_login_or_logout = String::from("login");
+				drop(self.leave_fetch_task.take());
 			}
 		}
 
@@ -233,6 +235,7 @@ impl Component for ClubCard {
 
 				<div class="club-card-action-bar">
 					<button id="club-card-join-btn" onclick={if self.show_login_or_logout == "login" { join_club } else { leave_club }}><span class="material-icons">{self.show_login_or_logout.clone()}</span></button>
+					<button id="club-card-expand-btn"><span class="material-icons">{"open_in_full"}</span></button>
 
 					{
 						if self.props.details.unwrap().is_moderator != "false" || * crate::flags::IS_DEBUG_MODE {

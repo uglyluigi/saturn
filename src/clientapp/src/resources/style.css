@@ -624,16 +624,20 @@ FFFD77
 }
 
 .club-card .material-icons {
-    font-size: 50px;
+    font-size: 40px;
     color: white;
 }
 
 .club-card #club-card-join-btn span {
-    color: green;
+    color: #94B9AF;
 }
 
 .club-card #club-card-delete-btn span {
-    color: red;
+    color: #D64550;
+}
+
+.club-card #club-card-expand-btn span {
+    color: #F7F5AD;
 }
 
 
@@ -674,12 +678,11 @@ FFFD77
 }
 
 .club-card-action-bar {
-    font-size: 30px;
     flex-direction: row;
+    justify-content: left;
 }
 
 .club-card-action-bar button {
-    font-size: 30px;
     background-color: transparent;
     border: none;
     margin: none;
