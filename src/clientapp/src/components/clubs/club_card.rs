@@ -165,7 +165,7 @@ impl Component for ClubCard {
 			},
 
 			Msg::Leave => {
-				let req = Request::put(format!("/api/{}/leave", self.props.details.unwrap().id)).body(yew::format::Nothing);
+				let req = Request::put(format!("/api/clubs/{}/leave", self.props.details.unwrap().id)).body(yew::format::Nothing);
 
 				match req {
 					Ok(req) => {
