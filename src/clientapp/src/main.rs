@@ -6,6 +6,8 @@ use components::{
 	coolshit::ThreeJSViewport,
 	core::{router::*, NotFound},
 	login::{Home, LoginPage},
+	search::*
+
 };
 use yew_router::{prelude::*, switch::Permissive};
 
@@ -63,6 +65,10 @@ impl Model {
 
 			AppRoute::Test => {
 				html! { <ThreeJSViewport/> }
+			}
+
+			AppRoute::Search => {
+				html! {<SearchBar/>}
 			}
 		}
 	}
