@@ -77,7 +77,7 @@ pub async fn leave(user: User, db: Db, id: i32) -> std::result::Result<status::A
                 
                 if club_exists.is_ok() {
                     if !is_head{
-                        let _result = diesel::delete(club_members).filter(club_id.eq(id)).filter(user_id.eq(&user_id_copy)).execute(conn);
+                        let _result = diesel::delete(club_members).filter(club_id.eq(id)).filter(user_id.eq(&user_id_copy)).execute(conn).unwrap();
                         Ok(status::Accepted(None))
                     }else{
                         Err(status::Custom(Status::BadRequest, Some(Json(JsonError {error: "You are the appointed head of the club appoint a new one or delete the club".to_owned()}))))
@@ -93,7 +93,7 @@ pub async fn leave(user: User, db: Db, id: i32) -> std::result::Result<status::A
                 let club_exists = clubs.find(id).get_result::<Club>(conn);
                 
                 if club_exists.is_ok() {
-                    let _result = diesel::delete(club_members).filter(club_id.eq(id)).filter(user_id.eq(&user_id_copy)).execute(conn);
+                    let _result = diesel::delete(club_members).filter(club_id.eq(id)).filter(user_id.eq(&user_id_copy)).execute(conn).unwrap();
                     Ok(status::Accepted(None))
                 }else{
                     Err(status::Custom(Status::BadRequest, Some(Json(JsonError {error: "The club you are trying to leave does not exist.".to_owned()}))))
