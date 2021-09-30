@@ -1,4 +1,5 @@
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
+use crate::components::core::router::*;
 
 pub struct ToolbarComponent {
 	link: ComponentLink<Self>,
@@ -33,10 +34,12 @@ impl Component for ToolbarComponent {
 	fn view(&self) -> Html {
 		html! {
 			<div class="toolbar">
-				<img id="logo" src="./assets/saturn-logo.svg"/>
-				<h1>{"Hi, "} {self.props.username.clone()}</h1>
-				<a class="active" href="/">{"Home"}</a>
-				<a href="#smth">{"Something"}</a>
+				<div class="toolbar-inner-component">	
+					<AppAnchor route=AppRoute::Home><img id="logo" src="./assets/saturn-logo.svg"/></AppAnchor>
+				</div>
+				<div class="toolbar-inner-component-right-side">
+					<h1>{"Hi, "} {self.props.username.clone()}</h1>
+				</div>
 			</div>
 		}
 	}

@@ -40,7 +40,7 @@ p {
 }
 
 body {
-    background: linear-gradient(#2bc29f, #4C1A88);
+/*background: linear-gradient(#2bc29f, #4C1A88);*/
 }
 
 html {
@@ -489,13 +489,36 @@ html {
 /* TOOLBAR */
 
 .toolbar {
+    box-sizing: border-box;
     width: 100%;
     background-color: #171738;
     display: flex;
+    height:5rem;
     flex-direction: row;   
 }
 
-.toolbar a, h1 {
+.toolbar * {
+    box-sizing: border-box;
+    height: 5rem;
+}
+
+.toolbar > .toolbar-inner-component {
+    display:inline-flex;
+}
+
+.toolbar > .toolbar-inner-component > * {
+    margin:auto;
+}
+
+
+.toolbar > .toolbar-inner-component-right-side {
+    margin-left:auto;
+    display:inline-flex;
+}
+
+.toolbar a{
+    height:100%;
+    display:inline-flex;
     font-family: 'Open Sans';
     color: #D2DDDE;
     text-align: center;
@@ -505,28 +528,22 @@ html {
     vertical-align: middle;
 }
 
-.toolbar h1 {
-
-}
-
-.toolbar a {
-    font-weight: 600;
-}
-
-.toolbar a:hover {
-    background-color: #D2DDDE;
-    color: #26282C;
-}
-
-.toolbar a.active {
-    background-color: #2bc29f;
+.toolbar h1{
+    height:initial;
+    margin: auto;
+    display:inline-flex;
+    font-family: 'Open Sans';
     color: #D2DDDE;
+    text-align: center;
+    padding: 14px 16px;
+    font-size: 17px;
+    text-decoration: none;
+    vertical-align: middle;
 }
 
-.toolbar #logo {
-    height: 3em;
-    width: 3em;
-    padding: 0.25em 0.25em 0.25em 0.25em;
+
+.toolbar  #logo {
+    height: 100%;
     align-self: center;
 }
 
@@ -816,4 +833,44 @@ FFFD77
       -webkit-transform: rotate(-360deg);
     }
   }
+  
+.search-bar-container{
+    width:100%;
+    height:20em;
+    background: linear-gradient(to right, #2bc29f, #4C1A88);
+    color:white;
+    display:flex;
+    flex-flow:column nowrap;
+}
 
+.search-bar-h1{
+    color:white;
+    font-size:3em;
+    padding-top:1em;
+    display: inline-block;
+    font-family: 'Open Sans';
+    color: #D2DDDE;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.search-bar-input {
+    background-color:white;
+    width:60%;
+    border:none;
+    margin:auto;
+    margin-top:1em;
+    height:18%;
+    border-radius:25em;
+    font-size:2rem;
+    color:#333;
+    padding-left: .5em;
+    padding-right: .5em;
+
+}
+
+.search-bar-input ::placeholder{
+    color:#333;
+    opacity: 0.8;
+}

@@ -2,7 +2,9 @@ pub mod clubs;
 pub mod coolshit;
 pub mod core;
 pub mod login;
+pub mod search;
 
+pub use search::*;
 pub use ::core::*;
 pub use clubs::*;
 pub use coolshit::*;
