@@ -92,6 +92,8 @@ impl ClubView {
 			<>
 				{
 					for vec.iter().map(|x| {
+						tell!("Makin cards");
+
 						html! {
 							<ClubCard
 								details=Mlk::new(x.clone())
@@ -110,47 +112,20 @@ impl ClubView {
 			FetchState::Done(clubs) => {
 				if clubs.len() > 0 {
 					html! {
-						{
-							self.make_cards(clubs)
-						}
+						<>
+							{
+								self.make_cards(clubs)
+							}
+						</>
 					}
 				} else {
 					html! {
-						<div class="club-view-msgs">
-							<div class="club-fetch-status-msg">
-								<div class="club-fetch-status-msg" id="be-first-msg">
-								<h2>{ "Be the first to post your own club!" }</h2>
-								</div>
-							</div>
-						</div>
-
+						<></>
 					}
 				}
 			},
 
-			FetchState::Failed(maybe_msg) => {
-				html! {
-					<div class="club-view-msgs">
-						<div class="club-fetch-status-msg">
-							<div id="club-load-failed">
-								<h2>{"Failed to get clubs."}</h2>
-							</div>
-						</div>
-					</div>
-
-				}
-			},
-
-			FetchState::Waiting => {
-				html! {
-					<div class="club-view-msgs" >
-						<div class="club-fetch-status-msg" id="fetching-msg">
-							<h2>{"Fetching clubs"}</h2>
-							<Spinner/>
-						</div>
-					</div>
-				}
-			}
+			_ => html! { <> </> }
 		}
 	}
 
@@ -161,9 +136,11 @@ impl ClubView {
 		let fake_info = DummyData::new();
 
 		html! {
-			{
-				self.make_cards(&fake_info.club_details)
-			}
+			<>
+				{
+					self.make_cards(&fake_info.club_details)
+				}
+			</>
 		}
 	}
 }
@@ -293,6 +270,8 @@ impl Component for ClubView {
 			}
 
 			GetClubDetails(id) => {
+				self.clubs_fetch_state = FetchState::Waiting;
+
 				let req =
 					yew::services::fetch::Request::get("/api/clubs").body(yew::format::Nothing);
 
@@ -421,14 +400,7 @@ impl Component for ClubView {
 				},
 			)));
 
-		/*
-		let el = yew::utils::document().create_element("peen").unwrap();
-		let builder = crate::components::club_dialog::Props::builder().bg_anim_class("").dialog_anim_class("").parent_link(parent_link).show(false).build();
-		let node_ref = NodeRef::default();
-		let comp = VComp::new::<ClubDialog>(builder, node_ref, None);
-		el.append_child(comp.into()); //nope
-		 */
-				
+
 		if let Yes(route) = &self.redirect {
 			html! {
 				<AppRedirect route=route.clone()/>
@@ -438,6 +410,53 @@ impl Component for ClubView {
 				<>
 					// Script that animates the clubs as they fill the screen
 					<Toolbar username=self.props.first_name.clone()/>
+
+					{
+						match &self.clubs_fetch_state {
+							FetchState::Failed(maybe_msg) => {
+								html! {
+									<div class="club-view-msgs">
+										<div class="club-fetch-status-msg">
+											<div id="club-load-failed">
+												<h2>{"Failed to get clubs."}</h2>
+											</div>
+										</div>
+									</div>
+				
+								}
+							},
+				
+							FetchState::Waiting => {
+								html! {
+									<div class="club-view-msgs" >
+										<div class="club-fetch-status-msg" id="fetching-msg">
+											<h2>{"Fetching clubs"}</h2>
+											<Spinner/>
+										</div>
+									</div>
+								}
+							},
+
+							FetchState::Done(deets) => {
+								if deets.len() == 0 {
+									html! {
+										<div class="club-view-msgs">
+											<div class="club-fetch-status-msg">
+												<div class="club-fetch-status-msg" id="be-first-msg">
+												<h2>{ "Be the first to post your own club!" }</h2>
+												</div>
+											</div>
+										</div>
+									}
+								} else {
+									html! {
+										<>
+										</>
+									}
+								}
+							}
+						}
+					}
 
 					<div class="club-view">
 						{
