@@ -3,6 +3,7 @@ use crate::types::*;
 use crate::components::ClubView;
 use crate::tell;
 use yew::services::fetch::{FetchService, FetchTask, Request, Response, StatusCode};
+use regex;
 
 
 pub struct ClubCard {
@@ -227,6 +228,33 @@ impl Component for ClubCard {
 				
 				let el = self.number_ref.cast::<web_sys::HtmlElement>().unwrap();
 				el.class_list().add_1("number-spin").unwrap();
+
+				
+
+				for _ in 0..10 {
+					let computed_style = yew::utils::window().get_computed_style(&el).unwrap();
+
+					match yew::utils::window().get_computed_style(&el) {
+						Ok(cs) => {
+							match cs {
+								Some(cs) => {
+									tell!("{}", cs.get_property_value("transform").unwrap());
+								},
+
+								None => {
+									tell!("Failed to get computed style for element");
+								}
+							}
+						},
+
+						Err(e) => {
+							tell!("OH GOD OH FUCK WTF {:?}", e);
+						}
+					}
+				}
+				
+
+
 
 				el.set_ontransitionend(Some(&js_sys::Function::new_with_args("trans", stringify! {
 					setTimeout(() => {

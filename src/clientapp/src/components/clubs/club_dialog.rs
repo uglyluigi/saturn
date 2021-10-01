@@ -5,6 +5,7 @@ use yew::format::Json;
 use yew::services::fetch::{FetchTask, Request, Response, StatusCode};
 use yew::services::FetchService;
 use yew::{prelude::*, Html, ShouldRender};
+use comrak::{markdown_to_html, ComrakOptions, ComrakExtensionOptions};
 
 
 use crate::components::ClubView;
@@ -19,6 +20,8 @@ pub struct ClubDialog {
 	props: Props,
 	post_task: Option<FetchTask>,
 	post_task_state: FetchState<()>,
+
+	preview_div: Option<web_sys::Element>,
 }
 
 #[derive(Properties, Debug, Clone)]
@@ -58,16 +61,22 @@ impl ClubDialog {
 		self.long_club_description_contents = None;
 		self.post_task = None;
 		self.post_task_state = FetchState::Waiting;
+		self.preview_div = None;
 	}
 
 	fn get_preview(&self) -> Html {
 		if let Some(val) = &self.long_club_description_contents {
-			let md = markdown::to_html(val);
+			let md = markdown_to_html(val, &ComrakOptions {
+				extension: ComrakExtensionOptions {
+					tagfilter: false,
+					..ComrakExtensionOptions::default()
+				},
+				..ComrakOptions::default()
+			});
 			let sanitized_md = ammonia::clean(md.as_str());
-			let div = yew::utils::document().create_element("preview").unwrap();
-			div.set_inner_html(sanitized_md.as_str());
+			self.preview_div.as_ref().unwrap().set_inner_html(sanitized_md.as_str());
 
-			Html::VRef(div.into())
+			Html::VRef(self.preview_div.as_ref().unwrap().clone().into())
 		} else {
 			html! {
 				<>
@@ -90,6 +99,8 @@ impl Component for ClubDialog {
 			props,
 			post_task: None,
 			post_task_state: FetchState::Waiting,
+
+			preview_div: None,
 		}
 	}
 
@@ -112,6 +123,14 @@ impl Component for ClubDialog {
 				}
 
 				WhichTextField::TheLongDescriptionOne => {
+					if self.preview_div.is_none() {
+						self.preview_div = if let Ok(el) = yew::utils::document().create_element("preview") {
+							Some(el)
+						} else {
+							None
+						}
+					}
+
 					self.long_club_description_contents = if value.len() > 0 { Some(value) } else { None }
 				}
 			},
