@@ -23,6 +23,7 @@ pub struct ClubCard {
 	leave_fetch_task: Option<FetchTask>,
 
 	number_ref: NodeRef,
+	body_ref: NodeRef, 
 	member_count: i64,
 
 	number_spin_anim_end_cb: Option<Closure<dyn Fn()>>,
@@ -43,8 +44,7 @@ pub struct ClubCard {
 pub struct Props {
 	pub details: Mlk<ClubDetails>,
 	pub parent_link: Mlk<ComponentLink<ClubView>>,
-	#[prop_or(String::new())]
-	pub style: String,
+	pub reveal_delay: f32,
 }
 
 pub enum Msg {
@@ -115,6 +115,8 @@ impl Component for ClubCard {
 			leave_fetch_task: None,
 			
 			number_ref: NodeRef::default(),
+			body_ref: NodeRef::default(),
+
 			member_count: props.details.unwrap().member_count.clone(),
 
 			props,
@@ -168,6 +170,12 @@ impl Component for ClubCard {
 			Msg::DoneDelet => {
 				self.delete_fetch_state = Some(FetchState::Done(()));
 				drop(self.delete_fetch_task.take());
+
+				// Play delete animation
+				let el = self.body_ref.cast::<HtmlElement>().unwrap();
+				el.style().remove_property("animation").unwrap();
+				el.class_list().add_1("disappear").unwrap();
+
 				self.props.parent_link.unwrap().send_message(crate::components::club_view::Msg::GetClubDetails(None));
 			},
 
@@ -286,7 +294,7 @@ impl Component for ClubCard {
 		let leave_club = self.link.callback(|_: MouseEvent| Msg::Leave);
 
 		html! {
-			<div style={self.props.style.clone()} class="club-card">
+			<div ref={self.body_ref.clone()} class="club-card">
 				<div class="club-card-header">
 					<h1>{self.props.details.unwrap().name.clone()}</h1>
 				</div>
@@ -326,16 +334,18 @@ impl Component for ClubCard {
 
 	fn rendered(&mut self, first: bool) {
 		if first {
-			let el = self.number_ref.cast::<web_sys::HtmlElement>().unwrap();
+			let el = self.number_ref.cast::<HtmlElement>().unwrap();
 			let link_clone = self.link.clone();
 
 			let cb = Closure::wrap(Box::new(move || {
-				tell!("Anim done");
 				link_clone.send_message(Msg::AnimDone);
 			}) as Box<dyn Fn()>);
 
 			el.set_ontransitionend(Some(cb.as_ref().unchecked_ref()));
 			self.number_spin_anim_end_cb = Some(cb);
+
+			let body = self.body_ref.cast::<HtmlElement>().unwrap();
+			body.style().set_property("animation", format!("reveal-cards 0.65s linear {}s forwards", self.props.reveal_delay).as_str()).unwrap();
 		}
 	}
 }

@@ -657,6 +657,40 @@ FFFD77
     color: #F7F5AD;
 }
 
+.disappear {
+    animation-name: disappear;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+}
+
+.reveal {
+    animation-name: reveal-cards;
+    animation-duration: 0.65s;
+}
+
+@keyframes disappear {
+    from {
+        opacity: 100%;
+    }
+
+    to {
+        opacity: 0%;
+        display: none;
+    }
+}
+
+@keyframes reveal-cards {
+    from {
+        opacity: 0%;
+        transform: translateY(-1em);
+    }
+
+    to {
+        opacity: 100%;
+        transform: translateY(0em);
+    }
+}
+
 #member-number {
     transition: transform 0.25s;
 }
@@ -681,23 +715,6 @@ FFFD77
 
 .club-card div {
     transform: scaleY(-0.25em);
-}
-
-.club-card-reveal {
-    animation-name: reveal-cards;
-    animation-duration: 0.65s;
-}
-
-@keyframes reveal-cards {
-    from {
-        opacity: 0%;
-        transform: translateY(-1em);
-    }
-
-    to {
-        opacity: 100%;
-        transform: translateY(0em);
-    }
 }
 
 .club-card-header h1 {

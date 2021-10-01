@@ -93,15 +93,10 @@ impl ClubView {
 				{
 					for vec.iter().map(|x| {
 						html! {
-							<ClubCard style=String::from(format!("
-								animation-name: reveal-cards;
-								animation-duration: 0.65s;
-								animation-delay: {}s;
-								animation-fill-mode: forwards;
-								", {i += 0.1; i})) 
-								
+							<ClubCard
 								details=Mlk::new(x.clone())
 								parent_link=Mlk::new(self.link.clone())
+								reveal_delay={i += 0.1; i}
 							/>
 						}
 					})
