@@ -658,9 +658,8 @@ FFFD77
 }
 
 #member-number {
-    transition: transform 0.25s;
+    transition: transform 0.3s;
 }
-
 .number-spin {
     transform: rotateY(90deg);
 }

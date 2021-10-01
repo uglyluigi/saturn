@@ -6,7 +6,7 @@ edition = "2018"
 [dependencies]
 yew = "0.18"
 gloo-render = "0.1.0"
-wasm-bindgen = "0.2.76"
+wasm-bindgen = {version = "0.2.76", features = ["serde-serialize"]}
 js-sys = "0.3.53"
 yew-router = "0.15.0"
 anyhow = "1.0.43"
@@ -43,5 +43,9 @@ features = [
   'Window',
   'HtmlCollection',
   'CssStyleDeclaration',
-  'DomTokenList'
+  'DomTokenList',
+  'Animation',
+  'AnimationEffect',
+  'AnimationTimeline',
+  'KeyframeEffect'
 ]

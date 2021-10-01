@@ -1,9 +1,11 @@
+use wasm_bindgen::{JsCast, prelude::Closure};
+use web_sys::{AnimationEffect, HtmlElement};
 use yew::{prelude::*, Properties};
 use crate::types::*;
 use crate::components::ClubView;
 use crate::tell;
 use yew::services::fetch::{FetchService, FetchTask, Request, Response, StatusCode};
-use regex;
+use regex::{self, Regex};
 
 
 pub struct ClubCard {
@@ -22,6 +24,8 @@ pub struct ClubCard {
 
 	number_ref: NodeRef,
 	member_count: i64,
+
+	number_spin_anim_end_cb: Option<Closure<dyn Fn()>>
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -43,6 +47,8 @@ pub enum Msg {
 
 	Leave,
 	DoneLeave,
+
+	AnimDone,
 }
 
 impl ClubCard {
@@ -84,7 +90,7 @@ impl Component for ClubCard {
 			member_count: props.details.unwrap().member_count.clone(),
 
 			props,
-
+			number_spin_anim_end_cb: None
 		}
 	}
 
@@ -169,22 +175,8 @@ impl Component for ClubCard {
 			},
 
 			Msg::DoneJoin => {
-				let el = self.number_ref.cast::<web_sys::HtmlElement>().unwrap();
+				let el = self.number_ref.cast::<HtmlElement>().unwrap();
 				el.class_list().add_1("number-spin").unwrap();
-
-				el.set_ontransitionend(Some(&js_sys::Function::new_with_args("trans", stringify! {
-					setTimeout(() => {
-						const el = document.getElementById("member-number");
-						console.log(trans);
-
-						if (el.classList.contains("number-spin")) {
-							el.innerHTML = parseInt(el.innerHTML) + 1 + "";
-							el.classList.remove("number-spin");
-							el.ontransionend = null;
-						}
-					}, 100);
-
-				})));
 
 				self.show_login_or_logout = String::from("logout");
 				drop(self.delete_fetch_task.take());
@@ -229,48 +221,16 @@ impl Component for ClubCard {
 				let el = self.number_ref.cast::<web_sys::HtmlElement>().unwrap();
 				el.class_list().add_1("number-spin").unwrap();
 
-				
-
-				for _ in 0..10 {
-					let computed_style = yew::utils::window().get_computed_style(&el).unwrap();
-
-					match yew::utils::window().get_computed_style(&el) {
-						Ok(cs) => {
-							match cs {
-								Some(cs) => {
-									tell!("{}", cs.get_property_value("transform").unwrap());
-								},
-
-								None => {
-									tell!("Failed to get computed style for element");
-								}
-							}
-						},
-
-						Err(e) => {
-							tell!("OH GOD OH FUCK WTF {:?}", e);
-						}
-					}
-				}
-				
-
-
-
-				el.set_ontransitionend(Some(&js_sys::Function::new_with_args("trans", stringify! {
-					setTimeout(() => {
-						const el = document.getElementById("member-number");
-						console.log(trans);
-
-						if (el.classList.contains("number-spin")) {
-							el.innerHTML = parseInt(el.innerHTML) - 1 + "";
-							el.classList.remove("number-spin");
-							el.ontransionend = null;
-						}
-					}, 50);
-
-				})));
-
 				drop(self.leave_fetch_task.take());
+			},
+
+			Msg::AnimDone => {
+				let el = self.number_ref.cast::<HtmlElement>().unwrap();
+
+				if el.class_list().contains("number-spin") {
+					el.class_list().remove_1("number-spin").unwrap();
+					self.member_count += 1;
+				}
 			}
 		}
 
@@ -322,6 +282,21 @@ impl Component for ClubCard {
 					}
 				</div>
 			</div>
+		}
+	}
+
+	fn rendered(&mut self, first: bool) {
+		if first {
+			let el = self.number_ref.cast::<web_sys::HtmlElement>().unwrap();
+			let link_clone = self.link.clone();
+
+			let cb = Closure::wrap(Box::new(move || {
+				tell!("Anim done");
+				link_clone.send_message(Msg::AnimDone);
+			}) as Box<dyn Fn()>);
+
+			el.set_ontransitionend(Some(cb.as_ref().unchecked_ref()));
+			self.number_spin_anim_end_cb = Some(cb);
 		}
 	}
 }
