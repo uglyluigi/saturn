@@ -658,10 +658,14 @@ FFFD77
 }
 
 #member-number {
-    transition: transform 0.3s;
+    transition: transform 0.25s;
 }
-.number-spin {
+.number-spin-in {
     transform: rotateY(90deg);
+}
+
+.number-spin-out {
+    transform: rotateY(-90deg);
 }
 
 .club-card h1 {

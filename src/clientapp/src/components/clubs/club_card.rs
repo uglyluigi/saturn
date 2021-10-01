@@ -25,7 +25,18 @@ pub struct ClubCard {
 	number_ref: NodeRef,
 	member_count: i64,
 
-	number_spin_anim_end_cb: Option<Closure<dyn Fn()>>
+	number_spin_anim_end_cb: Option<Closure<dyn Fn()>>,
+
+	// This is used to keep track of whether or not the animation
+	// that spins the number around when you join or leave a club
+	// has just rotated the number such that you can't see it anymore.
+	// During this time the number is incremented, and the class is removed,
+	// reversing the transition. However, since it's playing twice, the
+	// event fires twice. This state is used to know whether or not the AnimDone
+	// message needs to ignore the event, as nothing needs to happen after
+	// the number spins back into view, but if we don't ignore it when it spins back
+	// then the number is incremented twice.
+	number_spin_anim_state: Option<AnimState>,
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -51,6 +62,24 @@ pub enum Msg {
 	AnimDone,
 }
 
+enum AnimState {
+	In,
+	Out
+}
+
+impl std::ops::Neg for AnimState {
+	type Output = Self;
+
+	fn neg(self) -> Self::Output {
+		use AnimState::*;
+
+		match self {
+			In => Out,
+			Out => In,
+		}
+	}
+}
+
 impl ClubCard {
 	pub fn delete_btn(&self) -> Html {
 		let delete = self.link.callback(|_: MouseEvent| Msg::Delet);
@@ -72,7 +101,6 @@ impl Component for ClubCard {
 	type Properties = Props;
 
 	fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-		//TODO like button is already toggled based on if the user liked this club
 		Self {
 			link,
 			show_login_or_logout: if props.details.unwrap().is_member { String::from("logout") } else { String::from("login") },
@@ -90,7 +118,9 @@ impl Component for ClubCard {
 			member_count: props.details.unwrap().member_count.clone(),
 
 			props,
-			number_spin_anim_end_cb: None
+
+			number_spin_anim_end_cb: None,
+			number_spin_anim_state: None,
 		}
 	}
 
@@ -175,9 +205,12 @@ impl Component for ClubCard {
 			},
 
 			Msg::DoneJoin => {
+				// Get the element and activate the transition
 				let el = self.number_ref.cast::<HtmlElement>().unwrap();
-				el.class_list().add_1("number-spin").unwrap();
+				el.class_list().add_1("number-spin-in").unwrap();
+				self.number_spin_anim_state = Some(AnimState::In);
 
+				// Update the icon to the "logout" icon
 				self.show_login_or_logout = String::from("logout");
 				drop(self.delete_fetch_task.take());
 			},
@@ -216,20 +249,26 @@ impl Component for ClubCard {
 			},
 
 			Msg::DoneLeave => {
-				self.show_login_or_logout = String::from("login");
-				
+				// Get element, activate transition
 				let el = self.number_ref.cast::<web_sys::HtmlElement>().unwrap();
-				el.class_list().add_1("number-spin").unwrap();
+				el.class_list().add_1("number-spin-out").unwrap();
+				self.number_spin_anim_state = Some(AnimState::In);
 
+				// Update icon
+				self.show_login_or_logout = String::from("login");
 				drop(self.leave_fetch_task.take());
 			},
 
 			Msg::AnimDone => {
 				let el = self.number_ref.cast::<HtmlElement>().unwrap();
+				let classes = el.class_list();
 
-				if el.class_list().contains("number-spin") {
-					el.class_list().remove_1("number-spin").unwrap();
+				if classes.contains("number-spin-in") {
+					classes.remove_1("number-spin-in").unwrap();
 					self.member_count += 1;
+				} else if classes.contains("number-spin-out") {
+					classes.remove_1("number-spin-out").unwrap();
+					self.member_count -= 1;
 				}
 			}
 		}
