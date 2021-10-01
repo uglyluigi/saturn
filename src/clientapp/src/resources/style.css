@@ -659,7 +659,7 @@ FFFD77
 
 .disappear {
     animation-name: disappear;
-    animation-duration: 1s;
+    animation-duration: 0.25s;
     animation-fill-mode: forwards;
 }
 

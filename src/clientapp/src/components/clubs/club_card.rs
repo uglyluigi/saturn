@@ -176,7 +176,9 @@ impl Component for ClubCard {
 				el.style().remove_property("animation").unwrap();
 				el.class_list().add_1("disappear").unwrap();
 
-				self.props.parent_link.unwrap().send_message(crate::components::club_view::Msg::GetClubDetails(None));
+
+				let link_clone = self.props.parent_link.unwrap().clone();
+				el.set_onanimationend(Some(Closure::once_into_js(move || link_clone.send_message(crate::components::club_view::Msg::GetClubDetails(None))).unchecked_ref()));
 			},
 
 			Msg::Join => {
