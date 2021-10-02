@@ -1,12 +1,18 @@
 const path = require('path');
 const pkg = require('./package.json');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
 const buildPath = './build/';
 
 module.exports = {
   entry: ['./src/entry.js'],
   output: {
     filename: "bg.js",
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [new UglifyJsPlugin()],
   },
   mode: 'development',
   target: 'web',
@@ -25,6 +31,5 @@ module.exports = {
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin({'title': '3D-Reflective-Star-Anim-Bg'})
-  ]
+    new HtmlWebpackPlugin({'title': '3D-Reflective-Star-Anim-Bg'})  ],
 }
