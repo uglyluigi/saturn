@@ -44,6 +44,7 @@ pub struct ClubCard {
 pub struct Props {
 	pub details: Mlk<ClubDetails>,
 	pub parent_link: Mlk<ComponentLink<ClubView>>,
+	#[prop_or(0.0)]
 	pub reveal_delay: f32,
 }
 

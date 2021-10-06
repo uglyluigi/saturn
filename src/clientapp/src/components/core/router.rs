@@ -17,7 +17,9 @@ pub enum AppRoute {
 	#[to = "/!"]
 	Home,
 	#[to = "/search"]
-	Search
+	Search,
+	#[to = "/new_club"]
+	ClubForm,
 }
 
 pub type AppRouter = Router<AppRoute>;

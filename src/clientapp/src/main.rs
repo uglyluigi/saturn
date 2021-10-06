@@ -4,10 +4,10 @@ mod types;
 mod flags;
 use components::{
 	coolshit::ThreeJSViewport,
-	core::{router::*, NotFound},
+	core::{router::*, NotFound, Toolbar},
 	login::{Home, LoginPage},
-	search::*
-
+	search::*,
+	NewClubPage,
 };
 use yew_router::{prelude::*, switch::Permissive};
 
@@ -55,10 +55,6 @@ impl Model {
 				html! { <LoginPage/> }
 			}
 
-			AppRoute::Home => {
-				html! { <Home/> }
-			}
-
 			AppRoute::NotFound(Permissive(route)) => {
 				html! { <NotFound route=route /> }
 			}
@@ -67,8 +63,10 @@ impl Model {
 				html! { <ThreeJSViewport/> }
 			}
 
-			AppRoute::Search => {
-				html! {<SearchBar/>}
+			_  => {
+				html! { 
+					<Home route=switch/> 
+				}
 			}
 		}
 	}

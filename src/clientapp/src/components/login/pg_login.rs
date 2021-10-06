@@ -45,7 +45,6 @@ impl Component for LoginPageComponent {
 		html! {
 			<div class="login-page">
 				<canvas height="100" width="100" id="login-canvas"></canvas>
-				<script defer=true src="bg.js"/>
 
 				<div class="auth-header">
 					<img class="saturn-logo" src="assets/saturn-logo.svg" alt="Saturn logo"/>
@@ -60,6 +59,7 @@ impl Component for LoginPageComponent {
 						{"Please log in to proceed."}
 
 						<GoogleLoginButton/>
+						
 						{
 							if *IS_DEBUG_MODE {
 								html! {
@@ -85,6 +85,8 @@ impl Component for LoginPageComponent {
 						}
 					}
 				}
+
+				<script defer=true src="bg.js"/>
 			</div>
 		}
 	}

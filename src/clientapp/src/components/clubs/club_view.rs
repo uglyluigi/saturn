@@ -378,29 +378,6 @@ impl Component for ClubView {
 	}
 
 	fn view(&self) -> Html {
-		// Hook that listens to scroll events and hides the fab after scrolling down a little
-		yew::utils::window()
-			.set_onscroll(Some(&Function::new_with_args(
-				"event",
-				stringify! {
-					let scroll = window.scrollY;
-					let fab = document.getElementById("fab");
-
-					const UPPER_BOUND = 150; // height in px (?) of how far the user has to scroll down to hide the fab
-					const reveal = "fab-reveal";
-					const conceal = "fab-conceal";
-
-					if (scroll > 0 && scroll < 150) {
-						fab.classList.remove(conceal);
-						fab.classList.add(reveal);
-					} else if (scroll > UPPER_BOUND) {
-						fab.classList.remove(reveal);
-						fab.classList.add(conceal);
-					}
-				},
-			)));
-
-
 		if let Yes(route) = &self.redirect {
 			html! {
 				<AppRedirect route=route.clone()/>
@@ -408,9 +385,6 @@ impl Component for ClubView {
 		} else {
 			html! {
 				<>
-					// Script that animates the clubs as they fill the screen
-					<Toolbar username=self.props.first_name.clone()/>
-
 					{
 						match &self.clubs_fetch_state {
 							FetchState::Failed(maybe_msg) => {
@@ -460,15 +434,10 @@ impl Component for ClubView {
 
 					<div class="club-view">
 						{
-							if *IS_DEBUG_MODE {
-								self.debug_view()
-							} else {
-								self.normal_view()
-							}
+							self.normal_view()
 						}
 					</div>
 
-					<Fab parent_link=self.link.clone()/>
 					<ClubDialog dialog_anim_class=String::from("new-club-dialog-anim-in") bg_anim_class=String::from("modal-bg-anim-in") show=self.show_dialog parent_link=self.link.clone()/>
 				</>
 			}

@@ -5,12 +5,7 @@ use yew::{
 	services::fetch::{FetchService, FetchTask, Request, Response, StatusCode},
 };
 
-use crate::{
-	components::{core::*, ClubView},
-	tell,
-	types::*,
-	flags::*,
-};
+use crate::{components::{ClubView, NewClubPage, SearchBar, core::*, core::router::*}, flags::*, tell, types::*};
 
 pub enum Msg {
 	FetchUserInfo,
@@ -23,18 +18,25 @@ pub struct Home {
 	fetch_task: Option<FetchTask>,
 	fetch_state: FetchState<AuthDetails>,
 	details: Option<AuthDetails>,
+	props: Props,
+}
+
+#[derive(Properties, Clone)]
+pub struct Props {
+	pub route: AppRoute,
 }
 
 impl Component for Home {
 	type Message = Msg;
-	type Properties = ();
+	type Properties = Props;
 
-	fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
+	fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
 		Self {
 			link,
 			fetch_task: None,
 			details: None,
 			fetch_state: FetchState::Waiting,
+			props,
 		}
 	}
 
@@ -103,16 +105,13 @@ impl Component for Home {
 		true
 	}
 
-	fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-		false
+	fn change(&mut self, props: Self::Properties) -> ShouldRender {
+		self.props = props;
+		true
 	}
 
 	fn view(&self) -> Html {
-		if *IS_DEBUG_MODE {
-			self.debug_view()
-		} else {
-			self.normal_view()
-		}
+		self.normal_view()
 	}
 
 	fn rendered(&mut self, first: bool) {
@@ -123,21 +122,40 @@ impl Component for Home {
 }
 
 impl Home {
-	fn debug_view(&self) -> Html {
-		html! {
-			<ClubView first_name=String::from("Adrian") last_name=String::from("Brody")/>
-		}
-	}
-
 	fn normal_view(&self) -> Html {
 		match &self.fetch_state {
 			FetchState::Waiting => html! {
 				<h1> {"Waiting..."} </h1>
 			},
 
-			FetchState::Done(details) => html! {
-				//TODO handle token timeout. Just send Msg::RequestUserData again
-				<ClubView first_name=details.first_name.clone().unwrap() last_name=details.last_name.clone().unwrap()/>
+			FetchState::Done(details) => {
+				html! {
+					<>
+						<Toolbar username=details.first_name.clone().unwrap()/>
+
+						{
+							match self.props.route {
+								AppRoute::Home => {
+									html! {
+										<ClubView first_name=details.first_name.clone().unwrap() last_name=details.last_name.clone().unwrap()/>
+									}
+								},
+								AppRoute::Search => {
+									html! {
+										<SearchBar/>
+									}
+								},
+								AppRoute::ClubForm => {
+									html! {
+										<NewClubPage/>
+									}
+								},
+			
+								_ => unreachable!()
+							}
+						}
+					</>
+				}
 			},
 
 			FetchState::Failed(maybe_error) => {

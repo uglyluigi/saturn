@@ -44,13 +44,10 @@ impl Component for SearchBar {
 
     fn view(&self) -> Html {
         html!{
-            <>
-            <Toolbar username="Baby Seal Clubber"/>
             <div class="search-bar-container">
                 <h1 class="search-bar-h1"> {"find something "} <i>{" totally "}</i> {" you."} </h1>
                 <input class="search-bar-input" placeholder="I'm looking for..."/>
             </div>
-            </>
         }
     }
 }

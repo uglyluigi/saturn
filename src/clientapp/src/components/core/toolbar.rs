@@ -36,6 +36,10 @@ impl Component for ToolbarComponent {
 			<div class="toolbar">
 				<div class="toolbar-inner-component">	
 					<AppAnchor route=AppRoute::Home><img id="logo" src="./assets/saturn-logo.svg"/></AppAnchor>
+					<div class="toolbar-text-link">
+						<AppAnchor route=AppRoute::Search>{ "Search" }</AppAnchor>
+						<AppAnchor route=AppRoute::ClubForm>{ "Make New Club" }</AppAnchor>
+					</div>
 				</div>
 				<div class="toolbar-inner-component-right-side">
 					<h1>{"Hi, "} {self.props.username.clone()}</h1>
