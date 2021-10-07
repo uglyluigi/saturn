@@ -454,7 +454,6 @@ html {
 .toolbar .toolbar-text-link {
     height: initial;
     margin: auto;
-    display: inline-flex;
     font-family: 'Open Sans';
     color: #D2DDDE;
     text-align: center;
@@ -462,6 +461,14 @@ html {
     font-size: 17px;
     text-decoration: none;
     vertical-align: middle;
+}
+
+.toolbar .toolbar-pfp {
+    width: 2.5em;
+    height: 2.5em;
+    display: inline-flex;
+    align-self: center;
+    border-radius: 25em;
 }
 
 

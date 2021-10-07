@@ -131,7 +131,7 @@ impl Home {
 			FetchState::Done(details) => {
 				html! {
 					<>
-						<Toolbar username=details.first_name.clone().unwrap()/>
+						<Toolbar pfp_url=details.picture.as_ref().unwrap().clone() username=details.first_name.clone().unwrap()/>
 
 						{
 							match self.props.route {

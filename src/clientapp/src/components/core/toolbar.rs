@@ -13,6 +13,7 @@ enum Msg {
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {
 	pub username: String,
+	pub pfp_url: String,
 }
 
 impl Component for ToolbarComponent {
@@ -42,6 +43,7 @@ impl Component for ToolbarComponent {
 					</div>
 				</div>
 				<div class="toolbar-inner-component-right-side">
+					<img class="toolbar-pfp" src=self.props.pfp_url.clone()/>
 					<h1>{"Hi, "} {self.props.username.clone()}</h1>
 				</div>
 			</div>
