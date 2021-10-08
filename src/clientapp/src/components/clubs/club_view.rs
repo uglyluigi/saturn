@@ -9,7 +9,7 @@ use crate::{
 		clubs::CreateClubFloatingActionButton as Fab,
 		coolshit::Spinner,
 		core::{router::*, Toolbar},
-		ClubCard, ClubDialog,
+		ClubCard,
 	},
 	tell,
 	types::*,
@@ -126,21 +126,6 @@ impl ClubView {
 			},
 
 			_ => html! { <> </> }
-		}
-	}
-
-	pub fn debug_view(&self) -> Html {
-		// Make fake cards
-		use crate::components::clubs::dummy_data::DummyData;
-
-		let fake_info = DummyData::new();
-
-		html! {
-			<>
-				{
-					self.make_cards(&fake_info.club_details)
-				}
-			</>
 		}
 	}
 }
@@ -437,8 +422,6 @@ impl Component for ClubView {
 							self.normal_view()
 						}
 					</div>
-
-					<ClubDialog dialog_anim_class=String::from("new-club-dialog-anim-in") bg_anim_class=String::from("modal-bg-anim-in") show=self.show_dialog parent_link=self.link.clone()/>
 				</>
 			}
 		}

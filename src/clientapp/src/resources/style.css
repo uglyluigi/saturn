@@ -12,37 +12,28 @@ $TEXT_1_OFF_WHITE:#D2DDDE;
 $FONT_BODY: 'Poppins', sans-serif;
 **/
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap%27');
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
 
 h1, h2, h3, p, body {
+    font-family: 'Open Sans';
+    font-weight: 600;
     margin: 0;
     padding: 0;
 }
 
 h1 {
-    font-family: 'Open Sans';
     font-weight: 700;
-    font-color: #D2DDDE;
 }
 
-h2 {
-    font-family: Poppins;
-    font-size: 30pt;
+h2, h3 {
+    font-weight: 600;
 }
 
 /* Horizontal line */
 hr {
     border-top: 1px solid #D2DDDE;
     width: 90%;
-}
-
-p {
-    font-family: Poppins;
-}
-
-body {
-/*background: linear-gradient(#2bc29f, #4C1A88);*/
 }
 
 html {
@@ -111,6 +102,11 @@ html {
     font-size: 20pt;
     text-align: center;
     padding-bottom: 0.5em;
+}
+
+.login-page .g_id_signin {
+    display: inline-flex;
+    align-self: center;
 }
 
 .auth-header {
@@ -292,26 +288,6 @@ html {
 
 #fab:hover button {
     color: #2bc29f;
-}
-
-#preview {
-    color: white;
-    font-family: 'Open Sans';
-}
-
-#long-club-description-input {
-    width: 100%;
-    height: 20em;
-    background-color: #171738;
-    border-radius: 2px;
-    border: 1px solid white;
-    color: white;
-    font-size: 16px;
-    font-family: 'Space Mono';
-}
-
-#long-club-description-input:focus {
-    outline: none;
 }
 
 .new-club-dialog-anim-in {
@@ -508,19 +484,18 @@ html {
 
 .club-fetch-status-msg {
     background-color: #171738;
-    padding: 1em;
+    padding: 0.5em;
+    display: flex;
+    flex-direction: row;
     margin: auto;
-    margin-top: 1em;
+    margin-top: 0.5em;
     border-radius: 8px;
     width: auto;
     height: auto;
     text-align: center;
 }
 
-.club-view-msgs {
-    display: flex;
-    flex-direction: column;
-}
+
 
 #club-load-failed h2 {
     color: #EF626C;
@@ -820,10 +795,105 @@ FFFD77
 .new-club-page {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: left;
+    padding-left: 1em;
+    padding-right: 1em;
 }
 
-.new-club-page h1 {
+#description-and-preview-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1em;
+}
+
+@media only screen and (max-width: 800px) {
+    #description-and-preview-container {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 1em;
+    }
+}
+
+#preview {
+    border: 1px solid black;
+}
+
+.new-club-page #description-and-preview-container #preview * {
     color: black;
-    font-size: 60px;
+}
+
+.new-club-page a {
+    color: blue;
+}
+
+.new-club-page > h1 {
+    font-size: 50px;
+
+}
+
+.new-club-page > h1, p {
+    margin-bottom: 0.5em;    
+    margin-top: 0.5em;
+}
+
+.new-club-page > button {
+    font-family: 'Open Sans';
+    font-size: 20px;
+    width: 2em;
+    outline: none;
+    border: none;
+    border-radius: 8px;
+    background-color: #60D394;
+    color: white;
+    transition: background-color 0.25s;
+    margin-top: 0.5em;
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.7);
+}
+
+.new-club-page > button:hover {
+    background-color: #FFCAAF;
+}
+
+.new-club-page > button:active {
+    background-color: #2E4052;
+}
+
+
+.new-club-page > #club-name-field {
+    width: 40%;
+    font-size: 30px;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid black;
+    margin-bottom: 1em;
+}
+
+.new-club-page > #club-name-field::placeholder {
+    opacity: 0.8;
+}
+
+#long-club-description-input {
+    height: 20em;
+    background-color: #171738;
+    border-radius: 2px;
+    border: 1px solid white;
+    font-family: 'Open Sans';
+    font-weight: 600;
+    color: white;
+    font-size: 16px;
+    resize: none;
+    border-radius: 8px;
+    padding: 0.5em;
+}
+
+#long-club-description-input:focus {
+    outline: none;
+}
+
+#preview {
+    color: white;
+    font-family: 'Open Sans';
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    border-radius: 8px;
 }

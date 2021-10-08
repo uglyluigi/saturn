@@ -117,7 +117,8 @@ impl Component for NewClubPage {
 
 				WhichTextField::TheLongDescriptionOne => {
 					if self.preview_div.is_none() {
-						self.preview_div = if let Ok(el) = yew::utils::document().create_element("preview") {
+						self.preview_div = if let Ok(el) = yew::utils::document().create_element("div") {
+							el.set_id("preview");
 							Some(el)
 						} else {
 							None
@@ -138,9 +139,9 @@ impl Component for NewClubPage {
 
 				if let (Some(name), Some(body)) = (
 					self.club_name_field_contents.clone(),
-					self.club_body_field_contents.clone(),
+					self.long_club_description_contents.clone(),
 				) {
-					let json = json!({"name": Value::String(name), "body": Value::String(body)});
+					let json = json!({"name": Value::String(name), "body": body.replace("\\", "\\\\")});
 					let request = Request::post("/api/clubs/create")
 						.body(Json(&json))
 						.unwrap();
@@ -211,25 +212,25 @@ impl Component for NewClubPage {
                 <div class="new-club-page">
                     <h1>{"Create new club"}</h1>
 
-					<div class="inputs">
-						<input autocomplete="off" type="text" id="club-name-field" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
-						<input autocomplete="off" type="text" oninput=club_body_field_callback value=self.club_body_field_contents.clone() placeholder="Club Body"/>
+					<input autocomplete="off" type="text" id="club-name-field" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
+					<div>
+						<h2>{"Make your club stand out with some Markdown!"}</h2>
+						<p>{"Type in the markdown editor below and describe your organization the way you like it!"}</p>
 					</div>
-
                     <div>
-                        <div>
+                        <div id="description-and-preview-container">
+							<h3>{"Body text"}</h3>
+							<h3>{"Preview"}</h3>
                             <textarea id="long-club-description-input" value=self.long_club_description_contents.clone() oninput=long_description_field_callback/>
+							{ 
+								self.get_preview()
+							}
                         </div>
 
-                        <div id="preview">
-                            { self.get_preview() }
-                        </div>
+                        
                     </div>
 
-                    <div id="dialog-buttons">
-                        <button class="dialog-button" id="club-dialog-close-btn" onclick=close_cb>{"Close"}</button>
-                        <button class="dialog-button" id="club-dialog-ok-btn" onclick=self.link.callback(|_: MouseEvent| {Msg::ValidateForm})>{"OK"}</button>
-                    </div>
+					<button onclick=self.link.callback(|_: MouseEvent| {Msg::ValidateForm})>{"OK"}</button>
                 </div>
                 
                 <script>
