@@ -262,7 +262,6 @@ impl Component for ClubView {
 
 				match req {
 					Ok(req) => {
-						// TODO the response type in this callback is probably gonna have to change when all clubs are gotten from backend
 						let callback = self.link.callback(
 							|response: Response<Json<Result<Vec<ClubDetails>, anyhow::Error>>>| {
 								match response.status() {
@@ -271,7 +270,10 @@ impl Component for ClubView {
 										let Json(body) = response.into_body();
 
 										match body {
-											Ok(deets) => ReceiveClubDetails(Some(deets)),
+											Ok(deets) => {
+												tell!("Received deets: {:?}", deets);
+												ReceiveClubDetails(Some(deets))
+											},
 											Err(err) => {
 												tell!("Failed to deser auth data: {}", err);
 												Msg::ReceiveClubDetails(None)
@@ -369,53 +371,47 @@ impl Component for ClubView {
 			}
 		} else {
 			html! {
-				<>
-					{
-						match &self.clubs_fetch_state {
-							FetchState::Failed(maybe_msg) => {
-								html! {
-									<div class="club-view-msgs">
-										<div class="club-fetch-status-msg">
-											<div id="club-load-failed">
-												<h2>{"Failed to get clubs."}</h2>
-											</div>
-										</div>
-									</div>
-				
-								}
-							},
-				
-							FetchState::Waiting => {
-								html! {
-									<div class="club-view-msgs" >
-										<div class="club-fetch-status-msg" id="fetching-msg">
+				<>				
+					<div class="club-view-fetch-info">
+						{
+							
+							match &self.clubs_fetch_state {
+								FetchState::Failed(maybe_msg) => {
+									html! {
+										<span class="bad">
+											<h2>{"Failed to fetch clubs."}</h2>
+										</span>
+									}
+								},
+					
+								FetchState::Waiting => {
+									html! {
+										<span class="fetching">
 											<h2>{"Fetching clubs"}</h2>
 											<Spinner/>
-										</div>
-									</div>
-								}
-							},
-
-							FetchState::Done(deets) => {
-								if deets.len() == 0 {
-									html! {
-										<div class="club-view-msgs">
-											<div class="club-fetch-status-msg">
-												<div class="club-fetch-status-msg" id="be-first-msg">
-												<h2>{ "Be the first to post your own club!" }</h2>
-												</div>
-											</div>
-										</div>
+										</span>
 									}
-								} else {
-									html! {
-										<>
-										</>
+								},
+
+								FetchState::Done(deets) => {
+									if deets.len() == 0 {
+										html! {
+											<span class="bad">
+												<h2>
+													{ "Be the first to post your own club!" }
+												</h2>
+											</span>
+										}
+									} else {
+										html! {
+											<>
+											</>
+										}
 									}
 								}
 							}
 						}
-					}
+					</div>	
 
 					<div class="club-view">
 						{

@@ -23,8 +23,6 @@ impl Component for Spinner {
 	fn view(&self) -> Html {
 		html! {
 			<div class="spinner">
-				<div class="cube1"></div>
-				<div class="cube2"></div>
 			</div>
 		}
 	}

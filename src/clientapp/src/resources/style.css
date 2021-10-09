@@ -448,13 +448,7 @@ html {
 }
 
 
-
-
-
-
-
-
-
+/** CLUB VIEW **/
 
 
 
@@ -464,6 +458,34 @@ html {
     gap: 1em;
     grid-template-rows: auto;
 }
+
+/** Info pop-ups to indicate fetching **/
+
+.club-view-fetch-info {
+    display: flex;
+    height: auto;
+    width: auto;
+    justify-content: center;
+}
+
+.club-view-fetch-info > span {
+    display: inline-flex;
+    flex-direction: row;
+    background-color: #171738;
+    margin: 1em;
+    border-radius: 8px;
+    align-items: center;
+}
+
+.club-view-fetch-info > span > h2 {
+    padding: 0.5em;
+    color: white;
+}
+
+.club-view-fetch-info > span > .spinner {
+    margin: 0.5em;
+}
+
 
 @media only screen and (max-width: 1300px) {
     .club-view {
@@ -482,44 +504,6 @@ html {
     }
 }
 
-.club-fetch-status-msg {
-    background-color: #171738;
-    padding: 0.5em;
-    display: flex;
-    flex-direction: row;
-    margin: auto;
-    margin-top: 0.5em;
-    border-radius: 8px;
-    width: auto;
-    height: auto;
-    text-align: center;
-}
-
-
-
-#club-load-failed h2 {
-    color: #EF626C;
-}
-
-#be-first-msg {
-    color: #2E933C;
-}
-
-#fetching-msg {
-    display: flex;
-    flex-direction: row;
-}
-
-#fetching-msg h2 {
-    color: #7300FF;
-    right: 1em;
-}
-
-/*
-Colors I really like for variants of the club card
-EF626C
-FFFD77
-*/
 .club-card {
     height: auto;
     width: auto;
@@ -686,66 +670,28 @@ FFFD77
     padding-bottom: 1em;
 }
 
-#club-spinner {
-    display: flex;
-    flex-direction: row;
-    color:#7300FF;
-    justify-content: center;
-}
-
-#club-spinner h2 {
-    margin-right: 0.50em;
-}
-
 .spinner {
-    width: 40px;
-    height: 40px;
-    position: relative;
-    transform: scale(0.65);
-  }
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:#2bc29f;
+    -webkit-mask:
+      repeating-conic-gradient(#0000 0deg,#000 1deg 70deg,#0000 71deg 90deg),
+      radial-gradient(farthest-side,#0000 calc(100% - 9px),#000 calc(100% - 8px));
+    -webkit-mask-composite: destination-in;
+    mask-composite: intersect;
+    animation: s5 1s infinite;
+}
   
-  .cube1, .cube2 {
-    background-color: hsla(267, 100%, 50%);
-    width: 15px;
-    height: 15px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    
-    -webkit-animation: sk-cubemove 1.8s infinite ease-in-out;
-    animation: sk-cubemove 1.8s infinite ease-in-out;
-  }
-  
-  .cube2 {
-    -webkit-animation-delay: -0.9s;
-    animation-delay: -0.9s;
-  }
-  
-  @-webkit-keyframes sk-cubemove {
-    25% { -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5) }
-    50% { -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg) }
-    75% { -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5) }
-    100% { -webkit-transform: rotate(-360deg) }
-  }
-  
-  @keyframes sk-cubemove {
-    25% { 
-      transform: translateX(42px) rotate(-90deg) scale(0.5);
-      -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5);
-    } 50% { 
-      transform: translateX(42px) translateY(42px) rotate(-179deg);
-      -webkit-transform: translateX(42px) translateY(42px) rotate(-179deg);
-    } 50.1% { 
-      transform: translateX(42px) translateY(42px) rotate(-180deg);
-      -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg);
-    } 75% { 
-      transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5);
-      -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5);
-    } 100% { 
-      transform: rotate(-360deg);
-      -webkit-transform: rotate(-360deg);
+@keyframes s5 {
+    0% {
+        transform: rotate(0turn);
     }
-  }
+
+    100% {
+        transform: rotate(1turn);
+    }
+}
   
 .search-bar-container{
     width:100%;

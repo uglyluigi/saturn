@@ -136,6 +136,8 @@ impl Component for ClubCard {
 			Msg::Delet => {
 				let req = Request::delete(format!("/api/clubs/{}", self.props.details.unwrap().id)).body(yew::format::Nothing);
 
+				//FIXME back end tends to return 408 for delete requests which does actually delete it but sometimes it does so too slowly
+				//to be reflected on the front end the first time it is refreshed.
 				match req {
 					Ok(req) => {
 						let callback = self.link.callback(|response: Response<Result<String, anyhow::Error>>| {
