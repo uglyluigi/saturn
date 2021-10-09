@@ -92,7 +92,7 @@ pub fn rocket() -> Rocket<Build>{
         ])
         .mount("/.well-known", FileServer::from(relative!(".well-known")))
         .mount("/", FileServer::from(relative!("src/clientapp/dist")).rank(-1))
-        .mount("/assets/clubs", FileServer::from(relative!("uploads")).rank(-1))
+        .mount("/assets/clubs", FileServer::from(relative!("uploads")).rank(-2))
         .attach(AdHoc::on_response("404 Redirector", |_req, res| Box::pin(async move {
             if res.status() == Status::NotFound {
                 let body = std::fs::read_to_string("src/clientapp/dist/index.html").expect("Index file can't be found.");
