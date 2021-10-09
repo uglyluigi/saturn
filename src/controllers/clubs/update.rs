@@ -191,3 +191,26 @@ pub async fn appoint(user: User, db: Db, id: i32, request: Json<AppointModerator
         }
     }
 }
+
+#[put("/clubs/<id>/logo", data = "<file>")]
+pub async fn upload(user: User, db: Db, id: i32, mut file: Capped<TempFile<'_>>) -> std::result::Result<status::Accepted<()>, status::Custom<Option<Json<JsonError>>>> {
+    match user.get_membership_status_async(&db, &id).await {
+        MembershipStatus::Moderator(is_head) => {
+            if is_head{
+                if file.is_complete() {
+                    match file.persist_to(format!("uploads/{}.png",id)).await {
+                        Ok(_) => {return Ok(status::Accepted(None))},
+                        Err(_) => {return Err(status::Custom(Status::BadRequest, None))}
+                    }
+                } else {
+                    return Err(status::Custom(Status::BadRequest, None))
+                }
+            }else {
+                return Err(status::Custom(Status::Forbidden, None))
+            }
+        },
+        _ => {
+            return Err(status::Custom(Status::Forbidden, None))
+        }
+    }
+}

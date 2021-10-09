@@ -41,7 +41,9 @@ pub use rocket::config::SecretKey;
 pub use rocket::form::Form;
 pub use rocket::response::Redirect;
 pub use rocket::State;
-pub use std::sync::Arc;
+pub use rocket::data::Capped;
+pub use rocket::data::{Limits, ToByteUnit};
+pub use rocket::fs::TempFile;
 //Diesel
 pub use diesel::prelude::*;
 pub use diesel::pg::PgConnection;
@@ -54,3 +56,4 @@ pub use std::collections::HashMap;
 pub use std::env;
 pub use std::sync::RwLock;
 pub use jsonwebtoken::{encode, decode, Header, Algorithm, Validation, EncodingKey, DecodingKey};
+pub use std::sync::Arc;

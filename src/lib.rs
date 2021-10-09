@@ -36,12 +36,19 @@ pub fn rocket() -> Rocket<Build>{
         "url" => env::var("DATABASE_URL").expect("DATABASE_URL must be set").into()
     };
 
+    //Set Limits
+    let limits = Limits::default()
+        .limit("file", 0.kibibytes())
+        .limit("file/png", 1.megabytes())
+    ;
+
     //Build config
     let mut figment = Figment::from(rocket::Config::default())
         .merge(("address", "0.0.0.0"))
         .merge(("port", 443))
         .merge(("databases", map!["saturn" => db]))
         .merge(("secret_key", env::var("SECRET_KEY").expect("TLS_CERT_PATH must be set")))
+        .merge(("limits", limits))
     ;
 
     if env::var("IN_PRODUCTION").expect("TLS_CERT_PATH must be set") == "TRUE"{
@@ -72,6 +79,7 @@ pub fn rocket() -> Rocket<Build>{
             controllers::clubs::update::join,
             controllers::clubs::update::leave,
             controllers::clubs::update::appoint,
+            controllers::clubs::update::upload,
             controllers::clubs::delete::delete_admin,
             controllers::clubs::delete::delete_user,
             controllers::auth::login::login,
@@ -84,6 +92,7 @@ pub fn rocket() -> Rocket<Build>{
         ])
         .mount("/.well-known", FileServer::from(relative!(".well-known")))
         .mount("/", FileServer::from(relative!("src/clientapp/dist")).rank(-1))
+        .mount("/assets/clubs", FileServer::from(relative!("uploads")).rank(-1))
         .attach(AdHoc::on_response("404 Redirector", |_req, res| Box::pin(async move {
             if res.status() == Status::NotFound {
                 let body = std::fs::read_to_string("src/clientapp/dist/index.html").expect("Index file can't be found.");

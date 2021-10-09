@@ -13,4 +13,5 @@ node_modules
 *.code-workspace
 */dist/*
 src/clientapp/src/resources/bg.js
+uploads
 package-lock.json
