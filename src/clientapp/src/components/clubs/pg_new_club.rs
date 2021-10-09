@@ -141,6 +141,7 @@ impl Component for NewClubPage {
 					self.club_name_field_contents.clone(),
 					self.long_club_description_contents.clone(),
 				) {
+					//FIXME back end often returns 422 on markdown with newlines and probably other stuff
 					let json = json!({"name": Value::String(name), "body": body.replace("\\", "\\\\")});
 					let request = Request::post("/api/clubs/create")
 						.body(Json(&json))
@@ -219,18 +220,24 @@ impl Component for NewClubPage {
 					</div>
                     <div>
                         <div id="description-and-preview-container">
-							<h3>{"Body text"}</h3>
-							<h3>{"Preview"}</h3>
-                            <textarea id="long-club-description-input" value=self.long_club_description_contents.clone() oninput=long_description_field_callback/>
-							{ 
-								self.get_preview()
-							}
+							<span id="body-span">
+								<h3>{"Body text"}</h3>
+                            	<textarea value=self.long_club_description_contents.clone() oninput=long_description_field_callback/>
+								<button onclick=self.link.callback(|_: MouseEvent| {Msg::ValidateForm})>{"OK"}</button>
+							</span>
+
+							<span id="preview-span">
+								<h3>{"Preview"}</h3>
+
+								{ 
+									self.get_preview()
+								}
+							</span>
                         </div>
 
                         
                     </div>
 
-					<button onclick=self.link.callback(|_: MouseEvent| {Msg::ValidateForm})>{"OK"}</button>
                 </div>
                 
                 <script>

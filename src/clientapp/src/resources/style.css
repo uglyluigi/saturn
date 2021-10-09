@@ -782,22 +782,10 @@ html {
     margin-top: 0.5em;
 }
 
-.new-club-page > button {
-    font-family: 'Open Sans';
-    font-size: 20px;
-    width: 2em;
-    outline: none;
-    border: none;
-    border-radius: 8px;
-    background-color: #60D394;
-    color: white;
-    transition: background-color 0.25s;
-    margin-top: 0.5em;
-    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.7);
-}
+
 
 .new-club-page > button:hover {
-    background-color: #FFCAAF;
+    background-color: rgb(31, 196, 80);
 }
 
 .new-club-page > button:active {
@@ -811,15 +799,31 @@ html {
     outline: none;
     border: none;
     border-bottom: 1px solid black;
-    margin-bottom: 1em;
+    margin-bottom: 2em;
 }
 
 .new-club-page > #club-name-field::placeholder {
     opacity: 0.8;
 }
 
-#long-club-description-input {
+#description-and-preview-container button {
+    font-family: 'Open Sans';
+    font-size: 22px;
+    width: 5em;
+    outline: none;
+    border: none;
+    border-radius: 8px;
+    background-color: #2E4052;
+    color: white;
+    transition: background-color 0.25s;
+    margin-top: 0.5em;
+    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.7);
+}
+
+#description-and-preview-container #body-span textarea {
     height: 20em;
+    width: 100%;
+    box-sizing: border-box;
     background-color: #171738;
     border-radius: 2px;
     border: 1px solid white;
@@ -842,4 +846,9 @@ html {
     padding-left: 0.5em;
     padding-right: 0.5em;
     border-radius: 8px;
+    overflow-wrap: normal;
+}
+
+.new-club-page > div > p {
+    padding-bottom: 2em;
 }
