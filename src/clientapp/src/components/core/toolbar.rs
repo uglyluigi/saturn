@@ -39,7 +39,7 @@ impl Component for ToolbarComponent {
 					<AppAnchor route=AppRoute::Home><img id="logo" src="./assets/saturn-logo.svg"/></AppAnchor>
 					<div class="toolbar-text-link">
 						<AppAnchor route=AppRoute::Search>{ "Search" }</AppAnchor>
-						<AppAnchor route=AppRoute::ClubForm>{ "Make New Club" }</AppAnchor>
+						<AppAnchor route=AppRoute::ClubForm>{ "Add Club" }</AppAnchor>
 					</div>
 				</div>
 				<div class="toolbar-inner-component-right-side">
