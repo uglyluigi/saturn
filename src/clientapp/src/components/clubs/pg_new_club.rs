@@ -210,7 +210,7 @@ impl Component for NewClubPage {
 
 		html! {
             <div>
-                <div class="new-club-page">
+                <div class="content new-club-page">
                     <h1>{"Create new club"}</h1>
 
 					<input autocomplete="off" type="text" id="club-name-field" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
