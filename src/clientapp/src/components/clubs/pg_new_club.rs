@@ -215,7 +215,7 @@ impl Component for NewClubPage {
 
 					<input autocomplete="off" type="text" id="club-name-field" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
 					<div>
-						<h2>{"Club Description"}<small> {" markdown supported"}</h2>
+						<h2>{"Club Description"}<small> {" markdown supported"}</small></h2>
 					</div>
                     <div>
                         <div id="description-and-preview-container">
