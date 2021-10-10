@@ -311,7 +311,7 @@ impl Component for ClubCard {
 					</div>
 
 					<div id="right-col">
-						<img src={self.props.details.unwrap().head_moderator.picture.clone()}/>
+						<img src={format!("/assets/clubs/{}.png", self.props.details.unwrap().id)}/>
 						<p>{"Organizer"}</p>
 						<h2>{format!("{} {}", self.props.details.unwrap().head_moderator.first_name, self.props.details.unwrap().head_moderator.last_name)}</h2>
 					</div>
