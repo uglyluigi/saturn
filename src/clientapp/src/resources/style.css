@@ -369,13 +369,13 @@ html {
     width: 100%;
     background-color: #171738;
     display: flex;
-    height:3rem;
+    height: 5rem;
     flex-direction: row;   
 }
 
 .toolbar * {
     box-sizing: border-box;
-    height: 3rem;
+    height: 5rem;
 }
 
 .toolbar > .toolbar-inner-component {
