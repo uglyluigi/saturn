@@ -38,6 +38,8 @@ hr {
 
 html {
     min-height: 100%;
+    background-image: url("/assets/doodles.png");
+    background-repeat: repeat;
 }
 
 /* <--------- LOGIN ---------> */
