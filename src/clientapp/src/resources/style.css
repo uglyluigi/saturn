@@ -745,11 +745,13 @@ html {
 
 /* NEW CLUB WINDOW */
 .new-club-page {
+    background-color: white;
     display: flex;
     flex-direction: column;
-    align-items: left;
-    padding-left: 1em;
-    padding-right: 1em;
+    margin-top: 2em;
+    padding: 1em;
+    border-radius: .25em;
+    border: 1px solid #ccc;
 }
 
 #description-and-preview-container {
@@ -780,12 +782,11 @@ html {
 
 .new-club-page > h1 {
     font-size: 50px;
-
+    color:#2bc29f;
 }
 
-.new-club-page > h1, p {
+.new-club-page > h1{
     margin-bottom: 0.5em;    
-    margin-top: 0.5em;
 }
 
 
@@ -804,7 +805,7 @@ html {
     font-size: 30px;
     outline: none;
     border: none;
-    border-bottom: 1px solid black;
+    border-bottom: 3px solid #4c1a88;
     margin-bottom: 2em;
 }
 
@@ -840,6 +841,30 @@ html {
     resize: none;
     border-radius: 8px;
     padding: 0.5em;
+}
+
+#description-and-preview-container span > h3 {
+    color:#171738;
+}
+
+#description-and-preview-container button {
+    font-family: 'Open Sans';
+    font-size: 22px;
+    width: 5em;
+    outline: none;
+    border: none;
+    padding: .25em 1em;
+    border-radius: 40px;
+    background-color: #2E4052;
+    color: #fff;
+    transition: linear 0.25s;
+    margin-top: 0.5em;
+    background-color: #4c1a88;
+    cursor: pointer;
+}
+
+#description-and-preview-container button:hover {
+    color:#2bc29f;
 }
 
 #long-club-description-input:focus {
