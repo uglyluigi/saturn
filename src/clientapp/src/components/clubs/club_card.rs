@@ -322,7 +322,7 @@ impl Component for ClubCard {
 					<button id="club-card-expand-btn"><span class="material-icons">{"open_in_full"}</span></button>
 
 					{
-						if self.props.details.unwrap().is_moderator != "false" || * crate::flags::IS_DEBUG_MODE {
+						if self.props.details.unwrap().is_moderator != "false" {
 							html! {
 								<button id="club-card-delete-btn" onclick=delete_club><span class="material-icons">{"close"}</span></button>
 							}
@@ -351,7 +351,7 @@ impl Component for ClubCard {
 			self.number_spin_anim_end_cb = Some(cb);
 
 			let body = self.body_ref.cast::<HtmlElement>().unwrap();
-			body.style().set_property("animation", format!("reveal-cards 0.65s linear {}s forwards", self.props.reveal_delay).as_str()).unwrap();
+			body.style().set_property("animation", format!("reveal-cards 0.3s linear {}s forwards", self.props.reveal_delay).as_str()).unwrap();
 		}
 	}
 }

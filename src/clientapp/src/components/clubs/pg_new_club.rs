@@ -178,7 +178,8 @@ impl Component for NewClubPage {
 			Msg::PostClubDone => {
 				self.close();
 				self.reset();
-				self.link.send_message(Msg::UpdateClubs)
+				self.link.send_message(Msg::UpdateClubs);
+				self.post_task = None;
 			},
 
 			Msg::UpdateClubs => {
@@ -222,7 +223,30 @@ impl Component for NewClubPage {
 							<span id="body-span">
 								<h3>{"Body text"}</h3>
                             	<textarea value=self.long_club_description_contents.clone() oninput=long_description_field_callback/>
-								<button onclick=self.link.callback(|_: MouseEvent| {Msg::ValidateForm})>{"OK"}</button>
+								<button onclick=self.link.callback(|_: MouseEvent| {Msg::ValidateForm})>{"Submit"}</button>
+
+								{
+									if self.post_task.is_some() {
+										match &self.post_task_state {
+											FetchState::Waiting => html! {
+												{"Submitting club..."}
+											},
+				
+											FetchState::Done(_) => html! {
+												{"Done."}
+											},
+				
+											FetchState::Failed(_) => html! {
+												{"Failed."}
+											}
+										}
+									} else {
+										html! {
+											<>
+											</>
+										}
+									}
+								}
 							</span>
 
 							<span id="preview-span">
@@ -237,15 +261,9 @@ impl Component for NewClubPage {
                         
                     </div>
 
+					
+
                 </div>
-                
-                <script>
-                    {
-                        stringify! {
-                            document.getElementById("club-name-field").focus();
-                        }
-                    }
-                </script>
             </div>
         } 
 	}

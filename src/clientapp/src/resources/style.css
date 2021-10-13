@@ -816,7 +816,7 @@ html {
 #description-and-preview-container button {
     font-family: 'Open Sans';
     font-size: 22px;
-    width: 5em;
+    width: auto;
     outline: none;
     border: none;
     border-radius: 8px;

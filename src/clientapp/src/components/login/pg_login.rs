@@ -2,9 +2,7 @@ use yew::MouseEvent;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
 use crate::components::GoogleLoginButton;
-use crate::components::ClubView;
 use crate::components::core::router::*;
-use crate::flags::IS_DEBUG_MODE;
 
 pub struct LoginPageComponent {
 	link: ComponentLink<Self>,
@@ -38,6 +36,7 @@ impl Component for LoginPageComponent {
 	}
 
 	fn view(&self) -> Html {
+
 		let skip_login = self.link.callback(|_:MouseEvent| {
 			Msg::BypassLogin
 		});
@@ -59,18 +58,6 @@ impl Component for LoginPageComponent {
 						{"Please log in to proceed."}
 
 						<GoogleLoginButton/>
-						
-						{
-							if *IS_DEBUG_MODE {
-								html! {
-									<button onclick=skip_login>{"Skip login"}</button>
-								}
-							} else {
-								html! {
-									<></>
-								}
-							}
-						}
 					</div>
 				</div>
 
