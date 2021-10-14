@@ -6,14 +6,12 @@ use js_sys::Function;
 
 use crate::{
 	components::{
-		clubs::CreateClubFloatingActionButton as Fab,
 		coolshit::Spinner,
-		core::{router::*, Toolbar},
+		core::{router::*},
 		ClubCard,
 	},
 	tell,
 	types::*,
-	flags::*,
 };
 
 pub struct ClubView {
@@ -34,8 +32,10 @@ pub struct ClubView {
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct Props {
-	pub first_name: String,
-	pub last_name: String,
+	#[prop_or(Mlk::new(None))]
+	pub search_filter_function: Mlk<Option<fn(&String, &ClubDetails) -> bool>>,
+	#[prop_or(None)]
+	pub search_filter_text: Option<String>,
 }
 
 pub enum Msg {
@@ -92,7 +92,6 @@ impl ClubView {
 			<>
 				{
 					for vec.iter().map(|x| {
-						tell!("Makin cards");
 
 						html! {
 							<ClubCard
@@ -330,7 +329,15 @@ impl Component for ClubView {
 
 			ReceiveClubDetails(deets) => {
 				self.clubs_fetch_state = if let Some(deet) = deets {
-					FetchState::Done(deet)
+					let mut v = deet;
+
+
+					if let Some(f) = self.props.search_filter_function.unwrap() {
+						let search_text = self.props.search_filter_text.as_ref().expect("If you provide a search_filter_function to this component you must also provide search_filter_text.");
+						v.retain(|e| f(&search_text, e))
+					}
+
+					FetchState::Done(v)
 				} else {
 					FetchState::Failed(Some(anyhow!(
 						"Failed to get club details (struct was none)"
@@ -360,8 +367,9 @@ impl Component for ClubView {
 		true
 	}
 
-	fn change(&mut self, _props: Self::Properties) -> ShouldRender {
-		false
+	fn change(&mut self, props: Self::Properties) -> ShouldRender {
+		self.props = props;
+		true
 	}
 
 	fn view(&self) -> Html {
@@ -398,7 +406,13 @@ impl Component for ClubView {
 										html! {
 											<span class="bad">
 												<h2>
-													{ "Be the first to post your own club!" }
+													{ 
+														if self.props.search_filter_function.unwrap().is_some() {
+															"No matching clubs found."
+														} else {
+															"Be the first to post your own club!"
+														}
+													}
 												</h2>
 											</span>
 										}

@@ -17,9 +17,12 @@ pub struct NewClubPage {
 	club_name_field_contents: Option<String>,
 	club_body_field_contents: Option<String>,
 	long_club_description_contents: Option<String>,
+	club_logo_preview_src: Option<String>,
 	props: Props,
 	post_task: Option<FetchTask>,
 	post_task_state: FetchState<()>,
+
+
 
 	preview_div: Option<web_sys::Element>,
 }
@@ -33,11 +36,11 @@ pub enum Msg {
 	Close,
 	Ignore,
 	UpdateInfoState(WhichTextField, String),
+	UpdateClubLogoState(String),
 	ValidateForm,
 
 	PostClub,
 	PostClubDone,
-	UpdateClubs,
 }
 
 pub enum WhichTextField {
@@ -91,10 +94,11 @@ impl Component for NewClubPage {
 			club_name_field_contents: None,
 			club_body_field_contents: None,
 			long_club_description_contents: None,
+			club_logo_preview_src: None,
 			props,
 			post_task: None,
 			post_task_state: FetchState::Waiting,
-
+			
 			preview_div: None,
 		}
 	}
@@ -142,7 +146,8 @@ impl Component for NewClubPage {
 					self.long_club_description_contents.clone(),
 				) {
 					//FIXME back end often returns 422 on markdown with newlines and probably other stuff
-					let json = json!({"name": Value::String(name), "body": body.replace("\\", "\\\\")});
+																				// Clean your body with ammonia
+					let json = json!({"name": Value::String(name), "body": ammonia::clean(&body)});
 					let request = Request::post("/api/clubs/create")
 						.body(Json(&json))
 						.unwrap();
@@ -178,11 +183,11 @@ impl Component for NewClubPage {
 			Msg::PostClubDone => {
 				self.close();
 				self.reset();
-				self.link.send_message(Msg::UpdateClubs);
 				self.post_task = None;
 			},
 
-			Msg::UpdateClubs => {
+			Msg::UpdateClubLogoState(img) => {
+				self.club_logo_preview_src = Some(img);
 			}
 		}
 
@@ -195,29 +200,34 @@ impl Component for NewClubPage {
 	}
 
 	fn view(&self) -> Html {
-		let close_cb = self.link.callback(|_: MouseEvent| Msg::Close);
 
 		let club_name_field_callback = self.link.callback(|data: yew::html::InputData| {
 			Msg::UpdateInfoState(WhichTextField::TheNameOne, data.value)
-		});
-
-		let club_body_field_callback = self.link.callback(|data: yew::html::InputData| {
-			Msg::UpdateInfoState(WhichTextField::TheBodyOne, data.value)
 		});
 
 		let long_description_field_callback = self.link.callback(|data: yew::html::InputData| {
 			Msg::UpdateInfoState(WhichTextField::TheLongDescriptionOne, data.value)
 		});
 
+		let image_input_callback = self.link.callback(|data: yew::html::InputData| {
+			Msg::UpdateClubLogoState(data.value)
+		});
+
 		html! {
-            <div>
+            <div> 
                 <div class="content new-club-page">
                     <h1>{"Create new club"}</h1>
 
-					<input autocomplete="off" type="text" id="club-name-field" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
 					<div>
-						<h2>{"Club Description"}<small> {" markdown supported"}</small></h2>
+						<input autocomplete="off" type="text" id="club-name-field" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
+						<input type="file" id="club-logo-input" name="club-logo" accept="image/png" oninput=image_input_callback/>
+						<img id="club-logo-preview" src=self.club_logo_preview_src.clone()/>
 					</div>
+
+					<div>
+						<h2>{"Club Description"}<small>{" markdown supported"}</small></h2>
+					</div>
+
                     <div>
                         <div id="description-and-preview-container">
 							<span id="body-span">

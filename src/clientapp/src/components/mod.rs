@@ -23,7 +23,7 @@ pub mod mac {
         );
 
         ($str_slice:expr, $($arg:expr),*) => (
-            tell!(format!($str_slice, $($arg),*))
+            crate::tell!(format!($str_slice, $($arg),*))
         )
     }
 

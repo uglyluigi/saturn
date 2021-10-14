@@ -59,11 +59,11 @@ pub enum FetchState<T> {
 	Failed(Option<anyhow::Error>),
 }
 
-// Wrapper type for components whose properties must derive PartialEq but must also
-// store a ComponentLink to its parent. PartialEq is derived for props that may
-// change; it stands to reason that the ComponentLink's state will not "change" in
-// a way that should necessitate re-rendering the page at any point, so eq will
-// always say that any PartialEqDummy<T> == PartialEqDummy<T>.
+// Wrapper type for struct members (usually in a component's properties) whose structs must derive PartialEq
+// but don't implement PartialEq themselves, either because it doesn't really make sense to compare them
+// or because it doesn't matter if they're actually equal or not.
+// Thus, it follows that given a concrete type T, PartialEqDummy<T> == PartialEqDummy<T> regardless of the
+// state of either PartialEqDummy.
 
 pub struct PartialEqDummy<T> {
 	t: T,
@@ -84,9 +84,6 @@ impl<T> PartialEqDummy<T> {
 		self.t
 	}
 }
-
-use yew::ComponentLink;
-use crate::components::ClubView;
 
 impl<T> PartialEq for PartialEqDummy<T> {
 	fn eq(&self, _: &PartialEqDummy<T>) -> bool {

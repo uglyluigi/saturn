@@ -813,20 +813,6 @@ html {
     opacity: 0.8;
 }
 
-#description-and-preview-container button {
-    font-family: 'Open Sans';
-    font-size: 22px;
-    width: auto;
-    outline: none;
-    border: none;
-    border-radius: 8px;
-    background-color: #2E4052;
-    color: white;
-    transition: background-color 0.25s;
-    margin-top: 0.5em;
-    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.7);
-}
-
 #description-and-preview-container #body-span textarea {
     height: 20em;
     width: 100%;
@@ -850,7 +836,7 @@ html {
 #description-and-preview-container button {
     font-family: 'Open Sans';
     font-size: 22px;
-    width: 5em;
+    width: auto;
     outline: none;
     border: none;
     padding: .25em 1em;
@@ -861,6 +847,7 @@ html {
     margin-top: 0.5em;
     background-color: #4c1a88;
     cursor: pointer;
+    margin-right: 1em;
 }
 
 #description-and-preview-container button:hover {
@@ -882,4 +869,8 @@ html {
 
 .new-club-page > div > p {
     padding-bottom: 2em;
+}
+
+.new-club-page h2 {
+    margin-bottom: 1em;
 }

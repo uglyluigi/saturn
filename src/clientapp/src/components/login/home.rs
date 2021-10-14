@@ -137,7 +137,7 @@ impl Home {
 							match self.props.route {
 								AppRoute::Home => {
 									html! {
-										<ClubView first_name=details.first_name.clone().unwrap() last_name=details.last_name.clone().unwrap()/>
+										<ClubView/>
 									}
 								},
 								AppRoute::Search => {
