@@ -2,8 +2,8 @@ use crate::prelude::*;
 
 #[derive(Deserialize)]
 pub struct NewClubDTO<'r> {
-    pub name: &'r str,
-    pub body: &'r str
+    pub name: Cow<'r, str>,
+    pub body: Cow<'r, str>
 }
 
 #[post("/clubs/create", data = "<club>")]
