@@ -212,7 +212,7 @@ impl<'r> FromRequest<'r> for UserAuthenticator {
             if let Some(jwt) = jwt{
                 match decode::<GoogleClaims>(&jwt, &DecodingKey::from_rsa_components(&key.n, &key.e), &validation) {
                     Ok(c) => {email = Some(c.claims.email); picture=c.claims.picture; first_name=c.claims.given_name; last_name=c.claims.family_name;},
-                    Err(e) => {println!("{:?}", e)}
+                    Err(_e) => {}
                 };
             }
 
