@@ -147,7 +147,7 @@ impl Component for NewClubPage {
 				) {
 					//FIXME back end often returns 422 on markdown with newlines and probably other stuff
 																				// Clean your body with ammonia
-					let json = json!({"name": Value::String(name), "body": ammonia::clean(&body)});
+					let json = json!({"name": Value::String(name), "body": Value::String(ammonia::clean(&body))});
 					let request = Request::post("/api/clubs/create")
 						.body(Json(&json))
 						.unwrap();
