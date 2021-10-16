@@ -47,5 +47,10 @@ features = [
   'Animation',
   'AnimationEffect',
   'AnimationTimeline',
-  'KeyframeEffect'
+  'KeyframeEffect',
+  'FileReader',
+  'Blob',
+  'FileList',
+  'File',
+  'ProgressEvent'
 ]

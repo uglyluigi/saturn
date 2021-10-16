@@ -1,11 +1,15 @@
 use anyhow::anyhow;
 use serde_json::json;
 use serde_json::Value;
+use wasm_bindgen::JsCast;
+use wasm_bindgen::prelude::Closure;
+use web_sys::HtmlInputElement;
 use yew::format::Json;
 use yew::services::fetch::{FetchTask, Request, Response, StatusCode};
 use yew::services::FetchService;
 use yew::{prelude::*, Html, ShouldRender};
 use comrak::{markdown_to_html, ComrakOptions, ComrakExtensionOptions};
+use web_sys::{FileReader, Blob};
 
 
 use crate::components::ClubView;
@@ -21,6 +25,7 @@ pub struct NewClubPage {
 	props: Props,
 	post_task: Option<FetchTask>,
 	post_task_state: FetchState<()>,
+	img_selector_ref: NodeRef,
 
 
 
@@ -98,8 +103,8 @@ impl Component for NewClubPage {
 			props,
 			post_task: None,
 			post_task_state: FetchState::Waiting,
-			
 			preview_div: None,
+			img_selector_ref: NodeRef::default(),
 		}
 	}
 
@@ -187,6 +192,19 @@ impl Component for NewClubPage {
 			},
 
 			Msg::UpdateClubLogoState(img) => {
+				//TODO get rid of expect
+				let fileReader = FileReader::new().expect("Unable to create file reader");
+				let imgBlob = Blob::new().expect("Unable to create blob");
+				let el = self.img_selector_ref.cast::<HtmlInputElement>().unwrap();
+
+				if let Some(f) = el.files() {
+					let file = f.item(0).unwrap();
+					let blob: &web_sys::Blob = file.as_ref();
+					fileReader.set_onloadend(Some(Closure::once_into_js(|x: ProgressEvent| tell!("Done? {:?}", x)).unchecked_ref()));
+					fileReader.read_as_binary_string(&blob).expect("Error reading image data");
+
+				}
+
 				self.club_logo_preview_src = Some(img);
 			}
 		}
@@ -220,7 +238,7 @@ impl Component for NewClubPage {
 
 					<div>
 						<input autocomplete="off" type="text" id="club-name-field" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
-						<input type="file" id="club-logo-input" name="club-logo" accept="image/png" oninput=image_input_callback/>
+						<input ref=self.img_selector_ref.clone() type="file" id="club-logo-input" name="club-logo" accept="image/png" oninput=image_input_callback/>
 						<img id="club-logo-preview" src=self.club_logo_preview_src.clone()/>
 					</div>
 
