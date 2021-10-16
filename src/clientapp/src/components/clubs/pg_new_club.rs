@@ -4,6 +4,7 @@ use serde_json::Value;
 use wasm_bindgen::JsCast;
 use wasm_bindgen::__rt::IntoJsResult;
 use wasm_bindgen::prelude::Closure;
+use web_sys::HtmlElement;
 use web_sys::HtmlImageElement;
 use web_sys::HtmlInputElement;
 use yew::format::Json;
@@ -12,6 +13,7 @@ use yew::services::FetchService;
 use yew::{prelude::*, Html, ShouldRender};
 use comrak::{markdown_to_html, ComrakOptions, ComrakExtensionOptions};
 use web_sys::{FileReader, Blob};
+use crate::components::Spinner;
 
 
 use crate::components::ClubView;
@@ -29,10 +31,8 @@ pub struct NewClubPage {
 	post_task_state: FetchState<()>,
 	img_selector_ref: NodeRef,
 	img_preview_ref: NodeRef,
-
-
-
-	preview_div: Option<web_sys::Element>,
+	markdown_preview_ref: NodeRef,
+	club_name_input_ref: NodeRef,
 }
 
 #[derive(Properties, Debug, Clone)]
@@ -67,28 +67,9 @@ impl NewClubPage {
 		self.long_club_description_contents = None;
 		self.post_task = None;
 		self.post_task_state = FetchState::Waiting;
-		self.preview_div = None;
-	}
 
-	fn get_preview(&self) -> Html {
-		if let Some(val) = &self.long_club_description_contents {
-			let md = markdown_to_html(val, &ComrakOptions {
-				extension: ComrakExtensionOptions {
-					tagfilter: false,
-					..ComrakExtensionOptions::default()
-				},
-				..ComrakOptions::default()
-			});
-			let sanitized_md = ammonia::clean(md.as_str());
-			self.preview_div.as_ref().unwrap().set_inner_html(sanitized_md.as_str());
-
-			Html::VRef(self.preview_div.as_ref().unwrap().clone().into())
-		} else {
-			html! {
-				<>
-				</>
-			}
-		}
+		self.img_preview_ref.cast::<HtmlImageElement>().unwrap().set_src("");
+		self.markdown_preview_ref.cast::<HtmlElement>().unwrap().set_inner_html("");
 	}
 }
 
@@ -106,9 +87,10 @@ impl Component for NewClubPage {
 			props,
 			post_task: None,
 			post_task_state: FetchState::Waiting,
-			preview_div: None,
 			img_selector_ref: NodeRef::default(),
 			img_preview_ref: NodeRef::default(),
+			markdown_preview_ref: NodeRef::default(),
+			club_name_input_ref: NodeRef::default(),
 		}
 	}
 
@@ -129,16 +111,22 @@ impl Component for NewClubPage {
 				}
 
 				WhichTextField::TheLongDescriptionOne => {
-					if self.preview_div.is_none() {
-						self.preview_div = if let Ok(el) = yew::utils::document().create_element("div") {
-							el.set_id("preview");
-							Some(el)
-						} else {
-							None
-						}
-					}
+					self.long_club_description_contents = if value.len() > 0 { Some(value) } else { None };
+					let el = self.markdown_preview_ref.cast::<HtmlElement>().unwrap();					
 
-					self.long_club_description_contents = if value.len() > 0 { Some(value) } else { None }
+					el.set_inner_html(if let Some(md) = &self.long_club_description_contents {
+						let md = markdown_to_html(md.as_str(), &ComrakOptions {
+							extension: ComrakExtensionOptions {
+								tagfilter: false,
+								..ComrakExtensionOptions::default()
+							},
+							..ComrakOptions::default()
+						});
+	
+						ammonia::clean(md.as_str())
+					} else {
+						String::from("")
+					}.as_str());
 				}
 			},
 
@@ -198,7 +186,6 @@ impl Component for NewClubPage {
 			Msg::UpdateClubLogoState(img) => {
 				//TODO get rid of expect
 				let file_reader = FileReader::new().expect("Unable to create file reader");
-				let imgBlob = Blob::new().expect("Unable to create blob");
 				let el = self.img_selector_ref.cast::<HtmlInputElement>().unwrap();
 				let img_preview_element = self.img_preview_ref.cast::<HtmlImageElement>().unwrap();
 
@@ -242,12 +229,10 @@ impl Component for NewClubPage {
                 <div class="content new-club-page">
                     <h1>{"Create new club"}</h1>
 
-					
-
 					<div class="club-info-container">
 						<img ref=self.img_preview_ref.clone() id="club-logo-preview" src=self.club_logo_preview_src.clone()/>
 						<span>
-							<input autocomplete="off" type="text" id="club-name-field" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
+							<input ref=self.club_name_input_ref.clone() autocomplete="off" type="text" id="club-name-field" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club name"/>
 							<label for="club-logo-input">{"Upload logo"}</label>
 							<input ref=self.img_selector_ref.clone() type="file" id="club-logo-input" name="club-logo" accept="image/png" oninput=image_input_callback/>
 						</span>
@@ -256,53 +241,61 @@ impl Component for NewClubPage {
 					<h2>{"Club Description"}</h2>
 					<h3>{"(markdown supported)"}</h3>
 
-                    <div>
-                        <div id="description-and-preview-container">
-							<span id="body-span">
-								<h3>{"Body text"}</h3>
-                            	<textarea value=self.long_club_description_contents.clone() oninput=long_description_field_callback/>
-								<button class="normal-button" onclick=self.link.callback(|_: MouseEvent| {Msg::ValidateForm})>{"Submit"}</button>
+                    <div id="description-and-preview-container">
+							<span class="text-containers">
+								<span class="textarea-and-label">
+									<h3>{"Body text"}</h3>
+									<textarea id="markdown-textarea" value=self.long_club_description_contents.clone() oninput=long_description_field_callback/>
+								</span>
 
-								{
-									if self.post_task.is_some() {
-										match &self.post_task_state {
-											FetchState::Waiting => html! {
-												{"Submitting club..."}
-											},
-				
-											FetchState::Done(_) => html! {
-												{"Done."}
-											},
-				
-											FetchState::Failed(_) => html! {
-												{"Failed."}
+								<span class="preview-and-label">
+									<h3>{"Preview"}</h3>
+
+									<div ref=self.markdown_preview_ref.clone() id="preview">
+									</div>
+								</span>
+							</span>
+
+							<span class="submit-and-status">
+								<button class="normal-button" onclick=self.link.callback(|_: MouseEvent| {Msg::ValidateForm})>{"Submit"}</button>
+								
+								<h3>
+									{
+										if  self.post_task.is_some() {
+											match &self.post_task_state {
+												FetchState::Waiting => html! {
+													<span class="status-and-spinner">
+														{"Submitting club..."}
+														<Spinner which_spinner=crate::components::spinner::WhichSpinner::Ring2/>
+													</span>
+												},
+					
+												FetchState::Done(_) => html! {
+													{"Done."}
+												},
+					
+												FetchState::Failed(_) => html! {
+													{"Failed."}
+												}
+											}
+										} else {
+											html! {
+												<>
+												</>
 											}
 										}
-									} else {
-										html! {
-											<>
-											</>
-										}
 									}
-								}
-							</span>
-
-							<span id="preview-span">
-								<h3>{"Preview"}</h3>
-
-								{ 
-									self.get_preview()
-								}
+								</h3>
 							</span>
                         </div>
-
-                        
-                    </div>
-
-					
-
                 </div>
             </div>
         } 
+	}
+
+	fn rendered(&mut self, first: bool) {
+		if first {
+			self.club_name_input_ref.cast::<HtmlElement>().unwrap().focus().unwrap();
+		}
 	}
 }

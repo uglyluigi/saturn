@@ -2,14 +2,27 @@ use yew::prelude::*;
 
 pub struct Spinner {
 	link: ComponentLink<Self>,
+	props: Props,
+}
+
+#[derive(Clone, PartialEq)]
+pub enum WhichSpinner {
+	Ring1,
+	Ring2
+}
+
+#[derive(Properties, Clone, PartialEq)]
+pub struct Props {
+	#[prop_or(WhichSpinner::Ring1)]
+	pub which_spinner: WhichSpinner,
 }
 
 impl Component for Spinner {
 	type Message = ();
-	type Properties = ();
+	type Properties = Props;
 
 	fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-		Self { link }
+		Self { link, props }
 	}
 
 	fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -21,9 +34,14 @@ impl Component for Spinner {
 	}
 
 	fn view(&self) -> Html {
-		html! {
-			<div class="spinner">
-			</div>
+		match &self.props.which_spinner {
+			WhichSpinner::Ring1 => html! {
+				<div class="spinner"/>
+			},
+
+			WhichSpinner::Ring2 => html! {
+				<div class="lds-dual-ring"/>
+			}
 		}
 	}
 }
