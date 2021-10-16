@@ -52,5 +52,6 @@ features = [
   'Blob',
   'FileList',
   'File',
-  'ProgressEvent'
+  'ProgressEvent',
+  'HtmlImageElement'
 ]

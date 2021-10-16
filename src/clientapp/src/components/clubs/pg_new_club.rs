@@ -2,7 +2,9 @@ use anyhow::anyhow;
 use serde_json::json;
 use serde_json::Value;
 use wasm_bindgen::JsCast;
+use wasm_bindgen::__rt::IntoJsResult;
 use wasm_bindgen::prelude::Closure;
+use web_sys::HtmlImageElement;
 use web_sys::HtmlInputElement;
 use yew::format::Json;
 use yew::services::fetch::{FetchTask, Request, Response, StatusCode};
@@ -26,6 +28,7 @@ pub struct NewClubPage {
 	post_task: Option<FetchTask>,
 	post_task_state: FetchState<()>,
 	img_selector_ref: NodeRef,
+	img_preview_ref: NodeRef,
 
 
 
@@ -105,6 +108,7 @@ impl Component for NewClubPage {
 			post_task_state: FetchState::Waiting,
 			preview_div: None,
 			img_selector_ref: NodeRef::default(),
+			img_preview_ref: NodeRef::default(),
 		}
 	}
 
@@ -193,22 +197,24 @@ impl Component for NewClubPage {
 
 			Msg::UpdateClubLogoState(img) => {
 				//TODO get rid of expect
-				let fileReader = FileReader::new().expect("Unable to create file reader");
+				let file_reader = FileReader::new().expect("Unable to create file reader");
 				let imgBlob = Blob::new().expect("Unable to create blob");
 				let el = self.img_selector_ref.cast::<HtmlInputElement>().unwrap();
+				let img_preview_element = self.img_preview_ref.cast::<HtmlImageElement>().unwrap();
 
 				if let Some(f) = el.files() {
 					let file = f.item(0).unwrap();
 					let blob: &web_sys::Blob = file.as_ref();
-					fileReader.set_onloadend(Some(Closure::once_into_js(|x: ProgressEvent| tell!("Done? {:?}", x)).unchecked_ref()));
-					fileReader.read_as_binary_string(&blob).expect("Error reading image data");
+					file_reader.read_as_data_url(&blob).expect("Error reading image data");
+
+					file_reader.set_onloadend(Some(Closure::once_into_js( move |x: ProgressEvent| {
+						let reader = x.target().unwrap().into_js_result().unwrap().dyn_into::<FileReader>().unwrap();
+						img_preview_element.set_src(reader.result().unwrap().as_string().unwrap().as_str());						
+					}).unchecked_ref()));
 
 				}
-
-				self.club_logo_preview_src = Some(img);
 			}
 		}
-
 		true
 	}
 
@@ -239,7 +245,7 @@ impl Component for NewClubPage {
 					<div>
 						<input autocomplete="off" type="text" id="club-name-field" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
 						<input ref=self.img_selector_ref.clone() type="file" id="club-logo-input" name="club-logo" accept="image/png" oninput=image_input_callback/>
-						<img id="club-logo-preview" src=self.club_logo_preview_src.clone()/>
+						<img ref=self.img_preview_ref.clone() id="club-logo-preview" src=self.club_logo_preview_src.clone()/>
 					</div>
 
 					<div>
