@@ -242,22 +242,26 @@ impl Component for NewClubPage {
                 <div class="content new-club-page">
                     <h1>{"Create new club"}</h1>
 
-					<div>
-						<input autocomplete="off" type="text" id="club-name-field" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
-						<input ref=self.img_selector_ref.clone() type="file" id="club-logo-input" name="club-logo" accept="image/png" oninput=image_input_callback/>
+					
+
+					<div class="club-info-container">
 						<img ref=self.img_preview_ref.clone() id="club-logo-preview" src=self.club_logo_preview_src.clone()/>
+						<span>
+							<input autocomplete="off" type="text" id="club-name-field" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club Name"/>
+							<label for="club-logo-input">{"Upload logo"}</label>
+							<input ref=self.img_selector_ref.clone() type="file" id="club-logo-input" name="club-logo" accept="image/png" oninput=image_input_callback/>
+						</span>
 					</div>
 
-					<div>
-						<h2>{"Club Description"}<small>{" markdown supported"}</small></h2>
-					</div>
+					<h2>{"Club Description"}</h2>
+					<h3>{"(markdown supported)"}</h3>
 
                     <div>
                         <div id="description-and-preview-container">
 							<span id="body-span">
 								<h3>{"Body text"}</h3>
                             	<textarea value=self.long_club_description_contents.clone() oninput=long_description_field_callback/>
-								<button onclick=self.link.callback(|_: MouseEvent| {Msg::ValidateForm})>{"Submit"}</button>
+								<button class="normal-button" onclick=self.link.callback(|_: MouseEvent| {Msg::ValidateForm})>{"Submit"}</button>
 
 								{
 									if self.post_task.is_some() {
