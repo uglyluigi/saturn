@@ -902,6 +902,7 @@ input[type="file"] {
     overflow-wrap: normal;
     border: 1px solid white;
     height: 20em;
+    word-break: break-all;
 }
 
 .new-club-page > div > p {

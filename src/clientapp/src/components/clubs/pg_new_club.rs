@@ -1,13 +1,24 @@
+use std::future::Future;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicI8;
+use std::sync::atomic::Ordering;
+
 use anyhow::anyhow;
+use js_sys::Function;
+use rand::Rng;
 use serde_json::json;
 use serde_json::Value;
 use wasm_bindgen::JsCast;
+use wasm_bindgen::JsValue;
 use wasm_bindgen::__rt::IntoJsResult;
 use wasm_bindgen::prelude::Closure;
 use web_sys::HtmlElement;
 use web_sys::HtmlImageElement;
 use web_sys::HtmlInputElement;
+use yew::format::Bincode;
 use yew::format::Json;
+use yew::format::Nothing;
 use yew::services::fetch::{FetchTask, Request, Response, StatusCode};
 use yew::services::FetchService;
 use yew::{prelude::*, Html, ShouldRender};
@@ -28,7 +39,10 @@ pub struct NewClubPage {
 	club_logo_preview_src: Option<String>,
 	props: Props,
 	post_task: Option<FetchTask>,
+	post_logo_task: Option<FetchTask>,
+
 	post_task_state: FetchState<()>,
+	post_logo_task_state: FetchState<()>,
 	img_selector_ref: NodeRef,
 	img_preview_ref: NodeRef,
 	markdown_preview_ref: NodeRef,
@@ -40,21 +54,26 @@ pub struct Props {
 }
 
 pub enum Msg {
-	Open,
-	Close,
 	Ignore,
 	UpdateInfoState(WhichTextField, String),
-	UpdateClubLogoState(String),
+	UpdateClubLogoState,
 	ValidateForm,
+	PostClubLogo(i64),
 
 	PostClub,
-	PostClubDone,
+	PostClubDone(i64),
 }
 
 pub enum WhichTextField {
 	TheNameOne,
 	TheBodyOne,
 	TheLongDescriptionOne,
+}
+
+#[derive(Debug)]
+pub enum ReadImgResult {
+	TooBig,
+	EmptyFileList,
 }
 
 impl NewClubPage {
@@ -70,6 +89,42 @@ impl NewClubPage {
 
 		self.img_preview_ref.cast::<HtmlImageElement>().unwrap().set_src("");
 		self.markdown_preview_ref.cast::<HtmlElement>().unwrap().set_inner_html("");
+	}
+
+	fn read_img_sync(&self) -> Result<Vec<u8>, ReadImgResult> {
+		let file_reader = FileReader::new().expect("Unable to create file reader");
+		let el = self.img_selector_ref.cast::<HtmlInputElement>().unwrap();
+
+		if let Some(f) = el.files() {
+			let file = f.item(0).unwrap();
+
+			if file.size() > 1000000.0 {
+				return Err(ReadImgResult::TooBig);
+			}
+
+			let blob: &web_sys::Blob = file.as_ref();
+			let mut bytes: Arc<Vec<u8>> = Arc::new(vec![]);
+			let mut bytes_clone = bytes.clone();
+
+
+			file_reader.read_as_data_url(&blob).expect("Error reading image data");
+			file_reader.set_onloadend(Some(Closure::once_into_js(move |x: ProgressEvent| {
+				// cock
+				let mut bytes_clone = bytes_clone; // code
+				let mut result = x.target().unwrap().dyn_into::<FileReader>().unwrap().result().unwrap().as_string().unwrap().bytes().collect();
+				Arc::get_mut(&mut bytes_clone).unwrap().append(&mut result);
+			}).unchecked_ref()));
+
+
+			while file_reader.ready_state() != 2 {
+				std::thread::sleep(std::time::Duration::from_millis(1));
+
+			}
+
+			Ok((*bytes).clone())
+		} else {
+			Err(ReadImgResult::EmptyFileList)
+		}
 	}
 }
 
@@ -91,15 +146,13 @@ impl Component for NewClubPage {
 			img_preview_ref: NodeRef::default(),
 			markdown_preview_ref: NodeRef::default(),
 			club_name_input_ref: NodeRef::default(),
+			post_logo_task: None,
+			post_logo_task_state: FetchState::Waiting,
 		}
 	}
 
 	fn update(&mut self, msg: Self::Message) -> ShouldRender {
 		match msg {
-			Msg::Open => (),
-			Msg::Close => {
-				self.reset();
-			}
 			Msg::Ignore => (),
 			Msg::UpdateInfoState(which, value) => match which {
 				WhichTextField::TheBodyOne => {
@@ -144,7 +197,7 @@ impl Component for NewClubPage {
 				) {
 					//FIXME back end often returns 422 on markdown with newlines and probably other stuff
 																				// Clean your body with ammonia
-					let json = json!({"name": json!(name), "body": json!(ammonia::clean(&body).replace("\n", "\\n"))});
+					let json = json!({"name": name, "body": ammonia::clean(&body)});
 					let request = Request::post("/api/clubs/create")
 						.body(Json(&json))
 						.unwrap();
@@ -153,8 +206,9 @@ impl Component for NewClubPage {
 						|response: Response<Json<Result<(), anyhow::Error>>>| {
 							match response.status() {
 								StatusCode::OK => {
-									tell!("Successfully posted club");
-									Msg::PostClubDone
+									tell!("Successfully post`ed club");
+									tell!("{:?}", response);
+									Msg::PostClubLogo(42069 /* FIXME */)
 								}
 
 								_ => {
@@ -177,29 +231,50 @@ impl Component for NewClubPage {
 				}
 			}
 
-			Msg::PostClubDone => {
+			Msg::PostClubDone(id) => {
 				self.close();
 				self.reset();
 				self.post_task = None;
+				self.link.send_message(Msg::PostClubLogo(id));
 			},
 
-			Msg::UpdateClubLogoState(img) => {
-				//TODO get rid of expect
-				let file_reader = FileReader::new().expect("Unable to create file reader");
-				let el = self.img_selector_ref.cast::<HtmlInputElement>().unwrap();
-				let img_preview_element = self.img_preview_ref.cast::<HtmlImageElement>().unwrap();
+			Msg::UpdateClubLogoState => {
+				let el = self.img_preview_ref.cast::<HtmlImageElement>().unwrap();
 
-				if let Some(f) = el.files() {
-					let file = f.item(0).unwrap();
-					let blob: &web_sys::Blob = file.as_ref();
-					file_reader.read_as_data_url(&blob).expect("Error reading image data");
+				match self.read_img_sync() {
+					Ok(mut vec) => match std::str::from_utf8(vec.as_mut_slice()) {
+						Ok(img_data) => {
+							crate::tell!("Uhhhhhhhhhhhhhhhhhhhhh fuck......................................");
+							el.set_src(img_data);
+						},
+						Err(err) => crate::tell!("Invalid utf-8 sequence"),
+					},
+					Err(res) => {
+						crate::tell!("{:?}", res);
+					}
+				};
+			},
 
-					file_reader.set_onloadend(Some(Closure::once_into_js( move |x: ProgressEvent| {
-						let reader = x.target().unwrap().into_js_result().unwrap().dyn_into::<FileReader>().unwrap();
-						img_preview_element.set_src(reader.result().unwrap().as_string().unwrap().as_str());						
-					}).unchecked_ref()));
+			Msg::PostClubLogo(id) => {
+				let response_callback = self.link.callback(
+					|response: Response<Json<Result<(), anyhow::Error>>>| {
+						match response.status() {
+							StatusCode::OK => {
+								tell!("Successfully post`ed club");
+								tell!("{:?}", response);
+								Msg::PostClubLogo(42069 /* FIXME */)
+							}
 
-				}
+							_ => {
+								tell!("Bad status receieved: {:?}", response.status());
+								//Error stuff
+								Msg::Ignore
+							}
+						}
+					},
+				);
+
+				let img_bytes = self.read_img_sync();
 			}
 		}
 		true
@@ -213,6 +288,7 @@ impl Component for NewClubPage {
 	fn view(&self) -> Html {
 
 		let club_name_field_callback = self.link.callback(|data: yew::html::InputData| {
+
 			Msg::UpdateInfoState(WhichTextField::TheNameOne, data.value)
 		});
 
@@ -220,8 +296,8 @@ impl Component for NewClubPage {
 			Msg::UpdateInfoState(WhichTextField::TheLongDescriptionOne, data.value)
 		});
 
-		let image_input_callback = self.link.callback(|data: yew::html::InputData| {
-			Msg::UpdateClubLogoState(data.value)
+		let image_input_callback = self.link.callback(|data: yew::html::ChangeData| {
+			Msg::UpdateClubLogoState
 		});
 
 		html! {
@@ -234,7 +310,7 @@ impl Component for NewClubPage {
 						<span>
 							<input ref=self.club_name_input_ref.clone() autocomplete="off" type="text" id="club-name-field" oninput=club_name_field_callback value=self.club_name_field_contents.clone() placeholder="Club name"/>
 							<label for="club-logo-input">{"Upload logo"}</label>
-							<input ref=self.img_selector_ref.clone() type="file" id="club-logo-input" name="club-logo" accept="image/png" oninput=image_input_callback/>
+							<input ref=self.img_selector_ref.clone() type="file" id="club-logo-input" name="club-logo" accept="image/png" onchange=image_input_callback.clone()/>
 						</span>
 					</div>
 
