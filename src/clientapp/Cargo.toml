@@ -53,5 +53,6 @@ features = [
   'FileList',
   'File',
   'ProgressEvent',
-  'HtmlImageElement'
+  'HtmlImageElement',
+  'Worker'
 ]

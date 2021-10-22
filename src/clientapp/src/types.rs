@@ -99,3 +99,4 @@ impl<T: Clone> Clone for PartialEqDummy<T> {
 
 // All PartialEqDummy<T>'s are created equal (to other PartialEqDummy<T>'s)
 pub type Mlk<T> = PartialEqDummy<T>;
+
