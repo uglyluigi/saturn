@@ -15,7 +15,8 @@
     "build": "webpack --mode production"
   },
   "dependencies": {
-    "three": "^0.129.0"
+    "three": "^0.129.0",
+    "uglifyjs-webpack-plugin": "^2.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.3",

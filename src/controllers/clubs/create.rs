@@ -7,7 +7,7 @@ pub struct NewClubDTO<'r> {
 }
 
 #[post("/clubs/create", data = "<club>")]
-pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Json<ClubDetails>, None> {
+pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Json<ClubDetails>, ()> {
     use crate::schema::clubs::dsl::{clubs};
     use crate::schema::club_members::dsl::{club_members};
 
@@ -54,8 +54,8 @@ pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Js
         },
         None => {
             eprintln!("Uh this wasn't supposed to happen.");
-            eprintln!("member {:?}, created_club {:?}, user_id {:?}, db {:?}",member,created_club,user_id,db);
-            Err(None)
+            //eprintln!("member {:?}, created_club {:?}, user_id {:?}, db {:?}",member,created_club,user_id,db);
+            Err(())
         }
     }
 }
