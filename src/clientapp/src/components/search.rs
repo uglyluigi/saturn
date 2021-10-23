@@ -1,23 +1,66 @@
+use regex::internal::Inst;
+use wasm_bindgen::prelude::Closure;
 use yew::{prelude::*, Properties};
+use fuzzy_matcher::FuzzyMatcher;
+use fuzzy_matcher::skim::SkimMatcherV2;
 use crate::{components::{clubs::ClubView}, types::ClubDetails};
+// implemented by wasm_timer
+use gloo_timers::callback::Timeout;
+
 
 pub struct SearchBar {
 	link: ComponentLink<Self>,
     props: Props,
     search_text: Option<String>,
     search_field_state: Option<String>,
-    show_club_view: bool,
+    emitter: ClubViewEmitter,
+    delayed_search_cb: Option<Timeout>,
+}
+
+pub struct ClubViewEmitter {
+    show: bool
+}
+
+impl ClubViewEmitter {
+    pub fn new() -> Self {
+        Self {
+            show: false,
+        }
+    }
+
+    fn get(&self, search_text: Option<String>) -> Html {
+        let f: fn(&String, &ClubDetails) -> bool = |filter, club| {
+            let matcher = SkimMatcherV2::default();
+            return matcher.fuzzy_match(&club.name, filter).is_some() || matcher.fuzzy_match(&club.body, filter).is_some();
+        };
+
+        if self.show && search_text.is_some() {
+            html! {
+                <ClubView search_filter_function=crate::types::Mlk::new(Some(f)) search_filter_text=search_text/>
+            }
+        } else {
+            html! {
+                <>
+                </>
+            }
+        }
+    }
+
+    pub fn set(&mut self, show: bool) {
+        self.show = show;
+    }
 }
 
 pub enum Msg {
 	UpdateSearchFieldState(String),
-    PerformSearch,
-    Clear,
+    AfterKeyPress,
+    SetEmitterState(bool),
 }
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {
-
+    #[prop_or(None)]
+    search_text: Option<String>,
 }
 
 impl Component for SearchBar {
@@ -30,7 +73,8 @@ impl Component for SearchBar {
             props,
             search_text: None,
             search_field_state: None,
-            show_club_view: true,
+            delayed_search_cb: None,
+            emitter: ClubViewEmitter::new(),
         }
     }
 
@@ -40,15 +84,26 @@ impl Component for SearchBar {
                 self.search_field_state = if search.len() > 0 { Some(search) } else { None };
 			},
 
+            Msg::AfterKeyPress => {
+                crate::tell!("Bingus");
+                if self.delayed_search_cb.is_some() {
+                    self.delayed_search_cb.take().unwrap().cancel();
+                }
 
-            Msg::PerformSearch => {
-                self.show_club_view = true;
-                self.search_text = self.search_field_state.clone();
+                self.link.send_message(Msg::SetEmitterState(false));
+                let link = self.link.clone();
+
+                let cb = Timeout::new(700, move || {
+                    let link = link;
+                    link.send_message(Msg::SetEmitterState(true));
+                });
+
+                self.delayed_search_cb = Some(cb);
             },
 
-            Msg::Clear => {
-                self.show_club_view = false;
-            },
+            Msg::SetEmitterState(b) => {
+                self.emitter.set(b);               
+            }
         };
         true
     }
@@ -63,50 +118,19 @@ impl Component for SearchBar {
             Msg::UpdateSearchFieldState(data.value)
         });
 
-        let keypress_cb = self.link.callback(|e: yew::KeyboardEvent| {
-            if e.key() == "Enter" {
-                Msg::PerformSearch
-            } else {
-                Msg::Clear
-            }
+        let key_cb = self.link.callback(|data: KeyboardEvent| {
+            Msg::AfterKeyPress
         });
-
-        let f: fn(&String, &ClubDetails) -> bool = |filter, club| {
-            club.name.contains(filter.as_str())
-        };
 
         html!{
             <>
                 <div class="search-bar-container">
                     <h1 class="search-bar-h1"> {"find something "} <i>{" totally "}</i> {" you."} </h1>
-                    <input class="search-bar-input" oninput=input_cb value=self.search_field_state.clone() onkeypress=keypress_cb placeholder="I'm looking for..."/>
+                    <input class="search-bar-input" onkeypress=key_cb oninput=input_cb placeholder="I'm looking for..."/>
                 </div>
 
                 {
-                    // FIXME I have to toggle this in order for it to refresh when you enter something new?? Not sure what's going on here.
-                    if self.show_club_view {
-                        html! {
-                            <div>
-                                {
-                                    if self.search_text.is_some() {
-                                        html! {
-                                            <ClubView search_filter_function=crate::types::Mlk::new(Some(f)) search_filter_text=self.search_text.clone().unwrap()/>
-                                        }
-                                    } else {
-                                        html! {
-                                            <>
-                                            </>
-                                        }
-                                    }
-                                }
-                            </div>
-                        }
-                    } else {
-                        html! {
-                            <>
-                            </>
-                        }
-                    }
+                    self.emitter.get(self.search_field_state.clone())
                 }
             </>
         }
