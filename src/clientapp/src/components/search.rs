@@ -4,7 +4,6 @@ use yew::{prelude::*, Properties};
 use fuzzy_matcher::FuzzyMatcher;
 use fuzzy_matcher::skim::SkimMatcherV2;
 use crate::{components::{clubs::ClubView}, types::ClubDetails};
-// implemented by wasm_timer
 use gloo_timers::callback::Timeout;
 
 
@@ -21,6 +20,9 @@ pub struct ClubViewEmitter {
     show: bool
 }
 
+// Container for keeping track of whether or not the club view should be shown.
+// Remains hidden while the user is typing and for a little under a second after 
+// and automatically searches.
 impl ClubViewEmitter {
     pub fn new() -> Self {
         Self {
