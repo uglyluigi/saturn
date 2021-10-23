@@ -11,7 +11,7 @@ use regex::{self, Regex};
 pub struct ClubCard {
 	link: ComponentLink<Self>,
 	props: Props,
-	show_login_or_logout: String,
+	
 	
 	delete_fetch_state: Option<FetchState<()>>,
 	delete_fetch_task: Option<FetchTask>,
@@ -28,16 +28,7 @@ pub struct ClubCard {
 
 	number_spin_anim_end_cb: Option<Closure<dyn Fn()>>,
 
-	// This is used to keep track of whether or not the animation
-	// that spins the number around when you join or leave a club
-	// has just rotated the number such that you can't see it anymore.
-	// During this time the number is incremented, and the class is removed,
-	// reversing the transition. However, since it's playing twice, the
-	// event fires twice. This state is used to know whether or not the AnimDone
-	// message needs to ignore the event, as nothing needs to happen after
-	// the number spins back into view, but if we don't ignore it when it spins back
-	// then the number is incremented twice.
-	number_spin_anim_state: Option<AnimState>,
+	which_button: JoinButton,
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -63,22 +54,23 @@ pub enum Msg {
 	AnimDone,
 }
 
-enum AnimState {
-	In,
-	Out
+#[derive(Copy, Clone)]
+enum JoinButton {
+	EmptyStar,
+	FilledStar
 }
 
-impl std::ops::Neg for AnimState {
-	type Output = Self;
-
-	fn neg(self) -> Self::Output {
-		use AnimState::*;
-
-		match self {
-			In => Out,
-			Out => In,
-		}
-	}
+impl std::convert::Into<Html> for JoinButton {
+    fn into(self) -> Html {
+        match self {
+            JoinButton::EmptyStar => html! {
+				<span class="material-icons">{"star_outline"}</span>
+			},
+            JoinButton::FilledStar => html! {
+				<span class="material-icons">{"star"}</span>
+			},
+        }
+    }
 }
 
 impl ClubCard {
@@ -104,7 +96,7 @@ impl Component for ClubCard {
 	fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
 		Self {
 			link,
-			show_login_or_logout: if props.details.unwrap().is_member { String::from("logout") } else { String::from("login") },
+			which_button: if props.details.unwrap().is_member { JoinButton::FilledStar } else { JoinButton::EmptyStar },
 
 			delete_fetch_state: None,
 			delete_fetch_task: None,
@@ -123,7 +115,6 @@ impl Component for ClubCard {
 			props,
 
 			number_spin_anim_end_cb: None,
-			number_spin_anim_state: None,
 		}
 	}
 
@@ -220,10 +211,7 @@ impl Component for ClubCard {
 				// Get the element and activate the transition
 				let el = self.number_ref.cast::<HtmlElement>().unwrap();
 				el.class_list().add_1("number-spin-in").unwrap();
-				self.number_spin_anim_state = Some(AnimState::In);
-
-				// Update the icon to the "logout" icon
-				self.show_login_or_logout = String::from("logout");
+				self.which_button = JoinButton::FilledStar;
 				drop(self.delete_fetch_task.take());
 			},
 
@@ -264,10 +252,7 @@ impl Component for ClubCard {
 				// Get element, activate transition
 				let el = self.number_ref.cast::<web_sys::HtmlElement>().unwrap();
 				el.class_list().add_1("number-spin-out").unwrap();
-				self.number_spin_anim_state = Some(AnimState::In);
-
-				// Update icon
-				self.show_login_or_logout = String::from("login");
+				self.which_button = JoinButton::EmptyStar;
 				drop(self.leave_fetch_task.take());
 			},
 
@@ -316,7 +301,7 @@ impl Component for ClubCard {
 				</div>
 
 				<div class="club-card-action-bar">
-					<button id="club-card-join-btn" onclick={if self.show_login_or_logout == "login" { join_club } else { leave_club }}><span class="material-icons">{self.show_login_or_logout.clone()}</span></button>
+					<button id="club-card-join-btn" onclick={match self.which_button { JoinButton::FilledStar => leave_club, _ => join_club }}> {self.which_button} </button>
 					<button id="club-card-expand-btn"><span class="material-icons">{"open_in_full"}</span></button>
 
 					{

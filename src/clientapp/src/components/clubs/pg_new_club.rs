@@ -142,18 +142,15 @@ impl NewClubPage {
 		let el = self.img_selector_ref.cast::<HtmlInputElement>().unwrap();
 
 		if let Some(f) = el.files() {
-			let file = f.item(0).unwrap();
 
-			if file.size() > 1000000.0 {
+			if let Some(file) = f.item(0) {
+				let blob: &web_sys::Blob = file.as_ref();
+				let link = self.link.clone();
+				file_reader.read_as_data_url(&blob).expect("Error reading image data");
+				file_reader.set_onloadend(Some(Closure::once_into_js(move |x: ProgressEvent| {
+					link.send_message(Msg::UpdateClubLogoState(x.target().unwrap().dyn_into::<FileReader>().unwrap().result().unwrap().as_string().unwrap().bytes().collect()))
+				}).unchecked_ref()));
 			}
-
-			let blob: &web_sys::Blob = file.as_ref();
-			let link = self.link.clone();
-			file_reader.read_as_data_url(&blob).expect("Error reading image data");
-			file_reader.set_onloadend(Some(Closure::once_into_js(move |x: ProgressEvent| {
-				let mut result = x.target().unwrap().dyn_into::<FileReader>().unwrap().result().unwrap().as_string().unwrap().bytes().collect();
-				link.send_message(Msg::UpdateClubLogoState(result))
-			}).unchecked_ref()));
 		}
 	}
 }
@@ -278,25 +275,7 @@ impl Component for NewClubPage {
 			},
 
 			Msg::PostClubLogo(id) => {
-				let response_callback = self.link.callback(
-					|response: Response<Json<Result<(), anyhow::Error>>>| {
-						match response.status() {
-							StatusCode::OK => {
-								tell!("Successfully post`ed club");
-								tell!("{:?}", response);
-								Msg::PostClubLogo(42069 /* FIXME */)
-							}
-
-							_ => {
-								tell!("Bad status receieved: {:?}", response.status());
-								//Error stuff
-								Msg::Ignore
-							}
-						}
-					},
-				);
-
-				let img_bytes = self.read_img_sync();
+				
 			},
 
 			Msg::ReadLogo => {
