@@ -154,6 +154,8 @@ impl Home {
 								_ => unreachable!()
 							}
 						}
+
+						<Footer/>
 					</>
 				}
 			},
