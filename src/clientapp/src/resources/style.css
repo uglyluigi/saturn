@@ -220,11 +220,7 @@ html {
     left: 10px;
     font-size: 120pt;
     white-space: nowrap;
-    background-color: white;
-    
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: textAnimate 5s linear infinite alternate;
+    color:white;
 }
 
 .auth-header img {
@@ -439,7 +435,7 @@ html {
 }
 
 .toolbar > .toolbar-inner-component > * {
-    margin:auto;
+    margin:auto 0em;
 }
 
 
@@ -518,7 +514,7 @@ html {
 
 .toolbar .toolbar-text-link {
     height: initial;
-    margin: auto;
+    margin: auto 0em;
     font-family: 'Open Sans';
     color: #D2DDDE;
     text-align: center;

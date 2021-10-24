@@ -76,7 +76,7 @@ impl Component for LoginPageComponent {
 						</div>
 						<div class="login-2-panel-split">
 							<div class="panel">
-								<h2> {"Saturn is the platform that lets you "}<span class="text-accent"> {"overcome networking boundaries "}</span> {"hindering your clubs' growth and gives you the tools to "}<span class="text-accent"> {"connect with others"}</span> {"."}</h2>
+								<h2> {"Saturn is the platform that lets you "}<span class="text-accent"> {"overcome networking boundaries "}</span> {"hindering your club's growth and gives you the tools to "}<span class="text-accent"> {"connect with others"}</span> {"."}</h2>
 							</div>
 							<div class="panel">
 								<img class="panel-contain" src="/assets/saturn-space.png"/>
