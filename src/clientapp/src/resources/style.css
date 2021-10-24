@@ -400,6 +400,7 @@ html {
     background-color: transparent;
     border-color: transparent;
     display: inline-flex;
+    cursor: pointer;
 }
 
 .dropdown-content-transition {
