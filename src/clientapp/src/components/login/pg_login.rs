@@ -3,6 +3,7 @@ use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
 use crate::components::GoogleLoginButton;
 use crate::components::core::router::*;
+use crate::components::core::footer::*;
 
 pub struct LoginPageComponent {
 	link: ComponentLink<Self>,
@@ -37,30 +38,46 @@ impl Component for LoginPageComponent {
 
 	fn view(&self) -> Html {
 
-		let skip_login = self.link.callback(|_:MouseEvent| {
+		let _skip_login = self.link.callback(|_:MouseEvent| {
 			Msg::BypassLogin
 		});
 
 		html! {
 			<div class="login-page">
-				<canvas height="100" width="100" id="login-canvas"></canvas>
+				<canvas id="login-canvas"></canvas>
 
-				<div class="auth-header">
-					<img class="saturn-logo" src="assets/saturn-logo.svg" alt="Saturn logo"/>
-					<h1>{"Saturn"}</h1>
+				<div class="login-hero">
+					<div class="auth-header">
+						<img class="saturn-logo" src="assets/saturn-logo.svg" alt="Saturn logo"/>
+						<h1>{"Saturn"}</h1>
+					</div>
+
+					<div class="soft-grey-rect">
+						<h1>
+							{"Welcome to Saturn!"}
+						</h1>
+						<div class="please-login-text">
+							{"Please log in to proceed."}
+
+							<GoogleLoginButton/>
+						</div>
+					</div>
 				</div>
-
-				<div class="soft-grey-rect">
-					<h1>
-						{"Welcome to Saturn!"}
-					</h1>
-					<div class="please-login-text">
-						{"Please log in to proceed."}
-
-						<GoogleLoginButton/>
+				<div class="login-content-wrapper">
+					<div class="login-content-border"></div>
+					<div class="login-content">
+						<div class="login-2-panel-split">
+							<div class="panel">
+								<h1> {"Find "}<span class="text-accent"> {"Your "}</span> {"Communities!"}</h1>
+							</div>
+							<div class="panel">
+								<img src="https://images.pexels.com/photos/933964/pexels-photo-933964.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"/>
+							</div>
+						</div>
 					</div>
 				</div>
 
+				<Footer/>
 				{
 					if self.skip_login {
 						html! {
