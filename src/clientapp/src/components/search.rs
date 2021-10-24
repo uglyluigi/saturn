@@ -89,7 +89,6 @@ impl Component for SearchBar {
 			},
 
             Msg::AfterKeyPress => {
-                crate::tell!("Bingus");
                 if self.delayed_search_cb.is_some() {
                     self.delayed_search_cb.take().unwrap().cancel();
                 }
@@ -119,7 +118,6 @@ impl Component for SearchBar {
 
     fn view(&self) -> Html {
         let input_cb = self.link.callback(|data: yew::html::InputData| {
-            crate::tell!("Input={}",data.value);
             Msg::UpdateSearchFieldState(data.value)
         });
 
