@@ -2,6 +2,8 @@ use yew::prelude::*;
 mod components;
 mod types;
 mod flags;
+mod wbg;
+
 use components::{
 	coolshit::ThreeJSViewport,
 	core::{router::*, NotFound, Toolbar},
