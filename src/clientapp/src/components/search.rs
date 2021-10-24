@@ -6,7 +6,9 @@ use fuzzy_matcher::skim::SkimMatcherV2;
 use crate::{components::{clubs::ClubView}, types::ClubDetails};
 use gloo_timers::callback::Timeout;
 
-
+// TODO Future improvements
+// Add search filters, aka searching specifically by user, body text, or organizer
+// Obviously tags should be added too
 pub struct SearchBar {
 	link: ComponentLink<Self>,
     props: Props,
@@ -117,6 +119,7 @@ impl Component for SearchBar {
 
     fn view(&self) -> Html {
         let input_cb = self.link.callback(|data: yew::html::InputData| {
+            crate::tell!("Input={}",data.value);
             Msg::UpdateSearchFieldState(data.value)
         });
 
@@ -128,7 +131,7 @@ impl Component for SearchBar {
             <>
                 <div class="search-bar-container">
                     <h1 class="search-bar-h1"> {"find something "} <i>{" totally "}</i> {" you."} </h1>
-                    <input class="search-bar-input" onkeypress=key_cb oninput=input_cb placeholder="I'm looking for..."/>
+                    <input class="search-bar-input" value=self.search_field_state.clone() onkeydown=key_cb oninput=input_cb placeholder="I'm looking for..."/>
                 </div>
 
                 {
