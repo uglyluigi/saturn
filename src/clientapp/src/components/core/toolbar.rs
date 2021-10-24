@@ -1,3 +1,5 @@
+use gloo_timers::callback::Timeout;
+use wasm_bindgen::prelude::Closure;
 use web_sys::HtmlElement;
 use yew::{Component, ComponentLink, Html, NodeRef, Properties, ShouldRender, html, services::{FetchService, fetch::{FetchTask, Request, Response, StatusCode}}};
 use crate::components::core::router::*;
@@ -8,6 +10,7 @@ pub struct ToolbarComponent {
 	dropdown_content_ref: NodeRef,
 	logout_task: Option<FetchTask>,
 	redirect: bool,
+	hide_timer: Option<Timeout>,
 }
 
 pub enum Msg {
@@ -15,6 +18,7 @@ pub enum Msg {
 	SignOut,
 	SignOutDone,
 	SignOutFailed,
+	Hide,
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -29,7 +33,8 @@ impl Component for ToolbarComponent {
 
 	fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
 		Self { link, props, dropdown_content_ref: NodeRef::default(),
-		logout_task: None, redirect: false }
+		logout_task: None, redirect: false,
+		hide_timer: None }
 	}
 
 	fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -41,8 +46,21 @@ impl Component for ToolbarComponent {
 
 				if el.class_list().contains(name) {
 					el.class_list().remove_1(name).unwrap();
+
+					if self.hide_timer.is_some() {
+						self.hide_timer.take().unwrap().cancel();
+					}
 				} else {
 					el.class_list().add_1(name).unwrap();
+
+					if self.hide_timer.is_some() {
+						self.hide_timer.take().unwrap().cancel();
+					}
+
+					let link = self.link.clone();
+					self.hide_timer = Some(Timeout::new(3_000, move || {
+						link.send_message(Msg::Hide);
+					}));
 				}
 			},
 
@@ -82,6 +100,15 @@ impl Component for ToolbarComponent {
     		Msg::SignOutDone => {
 				self.redirect = true;
 			},
+
+			Msg::Hide => {
+				let name = "dropdown-content-transition";
+				let el = self.dropdown_content_ref.cast::<HtmlElement>().unwrap();
+
+				if el.class_list().contains(name) {
+					el.class_list().remove_1(name).unwrap();
+				}
+			}
 		};
 
 		true
