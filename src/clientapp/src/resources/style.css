@@ -13,10 +13,6 @@ $FONT_BODY: 'Poppins', sans-serif;
 **/
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
 
-*{
-    box-sizing: border-box !important;
-}
-
 h1, h2, h3, p, body {
     font-family: 'Open Sans';
     font-weight: 400;
@@ -28,20 +24,15 @@ h1 {
     font-weight: 700;
 }
 
+
+
 h2, h3 {
     font-weight: 600;
 }
 
-/* Horizontal line */
-hr {
-    border-top: 1px solid #D2DDDE;
-    width: 90%;
-}
-
 html {
     min-height: 100%;
-    background-image: url("/assets/doodles.png");
-    background-repeat: repeat;
+    background-image: url("data:image/svg+xml,<svg id='patternId' width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'><defs><pattern id='a' patternUnits='userSpaceOnUse' width='34.129' height='70' patternTransform='scale(5) rotate(140)'><rect x='0' y='0' width='100%' height='100%' fill='hsla(0,0%,100%,1)'/><path d='M2.51 1.597A23.682 23.682 0 000 1.72v32.65c2.18-2 4.176-4.072 5.844-5.915 3.188-3.523 9.14-2.133 10.242 2.488a5.048 5.048 0 01-.467 3.649c-1.5 2.829-3.843 2.848-5.616 2.316-1.343-.403-2.579.882-2.085 2.193.878 2.334 3.46 4.9 10.724 4.18 5.05-.5 10.712-4.53 15.487-8.911V1.72c-7.355.728-16.01 8.948-21.33 14.827-3.188 3.522-9.14 2.133-10.242-2.489a5.05 5.05 0 01.466-3.648C4.525 7.58 6.867 7.56 8.64 8.092c1.342.403 2.578-.88 2.085-2.192-.77-2.042-2.842-4.262-8.214-4.303z'  stroke-width='1' stroke='none' fill='hsla(166, 64%, 46%, 0.28)'/></pattern></defs><rect width='800%' height='800%' transform='translate(-10,0)' fill='url(%23a)'/></svg>");    background-repeat: repeat;
 }
 
 /* <--------- LOGIN ---------> */
@@ -537,7 +528,7 @@ html {
 .club-view {
     padding:2em;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 2em;
     grid-template-rows: auto;
 }
@@ -619,6 +610,15 @@ html {
     opacity: 0%;
     display: flex;
     flex-direction: column;    
+}
+
+.club-card hr {
+    border: none;
+    border-top: 1px solid #D2DDDD;
+}
+
+.club-card h3 {
+    margin: 0.5em;
 }
 
 .club-card .material-icons {
@@ -705,6 +705,7 @@ html {
 .club-card-action-bar {
     flex-direction: row;
     justify-content: left;
+    margin-top: 1em;
 }
 
 .club-card-action-bar button {
@@ -717,17 +718,35 @@ html {
     min-width: 1em;
 
     transition: transform 0.33s;
+    cursor: pointer;
 }
 
 .club-card-action-bar button:hover {
     transform: translateY(-0.25em) !important;
 }
 
+.club-card-action-bar abbr:hover::after {
+    font-family: 'Open Sans';
+    font-size: 1.5em;
+    color:#D2DDDE;
+    content: attr(data_title);
+    position: absolute;
+    background-color: #181839;
+    pointer-events: none;
+    z-index: 1;
+    margin-top: 2.3em;
+    padding: 0.25em;
+    border-radius: 0.25em;
+    border: 1px solid #D2DDDE;
+    width: fit-content;
+}
+
 .club-card-body {
     display: flex;
-    flex: 50%;
     text-align: center;
+    height: auto;
     color: #D2DDDE;
+    align-items: center;
 }
 
 .club-card-body #right-col {
@@ -768,8 +787,8 @@ html {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 10em;
-    height: 10em;
+    width: 11em;
+    height: 11em;
     border-radius: 25em;
     padding-bottom: 1em;
 }
@@ -979,6 +998,7 @@ input[type="file"] {
     background-color: #4c1a88;
     cursor: pointer;
 }
+
 
 .new-club-page label {
     width: 30%;

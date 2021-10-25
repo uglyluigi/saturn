@@ -284,38 +284,53 @@ impl Component for ClubCard {
 
 		html! {
 			<div ref={self.body_ref.clone()} class="club-card">
-				<div class="club-card-header">
-					<h1>{self.props.details.unwrap().name.clone()}</h1>
-				</div>
-				<hr/>
 				<div class="club-card-body">
 					<div id="left-col">
-						<h2><div ref=self.number_ref.clone() id="member-number">{self.member_count}</div> { if self.member_count == 0 || self.member_count > 1 {" members"} else { " member" }}</h2>
+						<img src={format!("/uploads/{}.png", self.props.details.unwrap().id)}/>	
 					</div>
 
 					<div id="right-col">
-						<img src={format!("/assets/clubs/{}.png", self.props.details.unwrap().id)}/>
 						<p>{"Organizer"}</p>
-						<h2>{format!("{} {}", self.props.details.unwrap().head_moderator.first_name, self.props.details.unwrap().head_moderator.last_name)}</h2>
+						<h3>{format!("{} {}", self.props.details.unwrap().head_moderator.first_name, self.props.details.unwrap().head_moderator.last_name)}</h3>
+
+						<hr/>
+
+						<h3>
+							<div ref=self.number_ref.clone() id="member-number">
+								{self.member_count} {" interested"}
+							</div> 
+						</h3>
+
+						<hr/>
+
+						<div class="club-card-action-bar">
+							<button id="club-card-join-btn" onclick={match self.which_button { JoinButton::FilledStar => leave_club, _ => join_club }}> 
+								<abbr data_title={match self.which_button { JoinButton::FilledStar => "Leave", _ => "Join"}}>
+									{self.which_button}
+								</abbr> 
+							</button>
+							<button id="club-card-expand-btn"><abbr data_title="View details"><span class="material-icons">{"open_in_full"}</span></abbr></button>
+
+							{
+								if self.props.details.unwrap().is_moderator != "false" {
+									html! {
+										<button id="club-card-delete-btn" onclick=delete_club><abbr data_title="Delete"><span class="material-icons">{"close"}</span></abbr></button>
+									}
+								} else {
+									html! {
+										<>
+										</>
+									}
+								}
+							}
+						</div>
 					</div>
 				</div>
 
-				<div class="club-card-action-bar">
-					<button id="club-card-join-btn" onclick={match self.which_button { JoinButton::FilledStar => leave_club, _ => join_club }}> {self.which_button} </button>
-					<button id="club-card-expand-btn"><span class="material-icons">{"open_in_full"}</span></button>
-
-					{
-						if self.props.details.unwrap().is_moderator != "false" {
-							html! {
-								<button id="club-card-delete-btn" onclick=delete_club><span class="material-icons">{"close"}</span></button>
-							}
-						} else {
-							html! {
-								<>
-								</>
-							}
-						}
-					}
+				
+				<hr/>
+				<div class="club-card-header">
+					<h1>{self.props.details.unwrap().name.clone()}</h1>
 				</div>
 			</div>
 		}
