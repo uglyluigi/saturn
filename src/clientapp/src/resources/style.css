@@ -15,10 +15,6 @@ $FONT_BODY: 'Poppins', sans-serif;
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono&display=swap');
 
-*{
-    box-sizing: border-box !important;
-}
-
 h1, h2, h3, p, body {
     font-family: 'Open Sans';
     font-weight: 400;
@@ -34,12 +30,6 @@ h1 {
 
 h2, h3 {
     font-weight: 600;
-}
-
-/* Horizontal line */
-hr {
-    border-top: 1px solid #D2DDDE;
-    width: 90%;
 }
 
 html {
@@ -540,7 +530,7 @@ html {
 .club-view {
     padding:2em;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 2em;
     grid-template-rows: auto;
 }
@@ -622,6 +612,15 @@ html {
     opacity: 0%;
     display: flex;
     flex-direction: column;    
+}
+
+.club-card hr {
+    border: none;
+    border-top: 1px solid #D2DDDD;
+}
+
+.club-card h3 {
+    margin: 0.5em;
 }
 
 .club-card .material-icons {
@@ -708,6 +707,7 @@ html {
 .club-card-action-bar {
     flex-direction: row;
     justify-content: left;
+    margin-top: 1em;
 }
 
 .club-card-action-bar button {
@@ -720,14 +720,11 @@ html {
     min-width: 1em;
 
     transition: transform 0.33s;
+    cursor: pointer;
 }
 
 .club-card-action-bar button:hover {
     transform: translateY(-0.25em) !important;
-}
-
-.club-card-action-bar abbr:hover {
-    transition: transform 0.33s;
 }
 
 .club-card-action-bar abbr:hover::after {
@@ -748,9 +745,10 @@ html {
 
 .club-card-body {
     display: flex;
-    flex: 50%;
     text-align: center;
+    height: auto;
     color: #D2DDDE;
+    align-items: center;
 }
 
 .club-card-body #right-col {
@@ -791,8 +789,8 @@ html {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width: 10em;
-    height: 10em;
+    width: 11em;
+    height: 11em;
     border-radius: 25em;
     padding-bottom: 1em;
 }
