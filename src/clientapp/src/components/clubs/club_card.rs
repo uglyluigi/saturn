@@ -284,6 +284,13 @@ impl Component for ClubCard {
 
 		html! {
 			<div ref={self.body_ref.clone()} class="club-card">
+				<div class="club-card-header">
+					<h1>{self.props.details.unwrap().name.clone()}</h1>
+				</div>
+				
+				<hr/>
+
+
 				<div class="club-card-body">
 					<div id="left-col">
 						<img src={format!("/uploads/{}.png", self.props.details.unwrap().id)}/>	
@@ -328,10 +335,7 @@ impl Component for ClubCard {
 				</div>
 
 				
-				<hr/>
-				<div class="club-card-header">
-					<h1>{self.props.details.unwrap().name.clone()}</h1>
-				</div>
+				
 			</div>
 		}
 	}

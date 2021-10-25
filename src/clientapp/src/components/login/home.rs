@@ -130,33 +130,35 @@ impl Home {
 
 			FetchState::Done(details) => {
 				html! {
-					<>
-						<Toolbar pfp_url=details.picture.as_ref().unwrap().clone() username=details.first_name.clone().unwrap()/>
+					<div>
+						<div id="root">
+							<Toolbar pfp_url=details.picture.as_ref().unwrap().clone() username=details.first_name.clone().unwrap()/>
 
-						{
-							match self.props.route {
-								AppRoute::Home => {
-									html! {
-										<ClubView/>
-									}
-								},
-								AppRoute::Search => {
-									html! {
-										<SearchBar/>
-									}
-								},
-								AppRoute::ClubForm => {
-									html! {
-										<NewClubPage/>
-									}
-								},
-			
-								_ => unreachable!()
+							{
+								match self.props.route {
+									AppRoute::Home => {
+										html! {
+											<ClubView/>
+										}
+									},
+									AppRoute::Search => {
+										html! {
+											<SearchBar/>
+										}
+									},
+									AppRoute::ClubForm => {
+										html! {
+											<NewClubPage/>
+										}
+									},
+				
+									_ => unreachable!()
+								}
 							}
-						}
+						</div>
 
 						<Footer/>
-					</>
+					</div>
 				}
 			},
 
