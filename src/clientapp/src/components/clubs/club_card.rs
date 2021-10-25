@@ -301,13 +301,13 @@ impl Component for ClubCard {
 				</div>
 
 				<div class="club-card-action-bar">
-					<button id="club-card-join-btn" onclick={match self.which_button { JoinButton::FilledStar => leave_club, _ => join_club }}> {self.which_button} </button>
-					<button id="club-card-expand-btn"><span class="material-icons">{"open_in_full"}</span></button>
+					<button id="club-card-join-btn" onclick={match self.which_button { JoinButton::FilledStar => leave_club, _ => join_club }}> <abbr data_title="Join">{self.which_button}</abbr> </button>
+					<button id="club-card-expand-btn"><abbr data_title="View details"><span class="material-icons">{"open_in_full"}</span></abbr></button>
 
 					{
 						if self.props.details.unwrap().is_moderator != "false" {
 							html! {
-								<button id="club-card-delete-btn" onclick=delete_club><span class="material-icons">{"close"}</span></button>
+								<button id="club-card-delete-btn" onclick=delete_club><abbr data_title="Delete"><span class="material-icons">{"close"}</span></abbr></button>
 							}
 						} else {
 							html! {
