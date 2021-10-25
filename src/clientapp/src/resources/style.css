@@ -178,13 +178,29 @@ html {
     display: flex;
 }
 
+::selection{
+    background-color: #4C1A88;
+    color: white;
+    background-clip: content-box;
+    -webkit-background-clip: content-box;
+}
+
 .text-accent{
-    color:#2bc29f;
+    background: linear-gradient(to right, #2bc29f, #4C1A88);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: rgba(0,0,0,0);
+    font-weight: bolder;
 }
 
 .login-2-panel-split > .panel > h1{
     margin:auto;
     font-size:5rem;
+}
+
+.login-2-panel-split > .panel > h2{
+    margin:auto;
+    font-size:3rem;
 }
 
 .login-2-panel-split > .panel > img{
@@ -193,17 +209,19 @@ html {
     object-fit: cover;
 }
 
+.login-2-panel-split > .panel > .panel-contain{
+    width:100%;
+    height:100%;
+    object-fit: contain;
+}
+
 
 .auth-header h1 {
     position: relative;
     left: 10px;
     font-size: 120pt;
     white-space: nowrap;
-    background-color: white;
-    
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: textAnimate 5s linear infinite alternate;
+    color:white;
 }
 
 .auth-header img {
@@ -418,7 +436,7 @@ html {
 }
 
 .toolbar > .toolbar-inner-component > * {
-    margin:auto;
+    margin:auto 0em;
 }
 
 
@@ -497,7 +515,7 @@ html {
 
 .toolbar .toolbar-text-link {
     height: initial;
-    margin: auto;
+    margin: auto 0em;
     font-family: 'Open Sans';
     color: #D2DDDE;
     text-align: center;
@@ -561,6 +579,11 @@ html {
         font-size:6vw;
     }
 
+    .login-2-panel-split > .panel > h2{
+        margin:auto;
+        font-size:4vw;
+    }
+
     .club-view {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -581,6 +604,11 @@ html {
     .login-2-panel-split > .panel > h1{
         margin:auto;
         font-size:12vw;
+    }
+
+    .login-2-panel-split > .panel > h2{
+        margin:auto;
+        font-size:6vw;
     }
 }
 

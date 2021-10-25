@@ -74,9 +74,16 @@ impl Component for LoginPageComponent {
 								<img src="https://images.pexels.com/photos/933964/pexels-photo-933964.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"/>
 							</div>
 						</div>
+						<div class="login-2-panel-split">
+							<div class="panel">
+								<h2> {"Saturn is the platform that lets you "}<span class="text-accent"> {"overcome networking boundaries "}</span> {"hindering your club's growth and gives you the tools to "}<span class="text-accent"> {"connect with others"}</span> {"."}</h2>
+							</div>
+							<div class="panel">
+								<img class="panel-contain" src="/assets/saturn-space.png"/>
+							</div>
+						</div>
 					</div>
 				</div>
-
 				<Footer/>
 				{
 					if self.skip_login {
