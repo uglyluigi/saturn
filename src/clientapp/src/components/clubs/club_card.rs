@@ -301,7 +301,11 @@ impl Component for ClubCard {
 				</div>
 
 				<div class="club-card-action-bar">
-					<button id="club-card-join-btn" onclick={match self.which_button { JoinButton::FilledStar => leave_club, _ => join_club }}> <abbr data_title="Join">{self.which_button}</abbr> </button>
+					<button id="club-card-join-btn" onclick={match self.which_button { JoinButton::FilledStar => leave_club, _ => join_club }}> 
+						<abbr data_title={match self.which_button { JoinButton::FilledStar => "Leave", _ => "Join"}}>
+							{self.which_button}
+						</abbr> 
+					</button>
 					<button id="club-card-expand-btn"><abbr data_title="View details"><span class="material-icons">{"open_in_full"}</span></abbr></button>
 
 					{
