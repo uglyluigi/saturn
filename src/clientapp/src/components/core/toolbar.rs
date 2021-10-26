@@ -128,6 +128,7 @@ impl Component for ToolbarComponent {
 		});
 
 		html! {
+			<div class="toolbar-wrapper">
 			<div class="toolbar">
 				{
 					if self.redirect {
@@ -148,7 +149,7 @@ impl Component for ToolbarComponent {
 								<div class="toolbar-inner-component-right-side">
 									<button class="dropdown-btn" onclick=on_dropdown_button_clicked>
 										<img class="toolbar-pfp" src=self.props.pfp_url.clone()/>
-										<h1>{"Hi, "} {self.props.username.clone()}</h1>
+										<h1>{self.props.username.clone()}</h1>
 									</button>
 
 									<div ref=self.dropdown_content_ref.clone() class="dropdown-content">
@@ -159,6 +160,8 @@ impl Component for ToolbarComponent {
 						}
 					}
 				}
+				</div>
+				<div class="login-content-border"></div>
 			</div>
 		}
 	}

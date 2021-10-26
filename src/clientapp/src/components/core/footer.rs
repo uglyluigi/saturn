@@ -31,6 +31,7 @@ impl Component for Footer {
 
 	fn view(&self) -> Html {
 		html! {
+            
             <div class="footer">
                 <div class="footer-section-container">
                     <div class="footer-section">

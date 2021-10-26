@@ -132,7 +132,7 @@ impl Home {
 				html! {
 					<div>
 						<div id="root">
-							<Toolbar pfp_url=details.picture.as_ref().unwrap().clone() username=details.first_name.clone().unwrap()/>
+							<Toolbar pfp_url=details.picture.as_ref().unwrap().clone() username=format!("{} {}",details.first_name.clone().unwrap(), details.last_name.clone().unwrap())/>
 
 							{
 								match self.props.route {

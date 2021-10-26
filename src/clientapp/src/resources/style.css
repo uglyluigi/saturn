@@ -36,7 +36,8 @@ h2, h3 {
 
 html {
     min-height: 100%;
-    background-image: url("data:image/svg+xml,<svg id='patternId' width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'><defs><pattern id='a' patternUnits='userSpaceOnUse' width='34.129' height='70' patternTransform='scale(5) rotate(140)'><rect x='0' y='0' width='100%' height='100%' fill='hsla(0,0%,100%,1)'/><path d='M2.51 1.597A23.682 23.682 0 000 1.72v32.65c2.18-2 4.176-4.072 5.844-5.915 3.188-3.523 9.14-2.133 10.242 2.488a5.048 5.048 0 01-.467 3.649c-1.5 2.829-3.843 2.848-5.616 2.316-1.343-.403-2.579.882-2.085 2.193.878 2.334 3.46 4.9 10.724 4.18 5.05-.5 10.712-4.53 15.487-8.911V1.72c-7.355.728-16.01 8.948-21.33 14.827-3.188 3.522-9.14 2.133-10.242-2.489a5.05 5.05 0 01.466-3.648C4.525 7.58 6.867 7.56 8.64 8.092c1.342.403 2.578-.88 2.085-2.192-.77-2.042-2.842-4.262-8.214-4.303z'  stroke-width='1' stroke='none' fill='hsla(166, 64%, 46%, 0.28)'/></pattern></defs><rect width='800%' height='800%' transform='translate(-10,0)' fill='url(%23a)'/></svg>");    background-repeat: repeat;
+    background-image: url("https://www.toptal.com/designers/subtlepatterns/patterns/stripes-light.png");
+    background-repeat: repeat;
 }
 
 body {
@@ -48,7 +49,7 @@ body {
 #root {
     display: flex;
     flex-direction: column;
-    min-height: 100%;
+    min-height: 100vh;
 }
 
 /* <--------- LOGIN ---------> */
@@ -61,6 +62,7 @@ body {
 }
 
 .login-content-wrapper{
+    display: block;
     width:100%;
     background-color:white;
     background-repeat: repeat;
@@ -70,6 +72,7 @@ body {
     background: linear-gradient(to right, #2bc29f, #4C1A88);
     height:.5em;
     width:100%;
+    flex-basis: 100%;
 
 }
 
@@ -422,10 +425,16 @@ body {
     margin:auto;
 }
 
+.toolbar-wrapper{
+    width:100%;
+    z-index:1;
+    box-shadow: 0px 0px 5px 0px #26282C;
+}
+
 .toolbar {
     box-sizing: border-box;
     width: 100%;
-    background-color: #171738;
+    background-color: white;
     display: flex;
     height: 4rem;
     flex-direction: row;   
@@ -485,7 +494,7 @@ body {
     display:inline-flex;
     font-family: 'Open Sans';
     font-weight: 400;
-    color: #D2DDDE;
+    color:#26282C;
     text-align: center;
     padding: 14px 16px;
     font-size: 20px;
@@ -498,10 +507,11 @@ body {
     margin: auto;
     display:inline-flex;
     font-family: 'Open Sans';
-    color: #D2DDDE;
+    color:#26282C;
     text-align: center;
-    padding: 14px 16px;
+    padding: 14px 10px;
     font-size: 17px;
+    font-weight: 400;
     text-decoration: none;
     vertical-align: middle;
 }
@@ -617,7 +627,6 @@ body {
 }
 
 .club-card {
-    height: fit-content;
     width: auto;
     border-radius: .25em;
     background-color: #171738;

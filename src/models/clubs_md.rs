@@ -19,7 +19,7 @@ pub struct NewClub<'a> {
     pub expiry_date: &'a DateTime<Utc>
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ClubDetails{
     pub id: i32,
     pub name: String,

@@ -380,7 +380,7 @@ impl Component for ClubView {
 		} else {
 			html! {
 				<>				
-					<div class="content club-view-fetch-info">
+					<div class="club-view-fetch-info">
 						{
 							
 							match &self.clubs_fetch_state {
