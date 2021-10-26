@@ -484,7 +484,7 @@ body {
     height:100%;
     display:inline-flex;
     font-family: 'Open Sans';
-    font-weight: 600;
+    font-weight: 400;
     color: #D2DDDE;
     text-align: center;
     padding: 14px 16px;
@@ -617,7 +617,7 @@ body {
 }
 
 .club-card {
-    height: auto;
+    height: fit-content;
     width: auto;
     border-radius: .25em;
     background-color: #171738;
@@ -798,14 +798,14 @@ body {
 }
 
 .club-card img {
-    padding-top: 1em;
+    margin-top: 1em;
     display: block;
     margin-left: auto;
     margin-right: auto;
     width: 11em;
     height: 11em;
     border-radius: 25em;
-    padding-bottom: 1em;
+    margin-bottom: 1em;
 }
 
 /* Spinners */
