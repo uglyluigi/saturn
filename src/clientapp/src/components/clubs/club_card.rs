@@ -293,7 +293,7 @@ impl Component for ClubCard {
 
 				<div class="club-card-body">
 					<div id="left-col">
-						<img src={format!("/uploads/{}.png", self.props.details.unwrap().id)}/>	
+						<img src={format!("/assets/clubs/{}.png", self.props.details.unwrap().id)}/>	
 					</div>
 
 					<div id="right-col">
