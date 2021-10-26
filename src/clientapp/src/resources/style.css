@@ -628,6 +628,11 @@ body {
     flex-direction: column;    
 }
 
+#interested {
+    display: flex;
+    justify-content: center;
+}
+
 .club-card hr {
     border: none;
     border-top: 1px solid #D2DDDD;
@@ -689,6 +694,7 @@ body {
 }
 
 #member-number {
+    margin-right: 0.5em;
     transition: transform 0.25s;
 }
 .number-spin-in {

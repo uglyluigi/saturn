@@ -301,11 +301,15 @@ impl Component for ClubCard {
 						<h3>{format!("{} {}", self.props.details.unwrap().head_moderator.first_name, self.props.details.unwrap().head_moderator.last_name)}</h3>
 
 						<hr/>
-
 						<h3>
-							<div ref=self.number_ref.clone() id="member-number">
-								{self.member_count} {" interested"}
-							</div> 
+							<div id="interested">
+								<div ref=self.number_ref.clone() id="member-number">
+									{self.member_count}
+								</div> 
+								<div>
+									{"interested"}
+								</div>
+							</div>
 						</h3>
 
 						<hr/>
