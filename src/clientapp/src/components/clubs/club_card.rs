@@ -29,6 +29,7 @@ pub struct ClubCard {
 	number_spin_anim_end_cb: Option<Closure<dyn Fn()>>,
 
 	which_button: JoinButton,
+	box_shadow_color: String,
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -94,6 +95,10 @@ impl Component for ClubCard {
 	type Properties = Props;
 
 	fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+		use rand::seq::SliceRandom;
+
+		let colors = vec!["ED6A5A", "FF5964", "2BC29F"];
+
 		Self {
 			link,
 			which_button: if props.details.unwrap().is_member { JoinButton::FilledStar } else { JoinButton::EmptyStar },
@@ -115,6 +120,7 @@ impl Component for ClubCard {
 			props,
 
 			number_spin_anim_end_cb: None,
+			box_shadow_color: colors.choose(&mut rand::thread_rng()).unwrap().to_owned().to_owned(),
 		}
 	}
 
@@ -283,7 +289,7 @@ impl Component for ClubCard {
 		let leave_club = self.link.callback(|_: MouseEvent| Msg::Leave);
 
 		html! {
-			<div ref={self.body_ref.clone()} class="club-card">
+			<div ref={self.body_ref.clone()} class="club-card" style=format!("box-shadow: 0.4em 0.4em {};", self.box_shadow_color)>
 				<div class="club-card-header">
 					<h1>{self.props.details.unwrap().name.clone()}</h1>
 				</div>

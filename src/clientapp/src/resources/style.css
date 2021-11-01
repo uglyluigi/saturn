@@ -11,7 +11,7 @@ $TEXT_1_OFF_WHITE:#D2DDDE;
 /**$FONT_HEADER: "Coda", cursive;
 $FONT_BODY: 'Poppins', sans-serif;
 **/
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
 
 * {
     box-sizing: border-box;
@@ -629,12 +629,14 @@ body {
 .club-card {
     width: auto;
     border-radius: .25em;
-    background-color: #171738;
+    background-color: #EEEEEE;
     padding: 1em 1em 1em 1em;
     transition: transform 0.5s;
     opacity: 0%;
     display: flex;
     flex-direction: column;    
+    color: #261C15;
+    box-shadow: 0.25em 0.25em #2bc29f;
 }
 
 #interested {
@@ -644,11 +646,13 @@ body {
 
 .club-card hr {
     border: none;
-    border-top: 1px solid #D2DDDD;
+    border-top: 1px solid #261C15;
 }
 
 .club-card h3 {
     margin: 0.5em;
+    color: #261C15;
+    font-weight: 400;
 }
 
 .club-card .material-icons {
@@ -657,7 +661,7 @@ body {
 }
 
 .club-card #club-card-join-btn span {
-    color: #94B9AF;
+    color: #2A7F62;
 }
 
 .club-card #club-card-delete-btn span {
@@ -665,7 +669,7 @@ body {
 }
 
 .club-card #club-card-expand-btn span {
-    color: #F7F5AD;
+    color: #406E8E;
 }
 
 .disappear {
@@ -716,9 +720,9 @@ body {
 
 .club-card h1 {
     font-size: 30px;
-    color: #FFFFFF;
+    color: #261C15;
     font-family: 'Open Sans';
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .club-card hr {
@@ -785,11 +789,14 @@ body {
 
 .club-card-body #right-col h2 {
     font-size: 20pt;
+    font-weight: 400;
 }
 
 .club-card-body #right-col p {
     display: flex;
     flex-direction: row;
+    color: #261C15;
+    font-weight: 500;
 }
 
 .club-card-body #right-col p:before, p:after {
