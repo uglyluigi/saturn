@@ -332,7 +332,7 @@ impl Component for ClubCard {
 									{self.which_button}
 								</abbr> 
 							</button>
-							<button id="club-card-expand-btn"><abbr data_title="View details"><span class="material-icons">{"open_in_full"}</span></abbr></button>
+							<button id="club-card-expand-btn"><abbr data_title="Details"><span class="material-icons">{"open_in_full"}</span></abbr></button>
 
 							{
 								if self.props.details.unwrap().is_moderator != "false" {
