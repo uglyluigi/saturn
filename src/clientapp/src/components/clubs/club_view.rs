@@ -381,7 +381,17 @@ impl Component for ClubView {
 			html! {
 				<>				
 					<div class="club-view-fetch-info">
-						{
+						<div class="club-filters">
+
+						<input type="checkbox" id="academia" name="academia" value="Academia"/>
+						<label for="academia"> {"Academia"}</label><br/>
+						<input type="checkbox" id="greek-life" name="greek-life" value="Greek Life"/>
+						<label for="greek-life"> {"Greek Life"}</label><br/>
+						<input type="checkbox" id="sports" name="sports" value="Sports"/>
+						<label for="sports"> {"Sports"}</label><br/> 
+				
+						</div>
+					{
 							
 							match &self.clubs_fetch_state {
 								FetchState::Failed(maybe_msg) => {
