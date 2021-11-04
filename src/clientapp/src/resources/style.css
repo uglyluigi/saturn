@@ -1118,10 +1118,23 @@ input[type="file"] {
     color: black;
     align-items: right;
     justify-content: flex-end;
-    padding-top: 2em;
-    padding-bottom: 2em;
+    padding-top: 1em;
+    padding-bottom: 1em;
     margin-top: 1em;
 
+}
+
+.checkbox {
+margin-left: 2em;
+margin-right: 2em;
+
+}
+
+.club-filters label {
+    font-size: large;
+}
+.club-filters input {
+    margin-right: 0.5em;
 }
 
 .status-and-spinner > .lds-dual-ring {

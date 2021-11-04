@@ -381,13 +381,17 @@ impl Component for ClubView {
 			html! {
 				<>		
 					<div class="club-filters">
-
+					<div class="checkbox">
 					<input type="checkbox" id="academia" name="academia" value="Academia"/>
-					<label for="academia"> {"Academia"}</label><br/>
+					<label for="academia"> {"Academia"}</label><br/></div>
+					
+					<div class="checkbox">
 					<input type="checkbox" id="greek-life" name="greek-life" value="Greek Life"/>
-					<label for="greek-life"> {"Greek Life"}</label><br/>
+					<label for="greek-life"> {"Greek Life"}</label><br/></div>
+					
+					<div class="checkbox">
 					<input type="checkbox" id="sports" name="sports" value="Sports"/>
-					<label for="sports"> {"Sports"}</label><br/> 
+					<label for="sports"> {"Sports"}</label><br/></div>
 			
 					</div>		
 					<div class="club-view-fetch-info">
