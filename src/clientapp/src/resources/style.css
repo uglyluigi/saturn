@@ -1112,5 +1112,17 @@ input[type="file"] {
     align-items: center;
 }
 
+.club-filters {
+    display: flex;
+    background-color: white;
+    color: black;
+    align-items: right;
+    justify-content: right;
+    padding-top: 2em;
+    padding-bottom: 2em;
+    margin-top: 1em;
+
+}
+
 .status-and-spinner > .lds-dual-ring {
 }
