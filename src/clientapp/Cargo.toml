@@ -18,7 +18,8 @@ getrandom = { version = "0.2", features = ["js"] }
 ammonia = "*"
 comrak = "0.11.0"
 fuzzy-matcher = "*"
-gloo-timers ="*"
+gloo-timers = "*"
+gloo-dialogs = "*"
 
 [dependencies.regex]
 version = "*"

@@ -323,6 +323,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "gloo-dialogs"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4ffb557a2ea2ed283f1334423d303a336fad55fb8572d51ae488f828b1464b40"
+dependencies = [
+ "wasm-bindgen",
+ "web-sys",
+]
+
+[[package]]
 name = "gloo-events"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -814,6 +824,7 @@ dependencies = [
  "comrak",
  "fuzzy-matcher",
  "getrandom 0.2.3",
+ "gloo-dialogs",
  "gloo-render",
  "gloo-timers",
  "js-sys",

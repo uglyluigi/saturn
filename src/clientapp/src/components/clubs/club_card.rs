@@ -6,6 +6,7 @@ use crate::components::ClubView;
 use crate::tell;
 use yew::services::fetch::{FetchService, FetchTask, Request, Response, StatusCode};
 use regex::{self, Regex};
+use gloo_dialogs::confirm;
 
 
 pub struct ClubCard {
@@ -131,40 +132,45 @@ impl Component for ClubCard {
 			},
 
 			Msg::Delet => {
-				let req = Request::delete(format!("/api/clubs/{}", self.props.details.unwrap().id)).body(yew::format::Nothing);
 
-				//FIXME back end tends to return 408 for delete requests which does actually delete it but sometimes it does so too slowly
-				//to be reflected on the front end the first time it is refreshed.
-				match req {
-					Ok(req) => {
-						let callback = self.link.callback(|response: Response<Result<String, anyhow::Error>>| {
-							match response.status() {
-								StatusCode::OK => {
-									tell!("Successfully deleted club");
+				// opens confirm dialog
+				let result = confirm("Are you sure you want to delete?");
+				if(result){
+					let req = Request::delete(format!("/api/clubs/{}", self.props.details.unwrap().id)).body(yew::format::Nothing);
+
+					//FIXME back end tends to return 408 for delete requests which does actually delete it but sometimes it does so too slowly
+					//to be reflected on the front end the first time it is refreshed.
+					match req {
+						Ok(req) => {
+							let callback = self.link.callback(|response: Response<Result<String, anyhow::Error>>| {
+								match response.status() {
+									StatusCode::OK => {
+										tell!("Successfully deleted club");
+									},
+
+									_ => {
+										tell!("Weird status received: {}", response.status());
+									}
+								};
+
+								Msg::DoneDelet
+							});
+
+							match FetchService::fetch(req, callback) {
+								Ok(task) => {
+									self.delete_fetch_task = Some(task);
+									self.delete_fetch_state = Some(FetchState::Waiting);
 								},
+								Err(e) => {
+									self.delete_fetch_state = Some(FetchState::Failed(Some(anyhow::anyhow!(e))));
+								},
+							}
+						},
+						Err(err) => (),
+					}
 
-								_ => {
-									tell!("Weird status received: {}", response.status());
-								}
-							};
-
-							Msg::DoneDelet
-						});
-
-						match FetchService::fetch(req, callback) {
-							Ok(task) => {
-								self.delete_fetch_task = Some(task);
-								self.delete_fetch_state = Some(FetchState::Waiting);
-							},
-							Err(e) => {
-								self.delete_fetch_state = Some(FetchState::Failed(Some(anyhow::anyhow!(e))));
-							},
-						}
-					},
-					Err(err) => (),
+					self.props.parent_link.unwrap().send_message(crate::components::club_view::Msg::GetClubDetails(None));
 				}
-
-				self.props.parent_link.unwrap().send_message(crate::components::club_view::Msg::GetClubDetails(None));
 			},
 
 			Msg::DoneDelet => {
