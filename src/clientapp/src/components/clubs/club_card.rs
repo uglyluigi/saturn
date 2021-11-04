@@ -328,7 +328,7 @@ impl Component for ClubCard {
 
 						<div class="club-card-action-bar">
 							<button id="club-card-join-btn" onclick={match self.which_button { JoinButton::FilledStar => leave_club, _ => join_club }}> 
-								<abbr data_title={match self.which_button { JoinButton::FilledStar => "Leave", _ => "Join"}}>
+								<abbr data_title={match self.which_button { JoinButton::FilledStar => "Not Interested", _ => "Interested"}}>
 									{self.which_button}
 								</abbr> 
 							</button>
