@@ -1,6 +1,6 @@
 use gloo_timers::callback::Timeout;
 use wasm_bindgen::prelude::Closure;
-use web_sys::HtmlElement;
+use web_sys::{HtmlElement, MouseEvent};
 use yew::{Component, ComponentLink, Html, NodeRef, Properties, ShouldRender, html, services::{FetchService, fetch::{FetchTask, Request, Response, StatusCode}}};
 use crate::components::core::router::*;
 
@@ -11,14 +11,17 @@ pub struct ToolbarComponent {
 	logout_task: Option<FetchTask>,
 	redirect: bool,
 	hide_timer: Option<Timeout>,
+	is_signout_button: bool,
 }
 
 pub enum Msg {
-	ToggleDropdownState,
 	SignOut,
 	SignOutDone,
 	SignOutFailed,
 	Hide,
+
+	EnterSignOutButtonState,
+	ExitSignOutButtonState,
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -34,34 +37,24 @@ impl Component for ToolbarComponent {
 	fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
 		Self { link, props, dropdown_content_ref: NodeRef::default(),
 		logout_task: None, redirect: false,
-		hide_timer: None }
+		hide_timer: None, is_signout_button: false, }
 	}
 
 	fn update(&mut self, msg: Self::Message) -> ShouldRender {
 		match msg {
-			Msg::ToggleDropdownState => {
-				let el = self.dropdown_content_ref.cast::<HtmlElement>().unwrap();
-				
-				let name = "dropdown-content-transition";
+			Msg::EnterSignOutButtonState => {
+				self.is_signout_button = true;
 
-				if el.class_list().contains(name) {
-					el.class_list().remove_1(name).unwrap();
+				let link = self.link.clone();
 
-					if self.hide_timer.is_some() {
-						self.hide_timer.take().unwrap().cancel();
-					}
-				} else {
-					el.class_list().add_1(name).unwrap();
+				self.hide_timer = Some(Timeout::new(3_000, move || {
+					link.send_message(Msg::ExitSignOutButtonState);
+				}));
+			},
 
-					if self.hide_timer.is_some() {
-						self.hide_timer.take().unwrap().cancel();
-					}
-
-					let link = self.link.clone();
-					self.hide_timer = Some(Timeout::new(3_000, move || {
-						link.send_message(Msg::Hide);
-					}));
-				}
+			Msg::ExitSignOutButtonState => {
+				self.is_signout_button = false;
+				self.hide_timer.take().unwrap().cancel();
 			},
 
 			Msg::SignOut => {
@@ -120,10 +113,10 @@ impl Component for ToolbarComponent {
 
 	fn view(&self) -> Html {
 		let on_dropdown_button_clicked = self.link.callback(|e| {
-			Msg::ToggleDropdownState
+			Msg::EnterSignOutButtonState
 		});
 
-		let on_signout_button_clicked = self.link.callback(|e| {
+		let sign_out_cb = self.link.callback(|e: MouseEvent| {
 			Msg::SignOut
 		});
 
@@ -147,14 +140,18 @@ impl Component for ToolbarComponent {
 								</div>
 								
 								<div class="toolbar-inner-component-right-side">
-									<button class="dropdown-btn" onclick=on_dropdown_button_clicked>
+									<button class="dropdown-btn" onclick=if self.is_signout_button { on_dropdown_button_clicked } else { sign_out_cb }>
 										<img class="toolbar-pfp" src=self.props.pfp_url.clone()/>
-										<h1>{self.props.username.clone()}</h1>
+										<h1>
+										{
+											if self.is_signout_button {
+												String::from("Sign out")
+											} else {
+												self.props.username.clone()
+											}
+										}
+										</h1>
 									</button>
-
-									<div ref=self.dropdown_content_ref.clone() class="dropdown-content">
-										<button class="normal-button" onclick=on_signout_button_clicked>{"Sign out"}</button>
-									</div>
 								</div>
 							</>
 						}
