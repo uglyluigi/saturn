@@ -981,3 +981,32 @@ img[src="*"] {
 .normal-button:hover, .new-club-page .col1 .image-input > label:hover {
     background-color: #2bc29f;
 }
+
+.club-filters {
+    display: flex;
+    background-color: white;
+    color: black;
+    align-items: right;
+    justify-content: flex-end;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    margin-top: 1em;
+
+}
+
+.checkbox {
+margin-left: 2em;
+margin-right: 2em;
+
+}
+
+.club-filters label {
+    font-size: large;
+}
+.club-filters input {
+    margin-right: 0.5em;
+}
+
+.status-and-spinner > .lds-dual-ring {
+    
+}
