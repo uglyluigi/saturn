@@ -8,7 +8,7 @@ pub struct Spinner {
 #[derive(Clone, PartialEq)]
 pub enum WhichSpinner {
 	Ring1,
-	Ring2
+	Ring2,
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -41,7 +41,7 @@ impl Component for Spinner {
 
 			WhichSpinner::Ring2 => html! {
 				<div class="lds-dual-ring"/>
-			}
+			},
 		}
 	}
 }

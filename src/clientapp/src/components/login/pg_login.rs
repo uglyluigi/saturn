@@ -1,9 +1,9 @@
-use yew::MouseEvent;
-use yew::{html, Component, ComponentLink, Html, ShouldRender};
+use yew::{html, Component, ComponentLink, Html, MouseEvent, ShouldRender};
 
-use crate::components::GoogleLoginButton;
-use crate::components::core::router::*;
-use crate::components::core::footer::*;
+use crate::components::{
+	core::{footer::*, router::*},
+	GoogleLoginButton,
+};
 
 pub struct LoginPageComponent {
 	link: ComponentLink<Self>,
@@ -19,7 +19,10 @@ impl Component for LoginPageComponent {
 	type Properties = ();
 
 	fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-		Self { link, skip_login: false }
+		Self {
+			link,
+			skip_login: false,
+		}
 	}
 
 	fn update(&mut self, msg: Self::Message) -> ShouldRender {
@@ -37,10 +40,7 @@ impl Component for LoginPageComponent {
 	}
 
 	fn view(&self) -> Html {
-
-		let _skip_login = self.link.callback(|_:MouseEvent| {
-			Msg::BypassLogin
-		});
+		let _skip_login = self.link.callback(|_: MouseEvent| Msg::BypassLogin);
 
 		html! {
 			<div class="login-page">

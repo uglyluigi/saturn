@@ -1,15 +1,20 @@
 use anyhow::*;
+use js_sys::Function;
 use serde::{Deserialize, Serialize};
 use web_sys::HtmlElement;
-use yew::{Html, Properties, format::{Json, Nothing}, prelude::*, services::fetch::{FetchService, FetchTask, Request, Response, StatusCode}, utils::document, virtual_dom::{VComp, VNode}, web_sys::{Element, Node}};
-use js_sys::Function;
+use yew::{
+	format::{Json, Nothing},
+	prelude::*,
+	services::fetch::{FetchService, FetchTask, Request, Response, StatusCode},
+	utils::document,
+	virtual_dom::{VComp, VNode},
+	web_sys::{Element, Node},
+	Html,
+	Properties,
+};
 
 use crate::{
-	components::{
-		coolshit::Spinner,
-		core::{router::*},
-		ClubCard,
-	},
+	components::{coolshit::Spinner, core::router::*, ClubCard},
 	tell,
 	types::*,
 };
@@ -122,9 +127,9 @@ impl ClubView {
 						<></>
 					}
 				}
-			},
+			}
 
-			_ => html! { <> </> }
+			_ => html! { <> </> },
 		}
 	}
 }
@@ -272,7 +277,7 @@ impl Component for ClubView {
 											Ok(deets) => {
 												tell!("Received deets: {:?}", deets);
 												ReceiveClubDetails(Some(deets))
-											},
+											}
 											Err(err) => {
 												tell!("Failed to deser auth data: {}", err);
 												Msg::ReceiveClubDetails(None)
@@ -331,7 +336,6 @@ impl Component for ClubView {
 				self.clubs_fetch_state = if let Some(deet) = deets {
 					let mut v = deet;
 
-
 					if let Some(f) = self.props.search_filter_function.unwrap() {
 						let search_text = self.props.search_filter_text.as_ref().expect("If you provide a search_filter_function to this component you must also provide search_filter_text.");
 						v.retain(|e| f(&search_text, e))
@@ -357,7 +361,7 @@ impl Component for ClubView {
 
 			HideDialog => {
 				self.show_dialog = false;
-			},
+			}
 
 			FakeGettingClubs => {
 				self.clubs_fetch_state = FetchState::Done(vec![]);
@@ -379,7 +383,7 @@ impl Component for ClubView {
 			}
 		} else {
 			html! {
-				<>		
+				<>
 					<div class="club-filters">
 
 					<input type="checkbox" id="academia" name="academia" value="Academia"/>
@@ -387,13 +391,13 @@ impl Component for ClubView {
 					<input type="checkbox" id="greek-life" name="greek-life" value="Greek Life"/>
 					<label for="greek-life"> {"Greek Life"}</label><br/>
 					<input type="checkbox" id="sports" name="sports" value="Sports"/>
-					<label for="sports"> {"Sports"}</label><br/> 
-			
-					</div>		
+					<label for="sports"> {"Sports"}</label><br/>
+
+					</div>
 					<div class="club-view-fetch-info">
-					
+
 					{
-							
+
 							match &self.clubs_fetch_state {
 								FetchState::Failed(maybe_msg) => {
 									html! {
@@ -402,7 +406,7 @@ impl Component for ClubView {
 										</span>
 									}
 								},
-					
+
 								FetchState::Waiting => {
 									html! {
 										<span class="fetching">
@@ -417,7 +421,7 @@ impl Component for ClubView {
 										html! {
 											<span class="bad">
 												<h2>
-													{ 
+													{
 														if self.props.search_filter_function.unwrap().is_some() {
 															"No matching clubs found."
 														} else {
@@ -436,7 +440,7 @@ impl Component for ClubView {
 								}
 							}
 						}
-					</div>	
+					</div>
 
 					<div class="club-view">
 						{

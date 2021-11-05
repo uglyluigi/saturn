@@ -5,7 +5,17 @@ use yew::{
 	services::fetch::{FetchService, FetchTask, Request, Response, StatusCode},
 };
 
-use crate::{components::{ClubView, NewClubPage, SearchBar, core::*, core::router::*}, flags::*, tell, types::*};
+use crate::{
+	components::{
+		core::{router::*, *},
+		ClubView,
+		NewClubPage,
+		SearchBar,
+	},
+	flags::*,
+	tell,
+	types::*,
+};
 
 pub enum Msg {
 	FetchUserInfo,
@@ -151,7 +161,7 @@ impl Home {
 											<NewClubPage/>
 										}
 									},
-				
+
 									_ => unreachable!()
 								}
 							}
@@ -160,7 +170,7 @@ impl Home {
 						<Footer/>
 					</div>
 				}
-			},
+			}
 
 			FetchState::Failed(maybe_error) => {
 				match maybe_error {

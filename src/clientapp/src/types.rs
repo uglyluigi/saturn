@@ -71,9 +71,7 @@ pub struct PartialEqDummy<T> {
 
 impl<T> PartialEqDummy<T> {
 	pub fn new(t: T) -> Self {
-		Self {
-			t
-		}
+		Self { t }
 	}
 
 	pub fn unwrap(&self) -> &T {
@@ -92,11 +90,10 @@ impl<T> PartialEq for PartialEqDummy<T> {
 }
 
 impl<T: Clone> Clone for PartialEqDummy<T> {
-	fn clone(&self) -> Self { 
+	fn clone(&self) -> Self {
 		PartialEqDummy::new(self.t.clone())
 	}
 }
 
 // All PartialEqDummy<T>'s are created equal (to other PartialEqDummy<T>'s)
 pub type Mlk<T> = PartialEqDummy<T>;
-

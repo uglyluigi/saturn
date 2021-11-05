@@ -1,19 +1,19 @@
-use wasm_bindgen::{JsCast, prelude::Closure};
-use web_sys::{AnimationEffect, HtmlElement};
-use yew::{prelude::*, Properties};
-use crate::types::*;
-use crate::components::ClubView;
-use crate::tell;
-use yew::services::fetch::{FetchService, FetchTask, Request, Response, StatusCode};
-use regex::{self, Regex};
 use gloo_dialogs::confirm;
+use regex::{self, Regex};
+use wasm_bindgen::{prelude::Closure, JsCast};
+use web_sys::{AnimationEffect, HtmlElement};
+use yew::{
+	prelude::*,
+	services::fetch::{FetchService, FetchTask, Request, Response, StatusCode},
+	Properties,
+};
 
+use crate::{components::ClubView, tell, types::*};
 
 pub struct ClubCard {
 	link: ComponentLink<Self>,
 	props: Props,
-	
-	
+
 	delete_fetch_state: Option<FetchState<()>>,
 	delete_fetch_task: Option<FetchTask>,
 
@@ -24,7 +24,7 @@ pub struct ClubCard {
 	leave_fetch_task: Option<FetchTask>,
 
 	number_ref: NodeRef,
-	body_ref: NodeRef, 
+	body_ref: NodeRef,
 	member_count: i64,
 
 	number_spin_anim_end_cb: Option<Closure<dyn Fn()>>,
@@ -59,20 +59,20 @@ pub enum Msg {
 #[derive(Copy, Clone)]
 enum JoinButton {
 	EmptyStar,
-	FilledStar
+	FilledStar,
 }
 
 impl std::convert::Into<Html> for JoinButton {
-    fn into(self) -> Html {
-        match self {
-            JoinButton::EmptyStar => html! {
+	fn into(self) -> Html {
+		match self {
+			JoinButton::EmptyStar => html! {
 				<span class="material-icons">{"star_outline"}</span>
 			},
-            JoinButton::FilledStar => html! {
+			JoinButton::FilledStar => html! {
 				<span class="material-icons">{"star"}</span>
 			},
-        }
-    }
+		}
+	}
 }
 
 impl ClubCard {
@@ -102,7 +102,11 @@ impl Component for ClubCard {
 
 		Self {
 			link,
-			which_button: if props.details.unwrap().is_member { JoinButton::FilledStar } else { JoinButton::EmptyStar },
+			which_button: if props.details.unwrap().is_member {
+				JoinButton::FilledStar
+			} else {
+				JoinButton::EmptyStar
+			},
 
 			delete_fetch_state: None,
 			delete_fetch_task: None,
@@ -112,7 +116,7 @@ impl Component for ClubCard {
 
 			leave_fetch_state: None,
 			leave_fetch_task: None,
-			
+
 			number_ref: NodeRef::default(),
 			body_ref: NodeRef::default(),
 
@@ -121,57 +125,66 @@ impl Component for ClubCard {
 			props,
 
 			number_spin_anim_end_cb: None,
-			box_shadow_color: colors.choose(&mut rand::thread_rng()).unwrap().to_owned().to_owned(),
+			box_shadow_color: colors
+				.choose(&mut rand::thread_rng())
+				.unwrap()
+				.to_owned()
+				.to_owned(),
 		}
 	}
 
 	fn update(&mut self, msg: Self::Message) -> ShouldRender {
 		match msg {
-			Msg::ToggleLikeButton => {
-
-			},
+			Msg::ToggleLikeButton => {}
 
 			Msg::Delet => {
-
 				// opens confirm dialog
 				let result = confirm("Are you sure you want to delete?");
-				if(result){
-					let req = Request::delete(format!("/api/clubs/{}", self.props.details.unwrap().id)).body(yew::format::Nothing);
+				if (result) {
+					let req =
+						Request::delete(format!("/api/clubs/{}", self.props.details.unwrap().id))
+							.body(yew::format::Nothing);
 
 					//FIXME back end tends to return 408 for delete requests which does actually delete it but sometimes it does so too slowly
 					//to be reflected on the front end the first time it is refreshed.
 					match req {
 						Ok(req) => {
-							let callback = self.link.callback(|response: Response<Result<String, anyhow::Error>>| {
-								match response.status() {
-									StatusCode::OK => {
-										tell!("Successfully deleted club");
-									},
+							let callback = self.link.callback(
+								|response: Response<Result<String, anyhow::Error>>| {
+									match response.status() {
+										StatusCode::OK => {
+											tell!("Successfully deleted club");
+										}
 
-									_ => {
-										tell!("Weird status received: {}", response.status());
-									}
-								};
+										_ => {
+											tell!("Weird status received: {}", response.status());
+										}
+									};
 
-								Msg::DoneDelet
-							});
+									Msg::DoneDelet
+								},
+							);
 
 							match FetchService::fetch(req, callback) {
 								Ok(task) => {
 									self.delete_fetch_task = Some(task);
 									self.delete_fetch_state = Some(FetchState::Waiting);
-								},
+								}
 								Err(e) => {
-									self.delete_fetch_state = Some(FetchState::Failed(Some(anyhow::anyhow!(e))));
-								},
+									self.delete_fetch_state =
+										Some(FetchState::Failed(Some(anyhow::anyhow!(e))));
+								}
 							}
-						},
+						}
 						Err(err) => (),
 					}
 
-					self.props.parent_link.unwrap().send_message(crate::components::club_view::Msg::GetClubDetails(None));
+					self.props
+						.parent_link
+						.unwrap()
+						.send_message(crate::components::club_view::Msg::GetClubDetails(None));
 				}
-			},
+			}
 
 			Msg::DoneDelet => {
 				self.delete_fetch_state = Some(FetchState::Done(()));
@@ -182,42 +195,55 @@ impl Component for ClubCard {
 				el.style().remove_property("animation").unwrap();
 
 				let link_clone = self.props.parent_link.unwrap().clone();
-				el.set_onanimationend(Some(Closure::once_into_js(move || link_clone.send_message(crate::components::club_view::Msg::GetClubDetails(None))).unchecked_ref()));
+				el.set_onanimationend(Some(
+					Closure::once_into_js(move || {
+						link_clone
+							.send_message(crate::components::club_view::Msg::GetClubDetails(None))
+					})
+					.unchecked_ref(),
+				));
 				el.class_list().add_1("disappear").unwrap();
-			},
+			}
 
 			Msg::Join => {
-				let req = Request::put(format!("/api/clubs/{}/join", self.props.details.unwrap().id)).body(yew::format::Nothing);
+				let req = Request::put(format!(
+					"/api/clubs/{}/join",
+					self.props.details.unwrap().id
+				))
+				.body(yew::format::Nothing);
 
 				match req {
 					Ok(req) => {
-						let callback = self.link.callback(|response: Response<Result<String, anyhow::Error>>| {
-							match response.status() {
-								StatusCode::OK => {
-									tell!("Successfully joined club");
-								},
+						let callback = self.link.callback(
+							|response: Response<Result<String, anyhow::Error>>| {
+								match response.status() {
+									StatusCode::OK => {
+										tell!("Successfully joined club");
+									}
 
-								_ => {
-									tell!("Weird status received: {}", response.status());
-								}
-							};
+									_ => {
+										tell!("Weird status received: {}", response.status());
+									}
+								};
 
-							Msg::DoneJoin
-						});
+								Msg::DoneJoin
+							},
+						);
 
 						match FetchService::fetch(req, callback) {
 							Ok(task) => {
 								self.join_fetch_task = Some(task);
 								self.join_fetch_state = Some(FetchState::Waiting);
-							},
+							}
 							Err(e) => {
-								self.join_fetch_state = Some(FetchState::Failed(Some(anyhow::anyhow!(e))));
-							},
+								self.join_fetch_state =
+									Some(FetchState::Failed(Some(anyhow::anyhow!(e))));
+							}
 						}
-					},
+					}
 					Err(err) => (),
 				}
-			},
+			}
 
 			Msg::DoneJoin => {
 				// Get the element and activate the transition
@@ -225,40 +251,47 @@ impl Component for ClubCard {
 				el.class_list().add_1("number-spin-in").unwrap();
 				self.which_button = JoinButton::FilledStar;
 				drop(self.delete_fetch_task.take());
-			},
+			}
 
 			Msg::Leave => {
-				let req = Request::put(format!("/api/clubs/{}/leave", self.props.details.unwrap().id)).body(yew::format::Nothing);
+				let req = Request::put(format!(
+					"/api/clubs/{}/leave",
+					self.props.details.unwrap().id
+				))
+				.body(yew::format::Nothing);
 
 				match req {
 					Ok(req) => {
-						let callback = self.link.callback(|response: Response<Result<String, anyhow::Error>>| {
-							match response.status() {
-								StatusCode::OK => {
-									tell!("Successfully left club");
-								},
+						let callback = self.link.callback(
+							|response: Response<Result<String, anyhow::Error>>| {
+								match response.status() {
+									StatusCode::OK => {
+										tell!("Successfully left club");
+									}
 
-								_ => {
-									tell!("Weird status received: {}", response.status());
-								}
-							};
+									_ => {
+										tell!("Weird status received: {}", response.status());
+									}
+								};
 
-							Msg::DoneLeave
-						});
+								Msg::DoneLeave
+							},
+						);
 
 						match FetchService::fetch(req, callback) {
 							Ok(task) => {
 								self.leave_fetch_task = Some(task);
 								self.leave_fetch_state = Some(FetchState::Waiting);
-							},
+							}
 							Err(e) => {
-								self.leave_fetch_state = Some(FetchState::Failed(Some(anyhow::anyhow!(e))));
-							},
+								self.leave_fetch_state =
+									Some(FetchState::Failed(Some(anyhow::anyhow!(e))));
+							}
 						}
-					},
+					}
 					Err(err) => (),
 				}
-			},
+			}
 
 			Msg::DoneLeave => {
 				// Get element, activate transition
@@ -266,7 +299,7 @@ impl Component for ClubCard {
 				el.class_list().add_1("number-spin-out").unwrap();
 				self.which_button = JoinButton::EmptyStar;
 				drop(self.leave_fetch_task.take());
-			},
+			}
 
 			Msg::AnimDone => {
 				let el = self.number_ref.cast::<HtmlElement>().unwrap();
@@ -295,17 +328,17 @@ impl Component for ClubCard {
 		let leave_club = self.link.callback(|_: MouseEvent| Msg::Leave);
 
 		html! {
-			<div ref={self.body_ref.clone()} class="club-card" style=format!("box-shadow: 0.4em 0.4em {};", self.box_shadow_color)>
+			<div ref={self.body_ref.clone()} class="club-card">
 				<div class="club-card-header">
 					<h1>{self.props.details.unwrap().name.clone()}</h1>
 				</div>
-				
+
 				<hr/>
 
 
 				<div class="club-card-body">
 					<div id="left-col">
-						<img src={format!("/assets/clubs/{}.png", self.props.details.unwrap().id)}/>	
+						<img src={format!("/assets/clubs/{}.png", self.props.details.unwrap().id)}/>
 					</div>
 
 					<div id="right-col">
@@ -317,7 +350,7 @@ impl Component for ClubCard {
 							<div id="interested">
 								<div ref=self.number_ref.clone() id="member-number">
 									{self.member_count}
-								</div> 
+								</div>
 								<div>
 									{"interested"}
 								</div>
@@ -327,10 +360,10 @@ impl Component for ClubCard {
 						<hr/>
 
 						<div class="club-card-action-bar">
-							<button id="club-card-join-btn" onclick={match self.which_button { JoinButton::FilledStar => leave_club, _ => join_club }}> 
+							<button id="club-card-join-btn" onclick={match self.which_button { JoinButton::FilledStar => leave_club, _ => join_club }}>
 								<abbr data_title={match self.which_button { JoinButton::FilledStar => "Not Interested", _ => "Interested"}}>
 									{self.which_button}
-								</abbr> 
+								</abbr>
 							</button>
 							<button id="club-card-expand-btn"><abbr data_title="View details"><span class="material-icons">{"open_in_full"}</span></abbr></button>
 
@@ -350,8 +383,8 @@ impl Component for ClubCard {
 					</div>
 				</div>
 
-				
-				
+
+
 			</div>
 		}
 	}
@@ -369,7 +402,16 @@ impl Component for ClubCard {
 			self.number_spin_anim_end_cb = Some(cb);
 
 			let body = self.body_ref.cast::<HtmlElement>().unwrap();
-			body.style().set_property("animation", format!("reveal-cards 0.3s linear {}s forwards", self.props.reveal_delay).as_str()).unwrap();
+			body.style()
+				.set_property(
+					"animation",
+					format!(
+						"reveal-cards 0.3s linear {}s forwards",
+						self.props.reveal_delay
+					)
+					.as_str(),
+				)
+				.unwrap();
 		}
 	}
 }

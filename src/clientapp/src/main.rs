@@ -1,7 +1,7 @@
 use yew::prelude::*;
 mod components;
-mod types;
 mod flags;
+mod types;
 mod wbg;
 
 use components::{
@@ -65,9 +65,9 @@ impl Model {
 				html! { <ThreeJSViewport/> }
 			}
 
-			_  => {
-				html! { 
-					<Home route=switch/> 
+			_ => {
+				html! {
+					<Home route=switch/>
 				}
 			}
 		}
@@ -80,7 +80,7 @@ fn main() {
 			if host.starts_with("localhost") {
 				tell!("Starting UI in test mode");
 			}
-		},
+		}
 		Err(err) => tell!("Error getting host: {}", err),
 	}
 

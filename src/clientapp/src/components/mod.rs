@@ -4,11 +4,11 @@ pub mod core;
 pub mod login;
 pub mod search;
 
-pub use search::*;
 pub use ::core::*;
 pub use clubs::*;
 pub use coolshit::*;
 pub use login::*;
+pub use search::*;
 
 #[macro_use]
 pub mod mac {
