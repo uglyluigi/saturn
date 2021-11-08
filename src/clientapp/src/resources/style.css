@@ -900,9 +900,8 @@ body {
 }
 
 .new-club-page .col1 {
-    background-color: #EEEEEE;
+    background-color: white;
     padding: 0.5em;
-    box-shadow: 0.25em 0.25em #2bc29f;
     border-radius: 0.25em;
 }
 
