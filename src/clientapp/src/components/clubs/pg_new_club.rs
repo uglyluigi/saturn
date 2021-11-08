@@ -108,7 +108,7 @@ impl NewClubPage {
 			self.form_errors.take(); //Take and drop
 		}
 
-		self.img_preview_ref.cast::<HtmlImageElement>().unwrap().set_src("");
+		self.img_preview_ref.cast::<HtmlImageElement>().unwrap().remove_attribute("src").unwrap();
 		self.club_name_input_ref.cast::<HtmlInputElement>().unwrap().set_value("");
 		self.markdown_textarea_ref.cast::<HtmlTextAreaElement>().unwrap().set_value("");
 
