@@ -899,6 +899,11 @@ body {
     margin: 1em;
 }
 
+.new-club-page .col1 {
+    background-color: white;
+    padding: 0.5em;
+}
+
 .new-club-page .col1 span {
     display: flex;
     flex-direction: row;
@@ -929,7 +934,6 @@ img[src="*"] {
     opacity: 1;
 }
 
-
 .new-club-page .col1 .image-input {
     display: flex;
     flex-direction: column;
@@ -947,11 +951,10 @@ img[src="*"] {
 }
 
 .new-club-page .column > * {
-    margin: 0.5em;
+    margin-bottom: 0.5em;
+
     margin-left: 0;
 }
-
-
 
 .submit-new-club-button {
     background-color: #006DAA;
@@ -963,6 +966,12 @@ img[src="*"] {
     position: absolute;
     opacity: 0;
     z-index: -1;
+}
+
+.new-club-page .form-errors h5 {
+    color: red;
+    margin: 0;
+    font-weight: 400;
 }
 
 .normal-button, .new-club-page .col1 .image-input > label {
@@ -982,6 +991,10 @@ img[src="*"] {
     background-color: #2bc29f;
 }
 
+.destructive-button:hover {
+    background-color: #D64550;
+}
+
 .club-filters {
     display: flex;
     background-color: white;
@@ -995,9 +1008,8 @@ img[src="*"] {
 }
 
 .checkbox {
-margin-left: 2em;
-margin-right: 2em;
-
+    margin-left: 2em;
+    margin-right: 2em;
 }
 
 .club-filters label {
