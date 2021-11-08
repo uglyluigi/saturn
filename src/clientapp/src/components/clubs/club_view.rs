@@ -385,19 +385,25 @@ impl Component for ClubView {
 			html! {
 				<>
 					<div class="club-filters">
-					<div class="checkbox">
-					<input type="checkbox" id="academia" name="academia" value="Academia"/>
-					<label for="academia"> {"Academia"}</label><br/></div>
-					
-					<div class="checkbox">
-					<input type="checkbox" id="greek-life" name="greek-life" value="Greek Life"/>
-					<label for="greek-life"> {"Greek Life"}</label><br/></div>
-					
-					<div class="checkbox">
-					<input type="checkbox" id="sports" name="sports" value="Sports"/>
 
-					<label for="sports"> {"Sports"}</label><br/></div>
-			
+
+						<h3><i>{"Filter by..."}</i></h3>
+
+
+						<div class="checkbox">
+								<input type="checkbox" id="academia" name="academia" value="Academia"/>
+								<label for="academia"> {"Clubs I mod"}</label>
+							</div>
+							
+							<div class="checkbox">
+								<input type="checkbox" id="greek-life" name="greek-life" value="Greek Life"/>
+								<label for="greek-life"> {"Clubs I like"}</label>
+							</div>
+							
+							<div class="checkbox">
+								<input type="checkbox" id="sports" name="sports" value="Sports"/>
+								<label for="sports"> {"Sports"}</label>
+						</div>
 					</div>		
 					
 					<div class="club-view-fetch-info">

@@ -364,7 +364,7 @@ body {
     background-color: white;
     display: flex;
     height: 4rem;
-    flex-direction: row;   
+    flex-direction: row;
 }
 
 .toolbar * {
@@ -404,9 +404,9 @@ body {
     width: 100%;
 }
 
-.toolbar a{
+.toolbar a {
     height:100%;
-    display:inline-flex;
+    display: inline-flex;
     font-family: 'Open Sans';
     font-weight: 400;
     color:#26282C;
@@ -415,9 +415,15 @@ body {
     font-size: 20px;
     text-decoration: none;
     vertical-align: middle;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.toolbar h1{
+.toolbar a:hover {
+    background-color: #2bc29f;
+    color: white;
+}
+
+.toolbar h1 {
     height:initial;
     margin: auto;
     display:inline-flex;
@@ -443,14 +449,13 @@ body {
 }
 
 .toolbar .toolbar-text-link {
-    height: initial;
-    margin: auto 0em;
+    height: 100%;
     font-family: 'Open Sans';
     color: #D2DDDE;
-    text-align: center;
     font-size: 17px;
     text-decoration: none;
-    vertical-align: middle;
+    margin: 0;
+    align-self: center;
 }
 
 .toolbar .toolbar-pfp {
@@ -1000,13 +1005,24 @@ img[src="*"] {
     display: flex;
     background-color: white;
     color: black;
-    align-items: right;
-    justify-content: flex-end;
+    align-items: center;
     padding-top: 1em;
     padding-bottom: 1em;
-    margin-top: 1em;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+}
+
+.club-filters .content-left {
+    margin-left: 1em;
+}
+
+.club-filters .content-right {
+    display: flex;
 
 }
+
+
 
 .checkbox {
     margin-left: 2em;

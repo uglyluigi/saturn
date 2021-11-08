@@ -39,6 +39,7 @@ impl<SW: Switch + Clone + 'static, STATE: RouterState> Component for RouterRedir
 	fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
 		let router = RouteAgentDispatcher::new();
 
+
 		Self {
 			link,
 			router,
@@ -58,10 +59,16 @@ impl<SW: Switch + Clone + 'static, STATE: RouterState> Component for RouterRedir
 
 	fn view(&self) -> Html {
 		self.link.send_message(Msg::Clicked);
+		crate::tell!("Fart");
+
 
 		html! {
 			<>
 			</>
 		}
+	}
+
+	fn rendered(&mut self, _first_render: bool) {
+
 	}
 }

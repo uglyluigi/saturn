@@ -37,7 +37,7 @@ impl Component for Footer {
 						<ul>
 							<li class="footer-section-header">{"Saturn Team"}</li>
 							<li><a href="https://booglejr.com/" target="_blank">{"☄️ Justin Woodring"}</a></li>
-							<li>{"🌲 Brennan Forrest"}</li>
+							<li><a href="https://github.com/uglyluigi">{"🎃 Brennan Forrest"}</a></li>
 							<li>{"🐢 Ashlynn Martell"}</li>
 						</ul>
 					</div>

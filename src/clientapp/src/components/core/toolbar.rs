@@ -128,8 +128,8 @@ impl Component for ToolbarComponent {
 
 	fn view(&self) -> Html {
 		let on_dropdown_button_clicked = self.link.callback(|e| Msg::EnterSignOutButtonState);
-
 		let sign_out_cb = self.link.callback(|e: MouseEvent| Msg::SignOut);
+		
 
 		html! {
 			<div class="toolbar-wrapper">
