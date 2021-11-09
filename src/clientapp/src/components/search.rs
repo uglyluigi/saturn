@@ -6,6 +6,7 @@ use yew::{Properties, agent::Dispatcher, prelude::*};
 
 use crate::{components::clubs::ClubView, event::{Amogus, EventBus}, types::ClubDetails};
 
+
 // TODO Future improvements
 // Add search filters, aka searching specifically by user, body text, or organizer
 // Obviously tags should be added too
@@ -141,5 +142,10 @@ impl Component for SearchBar {
 	fn rendered(&mut self, _first_render: bool) {
 		use crate::{components::core::toolbar::{Msg, WhichButton}, event::Request};
 		self.toolbar_link.send(Request::EventBusMsg(Msg::HighlightButton(WhichButton::Search)));
+	}
+
+	fn destroy(&mut self) {
+		use crate::{components::core::toolbar::{Msg, WhichButton}, event::Request};
+		self.toolbar_link.send(Request::EventBusMsg(Msg::UnhighlightButton(WhichButton::Search)))
 	}
 }

@@ -41,6 +41,7 @@ pub enum Msg {
 	EnterSignOutButtonState,
 	ExitSignOutButtonState,
 	HighlightButton(WhichButton),
+	UnhighlightButton(WhichButton),
 	AcceptExternalMsg,
 }
 
@@ -136,15 +137,23 @@ impl Component for ToolbarComponent {
 				match which {
 					WhichButton::AddClub => {
 						self.add_club_ref.cast::<HtmlElement>().unwrap().class_list().add_1("selected").unwrap();
-						self.search_ref.cast::<HtmlElement>().unwrap().class_list().remove_1("selected").unwrap();
 					},
 					WhichButton::Search => {
 						self.search_ref.cast::<HtmlElement>().unwrap().class_list().add_1("selected").unwrap();
-						self.add_club_ref.cast::<HtmlElement>().unwrap().class_list().remove_1("selected").unwrap();
-
 					},
 				}
 			},
+
+			Msg::UnhighlightButton(which) => {
+				match which {
+					WhichButton::AddClub => {
+						self.add_club_ref.cast::<HtmlElement>().unwrap().class_list().remove_1("selected").unwrap();
+					},
+					WhichButton::Search => {
+						self.search_ref.cast::<HtmlElement>().unwrap().class_list().remove_1("selected").unwrap();
+					},
+				}
+			}
 		};
 
 		true

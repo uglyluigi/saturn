@@ -471,4 +471,9 @@ impl Component for NewClubPage {
 		use crate::{components::core::toolbar::{Msg, WhichButton}, event::Request};
 		self.toolbar_link.send(Request::EventBusMsg(Msg::HighlightButton(WhichButton::AddClub)));
 	}
+
+	fn destroy(&mut self) {
+		use crate::{components::core::toolbar::{Msg, WhichButton}, event::Request};
+		self.toolbar_link.send(Request::EventBusMsg(Msg::UnhighlightButton(WhichButton::AddClub)))
+	}
 }
