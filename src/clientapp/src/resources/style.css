@@ -842,6 +842,10 @@ body {
 
 }
 
+.search-bar-input:focus {
+    outline: none;
+}
+
 .search-bar-input ::placeholder{
     color:#333;
     opacity: 0.8;
