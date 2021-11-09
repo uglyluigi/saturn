@@ -437,6 +437,11 @@ body {
     vertical-align: middle;
 }
 
+/* Applied by Rust once the corresponding button in the toolbar is clicked for a particular thing */
+.toolbar .selected {
+    background-color: #2bc29f;   
+    color: white;
+}
 
 .toolbar  #logo {
     height: 100%;

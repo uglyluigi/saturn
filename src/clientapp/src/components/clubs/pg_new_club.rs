@@ -6,22 +6,12 @@ use comrak::{ComrakExtensionOptions, ComrakOptions, arena_tree::Node, markdown_t
 use serde_json::{json};
 use wasm_bindgen::{JsCast, prelude::Closure};
 use web_sys::{Blob, FileReader, HtmlElement, HtmlImageElement, HtmlInputElement, HtmlTextAreaElement};
-use yew::{
-	format::{Bincode, Json, Nothing},
-	prelude::*,
-	services::{
+use yew::{Html, ShouldRender, agent::Dispatcher, format::{Bincode, Json, Nothing}, prelude::*, services::{
 		fetch::{FetchTask, Request, Response, StatusCode},
 		FetchService,
-	},
-	Html,
-	ShouldRender,
-};
+	}};
 
-use crate::{
-	components::{ClubCard, Spinner},
-	tell,
-	types::{FetchState},
-};
+use crate::{components::{ClubCard, Spinner}, event::{Amogus, EventBus}, tell, types::{FetchState}};
 
 pub struct NewClubPage {
 	link: ComponentLink<Self>,
@@ -42,6 +32,7 @@ pub struct NewClubPage {
 
 	form_errors: Option<Vec<FormError>>,
 	markdown_textarea_ref: NodeRef,
+	toolbar_link: Dispatcher<EventBus<crate::components::core::toolbar::Msg>>,
 }
 
 #[derive(Properties, Debug, Clone)]
@@ -229,6 +220,7 @@ impl Component for NewClubPage {
 			post_logo_task_state: FetchState::Waiting,
 			form_errors: None,
 			markdown_textarea_ref: NodeRef::default(),
+			toolbar_link: Amogus::dispatcher(),
 		}
 	}
 
@@ -475,5 +467,8 @@ impl Component for NewClubPage {
 		if first {
 			self.club_name_input_ref.cast::<HtmlElement>().unwrap().focus().unwrap();
 		}
+
+		use crate::{components::core::toolbar::{Msg, WhichButton}, event::Request};
+		self.toolbar_link.send(Request::EventBusMsg(Msg::HighlightButton(WhichButton::AddClub)));
 	}
 }

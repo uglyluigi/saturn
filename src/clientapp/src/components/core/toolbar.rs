@@ -1,21 +1,15 @@
 use gloo_timers::callback::Timeout;
 use wasm_bindgen::prelude::Closure;
 use web_sys::{HtmlElement, MouseEvent};
-use yew::{
-	html,
-	services::{
+use yew::{Bridged, Component, ComponentLink, Html, NodeRef, Properties, ShouldRender, html, services::{
 		fetch::{FetchTask, Request, Response, StatusCode},
 		FetchService,
-	},
-	Component,
-	ComponentLink,
-	Html,
-	NodeRef,
-	Properties,
-	ShouldRender,
-};
+	}};
 
-use crate::components::core::router::*;
+use serde::{Serialize, Deserialize};
+
+use crate::{components::core::router::*, event::{Amogus, EventBus}};
+
 
 pub struct ToolbarComponent {
 	link: ComponentLink<Self>,
@@ -25,8 +19,19 @@ pub struct ToolbarComponent {
 	redirect: bool,
 	hide_timer: Option<Timeout>,
 	is_signout_button: bool,
+	msg_acceptor: Box<dyn yew::Bridge<Amogus<Msg>>>,
+
+	search_ref: NodeRef,
+	add_club_ref: NodeRef,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub enum WhichButton {
+	Search,
+	AddClub,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum Msg {
 	SignOut,
 	SignOutDone,
@@ -35,6 +40,8 @@ pub enum Msg {
 
 	EnterSignOutButtonState,
 	ExitSignOutButtonState,
+	HighlightButton(WhichButton),
+	AcceptExternalMsg,
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -49,13 +56,16 @@ impl Component for ToolbarComponent {
 
 	fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
 		Self {
-			link,
 			props,
 			dropdown_content_ref: NodeRef::default(),
 			logout_task: None,
 			redirect: false,
 			hide_timer: None,
 			is_signout_button: false,
+			msg_acceptor: EventBus::bridge(link.callback(|e| e)),
+			link, //I have to move this here because putting it as a field in a struct move it and I need to borrow it to make the message acceptor.
+			search_ref: NodeRef::default(),
+			add_club_ref: NodeRef::default(),
 		}
 	}
 
@@ -116,7 +126,25 @@ impl Component for ToolbarComponent {
 				if el.class_list().contains(name) {
 					el.class_list().remove_1(name).unwrap();
 				}
-			}
+			},
+
+			Msg::AcceptExternalMsg => {
+
+			},
+
+			Msg::HighlightButton(which) => {
+				match which {
+					WhichButton::AddClub => {
+						self.add_club_ref.cast::<HtmlElement>().unwrap().class_list().add_1("selected").unwrap();
+						self.search_ref.cast::<HtmlElement>().unwrap().class_list().remove_1("selected").unwrap();
+					},
+					WhichButton::Search => {
+						self.search_ref.cast::<HtmlElement>().unwrap().class_list().add_1("selected").unwrap();
+						self.add_club_ref.cast::<HtmlElement>().unwrap().class_list().remove_1("selected").unwrap();
+
+					},
+				}
+			},
 		};
 
 		true
@@ -145,8 +173,8 @@ impl Component for ToolbarComponent {
 								<div class="toolbar-inner-component">
 									<AppAnchor route=AppRoute::Home><img id="logo" src="./assets/saturn-logo.svg"/></AppAnchor>
 									<div class="toolbar-text-link">
-										<AppAnchor route=AppRoute::Search>{ "search" }</AppAnchor>
-										<AppAnchor route=AppRoute::ClubForm>{ "add club" }</AppAnchor>
+										<AppAnchor ref=self.search_ref.clone() route=AppRoute::Search>{ "search" }</AppAnchor>
+										<AppAnchor ref=self.add_club_ref.clone() route=AppRoute::ClubForm>{ "add club" }</AppAnchor>
 									</div>
 								</div>
 
