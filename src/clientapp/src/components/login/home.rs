@@ -10,7 +10,7 @@ use crate::{components::{
 		ClubView,
 		NewClubPage,
 		SearchBar,
-	}, event::Amogus, tell, types::*};
+	}, tell, types::*};
 
 pub enum Msg {
 	FetchUserInfo,

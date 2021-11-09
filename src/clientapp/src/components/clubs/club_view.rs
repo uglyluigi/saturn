@@ -275,7 +275,6 @@ impl Component for ClubView {
 
 										match body {
 											Ok(deets) => {
-												tell!("Received deets: {:?}", deets);
 												ReceiveClubDetails(Some(deets))
 											}
 											Err(err) => {
@@ -385,8 +384,6 @@ impl Component for ClubView {
 			html! {
 				<>
 					<div class="club-filters">
-
-
 						<h3><i>{"Filter by..."}</i></h3>
 
 
