@@ -917,6 +917,12 @@ body {
     background-color: white;
     padding: 0.5em;
     border-radius: 0.25em;
+    transform: translateX(-80em);
+    transition: transform 0.3s ease-in;
+}
+
+.new-club-page .col1 .in {
+    transform: translateX(0em);
 }
 
 .new-club-page .col1 span {

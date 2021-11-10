@@ -33,6 +33,9 @@ pub struct NewClubPage {
 	form_errors: Option<Vec<FormError>>,
 	markdown_textarea_ref: NodeRef,
 	toolbar_link: Dispatcher<EventBus<crate::components::core::toolbar::Msg>>,
+
+	right_col_ref: NodeRef,
+	left_col_ref: NodeRef,
 }
 
 #[derive(Properties, Debug, Clone)]
@@ -221,6 +224,8 @@ impl Component for NewClubPage {
 			form_errors: None,
 			markdown_textarea_ref: NodeRef::default(),
 			toolbar_link: Amogus::dispatcher(),
+			left_col_ref: NodeRef::default(),
+			right_col_ref: NodeRef::default(),
 		}
 	}
 
@@ -395,7 +400,7 @@ impl Component for NewClubPage {
 
 		html! {
 			<div class="new-club-page">
-				<div class="column col1">
+				<div ref=self.left_col_ref.clone() class="column col1">
 					<h1>{"Create a new club!"}</h1>
 					<div class="image-input">
 						<img ref=self.img_preview_ref.clone() class="club-logo"/>
@@ -453,7 +458,7 @@ impl Component for NewClubPage {
 					</span>
 				</div>
 
-				<div class="column">
+				<div ref=self.right_col_ref.clone() class="column">
 					<h1>{"Markdown preview"}</h1>
 					<div ref=self.markdown_preview_ref.clone()>
 					</div>
@@ -466,6 +471,7 @@ impl Component for NewClubPage {
 	fn rendered(&mut self, first: bool) {
 		if first {
 			self.club_name_input_ref.cast::<HtmlElement>().unwrap().focus().unwrap();
+			self.left_col_ref.cast::<HtmlElement>().unwrap().class_list().add_1("in").unwrap();
 		}
 
 		use crate::{components::core::toolbar::{Msg, WhichButton}, event::Request};
