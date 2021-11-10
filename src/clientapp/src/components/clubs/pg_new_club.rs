@@ -51,7 +51,8 @@ pub enum Msg {
 
 	PostClub,
 	PostClubDone(i64),
-	Reset
+	Reset,
+	PostClubFailedDuplicateName
 }
 
 pub enum WhichTextField {
@@ -232,6 +233,7 @@ impl Component for NewClubPage {
 	fn update(&mut self, msg: Self::Message) -> ShouldRender {
 		match msg {
 			Msg::Ignore => (),
+	
 			Msg::UpdateInfoState(which, value) => match which {
 				WhichTextField::TheBodyOne => {
 					self.club_body_field_contents = if value.len() > 0 { Some(value) } else { None }
@@ -269,6 +271,10 @@ impl Component for NewClubPage {
 			},
 
 			Msg::ValidateForm => {
+				if let Some(v) = self.form_errors.as_mut() {
+					v.clear();
+				}
+
 				let mut v = vec![];
 
 				if self.club_name_field_contents.is_none() {
@@ -321,6 +327,11 @@ impl Component for NewClubPage {
 									Msg::PostClubDone(20202)
 								},
 
+								StatusCode::INTERNAL_SERVER_ERROR => {
+									tell!("Looks like a dupe");
+									Msg::PostClubFailedDuplicateName
+								},
+
 								_ => {
 									tell!("Bad status receieved: {:?}", response.status());
 									//Error stuff
@@ -340,6 +351,11 @@ impl Component for NewClubPage {
 					}
 				}
 			}
+
+			Msg::PostClubFailedDuplicateName => {
+				self.post_task.take();
+				self.add_form_error(FormError::ClubName("A club with this name already exists.".to_owned()));
+			},
 
 			Msg::PostClubDone(id) => {
 				self.reset();
