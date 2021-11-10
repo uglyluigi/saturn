@@ -6,6 +6,8 @@ use yew_router::{
 	switch::Permissive,
 };
 
+use crate::types::ClubDetails;
+
 #[derive(Clone, Debug, Switch)]
 pub enum AppRoute {
 	#[to = "/login"]
@@ -20,6 +22,9 @@ pub enum AppRoute {
 	Search,
 	#[to = "/new_club"]
 	ClubForm,
+	#[to = "/details"]
+	Details(usize, ClubDetails),
+
 }
 
 pub type AppRouter = Router<AppRoute>;
@@ -59,7 +64,6 @@ impl<SW: Switch + Clone + 'static, STATE: RouterState> Component for RouterRedir
 
 	fn view(&self) -> Html {
 		self.link.send_message(Msg::Clicked);
-		crate::tell!("Fart");
 
 
 		html! {

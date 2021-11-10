@@ -9,6 +9,8 @@ pub struct DetailsPage {
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {
 	pub details: Mlk<ClubDetails>,
+	#[prop_or(0usize)]
+	pub id: usize,
 }
 
 impl Component for DetailsPage {
@@ -30,6 +32,7 @@ impl Component for DetailsPage {
 	fn view(&self) -> Html {
 		html! {
             <>
+				<h1>{"Details for mogus"}</h1>
             </>
         }
 	}

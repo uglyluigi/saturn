@@ -11,8 +11,8 @@ use crate::{
 		ClubView,
 		NewClubPage,
 		SearchBar,
+		DetailsPage
 	},
-	flags::*,
 	tell,
 	types::*,
 };
@@ -151,16 +151,24 @@ impl Home {
 											<ClubView/>
 										}
 									},
+									
 									AppRoute::Search => {
 										html! {
 											<SearchBar/>
 										}
 									},
+
 									AppRoute::ClubForm => {
 										html! {
 											<NewClubPage/>
 										}
 									},
+
+									AppRoute::Details(id, details) => {
+										html! {
+											<DetailsPage details=Mlk::new(details)/>
+										}
+									}
 
 									_ => unreachable!()
 								}

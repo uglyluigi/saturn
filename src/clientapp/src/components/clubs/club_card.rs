@@ -8,7 +8,8 @@ use yew::{
 	Properties,
 };
 
-use crate::{components::ClubView, tell, types::*};
+
+use crate::{components::{ClubView, core::router::*}, tell, types::*};
 
 pub struct ClubCard {
 	link: ComponentLink<Self>,
@@ -31,6 +32,7 @@ pub struct ClubCard {
 
 	which_button: JoinButton,
 	box_shadow_color: String,
+	show_details: bool,
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -54,6 +56,7 @@ pub enum Msg {
 	DoneLeave,
 
 	AnimDone,
+	ShowDetails,
 }
 
 #[derive(Copy, Clone)]
@@ -130,6 +133,7 @@ impl Component for ClubCard {
 				.unwrap()
 				.to_owned()
 				.to_owned(),
+			show_details: false,
 		}
 	}
 
@@ -312,6 +316,10 @@ impl Component for ClubCard {
 					classes.remove_1("number-spin-out").unwrap();
 					self.member_count -= 1;
 				}
+			},
+
+			Msg::ShowDetails => {
+				self.show_details = true;
 			}
 		}
 
@@ -326,66 +334,83 @@ impl Component for ClubCard {
 		let delete_club = self.link.callback(|_: MouseEvent| Msg::Delet);
 		let join_club = self.link.callback(|_: MouseEvent| Msg::Join);
 		let leave_club = self.link.callback(|_: MouseEvent| Msg::Leave);
+		let open_details = self.link.callback(|_: MouseEvent| Msg::ShowDetails);
 
 		html! {
-			<div ref={self.body_ref.clone()} class="club-card">
-				<div class="club-card-header">
-					<h1>{self.props.details.unwrap().name.clone()}</h1>
-				</div>
-
-				<hr/>
-
-
-				<div class="club-card-body">
-					<div id="left-col">
-						<img src={format!("/assets/clubs/{}.png", self.props.details.unwrap().id)}/>
+			<>
+				{
+					if self.show_details {
+						html! {
+							<>
+								<AppRedirect route=AppRoute::Details/>
+							</>
+						}
+					} else {
+						html! {
+							<>
+							</>
+						}
+					}
+				}
+				<div ref={self.body_ref.clone()} class="club-card">
+					<div class="club-card-header">
+						<h1>{self.props.details.unwrap().name.clone()}</h1>
 					</div>
 
-					<div id="right-col">
-						<p>{"Organizer"}</p>
-						<h3>{format!("{} {}", self.props.details.unwrap().head_moderator.first_name, self.props.details.unwrap().head_moderator.last_name)}</h3>
+					<hr/>
 
-						<hr/>
-						<h3>
-							<div id="interested">
-								<div ref=self.number_ref.clone() id="member-number">
-									{self.member_count}
+
+					<div class="club-card-body">
+						<div id="left-col">
+							<img src={format!("/assets/clubs/{}.png", self.props.details.unwrap().id)}/>
+						</div>
+
+						<div id="right-col">
+							<p>{"Organizer"}</p>
+							<h3>{format!("{} {}", self.props.details.unwrap().head_moderator.first_name, self.props.details.unwrap().head_moderator.last_name)}</h3>
+
+							<hr/>
+							<h3>
+								<div id="interested">
+									<div ref=self.number_ref.clone() id="member-number">
+										{self.member_count}
+									</div>
+									<div>
+										{"interested"}
+									</div>
 								</div>
-								<div>
-									{"interested"}
-								</div>
-							</div>
-						</h3>
+							</h3>
 
-						<hr/>
+							<hr/>
 
-						<div class="club-card-action-bar">
-							<button id="club-card-join-btn" onclick={match self.which_button { JoinButton::FilledStar => leave_club, _ => join_club }}>
-								<abbr data_title={match self.which_button { JoinButton::FilledStar => "Not Interested", _ => "Interested"}}>
-									{self.which_button}
-								</abbr>
-							</button>
-							<button id="club-card-expand-btn"><abbr data_title="Details"><span class="material-icons">{"open_in_full"}</span></abbr></button>
+							<div class="club-card-action-bar">
+								<button id="club-card-join-btn" onclick={match self.which_button { JoinButton::FilledStar => leave_club, _ => join_club }}>
+									<abbr data_title={match self.which_button { JoinButton::FilledStar => "Not Interested", _ => "Interested"}}>
+										{self.which_button}
+									</abbr>
+								</button>
+								<button onclick=open_details id="club-card-expand-btn"><abbr data_title="Details"><span class="material-icons">{"open_in_full"}</span></abbr></button>
 
-							{
-								if self.props.details.unwrap().is_moderator != "false" {
-									html! {
-										<button id="club-card-delete-btn" onclick=delete_club><abbr data_title="Delete"><span class="material-icons">{"close"}</span></abbr></button>
-									}
-								} else {
-									html! {
-										<>
-										</>
+								{
+									if self.props.details.unwrap().is_moderator != "false" {
+										html! {
+											<button id="club-card-delete-btn" onclick=delete_club><abbr data_title="Delete"><span class="material-icons">{"close"}</span></abbr></button>
+										}
+									} else {
+										html! {
+											<>
+											</>
+										}
 									}
 								}
-							}
+							</div>
 						</div>
 					</div>
+
+
+
 				</div>
-
-
-
-			</div>
+			</>
 		}
 	}
 
