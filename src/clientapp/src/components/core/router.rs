@@ -18,7 +18,9 @@ pub enum AppRoute {
 	Test,
 	#[to = "/!"]
 	Home,
-	#[to = "/search"]
+	#[to = "/search/{term}"]
+	SearchTerm{term: String},
+	#[to= "/search"]
 	Search,
 	#[to = "/new_club"]
 	ClubForm,

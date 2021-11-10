@@ -14,7 +14,6 @@ use crate::{components::clubs::ClubView, event::{Amogus, EventBus}, types::ClubD
 pub struct SearchBar {
 	link: ComponentLink<Self>,
 	props: Props,
-	search_text: Option<String>,
 	search_field_state: Option<String>,
 	emitter: ClubViewEmitter,
 	delayed_search_cb: Option<Timeout>,
@@ -31,8 +30,10 @@ pub struct ClubViewEmitter {
 // Remains hidden while the user is typing and for a little under a second after
 // and automatically searches.
 impl ClubViewEmitter {
-	pub fn new() -> Self {
-		Self { show: false }
+	pub fn new(default: bool) -> Self {
+		Self {
+			show: default,
+		}
 	}
 
 	fn get(&self, search_text: Option<String>) -> Html {
@@ -68,7 +69,7 @@ pub enum Msg {
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {
 	#[prop_or(None)]
-	search_text: Option<String>,
+	pub search_text: Option<String>,
 }
 
 impl Component for SearchBar {
@@ -76,13 +77,19 @@ impl Component for SearchBar {
 	type Properties = Props;
 
 	fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+		let mut search_text = props.search_text.clone();
+
+		if let Some(str) = search_text {
+			let s = str.replace("%20", " ").trim().to_owned();
+			search_text = Some(s);
+		}
+
 		Self {
 			link,
+			emitter: ClubViewEmitter::new(search_text.is_some()),
+			search_field_state: search_text,
 			props,
-			search_text: None,
-			search_field_state: None,
 			delayed_search_cb: None,
-			emitter: ClubViewEmitter::new(),
 			toolbar_link: Amogus::dispatcher(),
 			search_bar_ref: NodeRef::default(),
 			container_ref: NodeRef::default(),

@@ -64,11 +64,11 @@ impl Component for ToolbarComponent {
 			redirect: false,
 			hide_timer: None,
 			is_signout_button: false,
+			// Only accept toolbar messages
+			// as long as a message is sent wrapped with ToolbarMsg this component
+			// will respond to it.
 			msg_acceptor: EventBus::bridge(link.callback(|e| match e {
-				crate::event::AgentMessage::ToolbarMsg(msg) => {
-					msg
-				},
-
+				crate::event::AgentMessage::ToolbarMsg(msg) => msg,
 				_ => Msg::DoNothing,
 			})),
 			link, //I have to move this here because putting it as a field in a struct move it and I need to borrow it to make the message acceptor.
@@ -80,7 +80,7 @@ impl Component for ToolbarComponent {
 	fn update(&mut self, msg: Self::Message) -> ShouldRender {
 		match msg {
 			Msg::DoNothing => {},
-			
+
 			Msg::EnterSignOutButtonState => {
 				self.is_signout_button = true;
 
@@ -189,7 +189,7 @@ impl Component for ToolbarComponent {
 						html! {
 							<>
 								<div class="toolbar-inner-component">
-									<AppAnchor route=AppRoute::Home><img id="logo" src="./assets/saturn-logo.svg"/></AppAnchor>
+									<AppAnchor route=AppRoute::Home><img id="logo" src="/assets/saturn-logo.svg"/></AppAnchor>
 									<div class="toolbar-text-link">
 										<AppAnchor ref=self.search_ref.clone() route=AppRoute::Search>{ "search" }</AppAnchor>
 										<AppAnchor ref=self.add_club_ref.clone() route=AppRoute::ClubForm>{ "add club" }</AppAnchor>

@@ -144,7 +144,7 @@ impl Home {
 							<Toolbar pfp_url=details.picture.as_ref().unwrap().clone() username=format!("{} {}",details.first_name.clone().unwrap(), details.last_name.clone().unwrap())/>
 
 							{
-								match self.props.route {
+								match &self.props.route {
 									AppRoute::Home => {
 										html! {
 											<ClubView/>
@@ -153,7 +153,13 @@ impl Home {
 									
 									AppRoute::Search => {
 										html! {
-											<SearchBar />
+											<SearchBar/>
+										}
+									},
+
+									AppRoute::SearchTerm {term} => {
+										html! {
+											<SearchBar search_text=Some(term.to_owned())/>
 										}
 									},
 
@@ -165,7 +171,7 @@ impl Home {
 
 									AppRoute::Details{id} => {
 										html! {
-											<DetailsPage id=id/>
+											<DetailsPage id=*id/>
 										}
 									}
 
