@@ -808,14 +808,20 @@ body {
   
 .search-bar-container{
     width:100%;
-    height:20em;
+    height:0em;
     background: linear-gradient(to right, #2bc29f, #4C1A88);
     color:white;
     display:flex;
     flex-flow:column nowrap;
+    transition: height 0.5s ease;
 }
 
-.search-bar-h1{
+.search-bar-container-in {
+    height:20em;
+}
+
+.search-bar-h1 {
+    opacity: 0;
     color:white;
     font-size:3em;
     padding-top:1em;
@@ -825,11 +831,22 @@ body {
     text-align: center;
     text-decoration: none;
     vertical-align: middle;
+    animation: fade-in 0.5s forwards 0.3s;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .search-bar-input {
     background-color:white;
-    width:60%;
+    width:0%;
     border:none;
     margin:auto;
     margin-top:1em;
@@ -839,7 +856,24 @@ body {
     color:#333;
     padding-left: .5em;
     padding-right: .5em;
+    animation: joe_widen 0.5s forwards 0.3s;
+    opacity: 0;
+}
 
+@keyframes joe_widen {
+    from {
+        opacity: 0;
+        width: 0%;
+    }
+
+    10% {
+        opacity: 100%;
+    }
+
+    to {
+        width: 60%;
+        opacity: 100%;
+    }
 }
 
 .search-bar-input:focus {

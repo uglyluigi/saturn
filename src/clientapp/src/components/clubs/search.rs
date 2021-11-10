@@ -20,6 +20,7 @@ pub struct SearchBar {
 	delayed_search_cb: Option<Timeout>,
 	toolbar_link: Dispatcher<EventBus<crate::components::core::toolbar::Msg>>,
 	search_bar_ref: NodeRef,
+	container_ref: NodeRef,
 }
 
 pub struct ClubViewEmitter {
@@ -84,6 +85,7 @@ impl Component for SearchBar {
 			emitter: ClubViewEmitter::new(),
 			toolbar_link: Amogus::dispatcher(),
 			search_bar_ref: NodeRef::default(),
+			container_ref: NodeRef::default(),
 		}
 	}
 
@@ -130,7 +132,7 @@ impl Component for SearchBar {
 
 		html! {
 			<>
-				<div class="search-bar-container">
+				<div ref=self.container_ref.clone() class="search-bar-container">
 					<h1 class="search-bar-h1"> {"find something "} <i>{" totally "}</i> {" you."} </h1>
 					<input ref=self.search_bar_ref.clone() class="search-bar-input" value=self.search_field_state.clone() onkeydown=key_cb oninput=input_cb placeholder="I'm looking for..."/>
 				</div>
@@ -145,6 +147,7 @@ impl Component for SearchBar {
 	fn rendered(&mut self, first: bool) {
 		if first {
 			self.search_bar_ref.cast::<HtmlElement>().unwrap().focus().unwrap();
+			self.container_ref.cast::<HtmlElement>().unwrap().class_list().add_1("search-bar-container-in").unwrap();
 		}
 		use crate::{components::core::toolbar::{Msg, WhichButton}, event::Request};
 		self.toolbar_link.send(Request::EventBusMsg(Msg::HighlightButton(WhichButton::Search)));
