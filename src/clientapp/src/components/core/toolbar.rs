@@ -19,7 +19,7 @@ pub struct ToolbarComponent {
 	redirect: bool,
 	hide_timer: Option<Timeout>,
 	is_signout_button: bool,
-	msg_acceptor: Box<dyn yew::Bridge<Amogus<Msg>>>,
+	msg_acceptor: Box<dyn yew::Bridge<Amogus>>,
 
 	search_ref: NodeRef,
 	add_club_ref: NodeRef,
@@ -37,6 +37,7 @@ pub enum Msg {
 	SignOutDone,
 	SignOutFailed,
 	Hide,
+	DoNothing,
 
 	EnterSignOutButtonState,
 	ExitSignOutButtonState,
@@ -63,7 +64,13 @@ impl Component for ToolbarComponent {
 			redirect: false,
 			hide_timer: None,
 			is_signout_button: false,
-			msg_acceptor: EventBus::bridge(link.callback(|e| e)),
+			msg_acceptor: EventBus::bridge(link.callback(|e| match e {
+				crate::event::AgentMessage::ToolbarMsg(msg) => {
+					msg
+				},
+
+				_ => Msg::DoNothing,
+			})),
 			link, //I have to move this here because putting it as a field in a struct move it and I need to borrow it to make the message acceptor.
 			search_ref: NodeRef::default(),
 			add_club_ref: NodeRef::default(),
@@ -72,6 +79,8 @@ impl Component for ToolbarComponent {
 
 	fn update(&mut self, msg: Self::Message) -> ShouldRender {
 		match msg {
+			Msg::DoNothing => {},
+			
 			Msg::EnterSignOutButtonState => {
 				self.is_signout_button = true;
 

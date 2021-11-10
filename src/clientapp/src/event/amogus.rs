@@ -2,23 +2,28 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use yew::worker::*;
 
-pub type Amogus<T> = EventBus<T>;
+pub type Amogus = EventBus;
 
 #[derive(Serialize, Deserialize, Debug)]
-pub enum Request<T> {
-    EventBusMsg(T),
+pub enum Request {
+    EventBusMsg(AgentMessage)
 }
 
-pub struct EventBus<T: Clone + Serialize + Deserialize<'static> + 'static> {
-    link: AgentLink<EventBus<T>>,
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub enum AgentMessage {
+    ToolbarMsg(crate::components::core::toolbar::Msg),
+}
+
+pub struct EventBus {
+    link: AgentLink<EventBus>,
     subscribers: HashSet<HandlerId>,
 }
 
-impl<T: Clone + Serialize + Deserialize<'static> + 'static> Agent for EventBus<T> {
+impl Agent for EventBus {
     type Reach = Context<Self>;
     type Message = ();
-    type Input = Request<T>;
-    type Output = T;
+    type Input = Request;
+    type Output = AgentMessage;
 
     fn create(link: AgentLink<Self>) -> Self {
         Self {
@@ -30,6 +35,7 @@ impl<T: Clone + Serialize + Deserialize<'static> + 'static> Agent for EventBus<T
     fn update(&mut self, _msg: Self::Message) {}
 
     fn handle_input(&mut self, msg: Self::Input, _id: HandlerId) {
+
         match msg {
             Request::EventBusMsg(s) => {
                 for sub in self.subscribers.iter() {

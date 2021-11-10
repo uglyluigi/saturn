@@ -18,7 +18,7 @@ pub struct SearchBar {
 	search_field_state: Option<String>,
 	emitter: ClubViewEmitter,
 	delayed_search_cb: Option<Timeout>,
-	toolbar_link: Dispatcher<EventBus<crate::components::core::toolbar::Msg>>,
+	toolbar_link: Dispatcher<EventBus>,
 	search_bar_ref: NodeRef,
 	container_ref: NodeRef,
 }
@@ -149,12 +149,12 @@ impl Component for SearchBar {
 			self.search_bar_ref.cast::<HtmlElement>().unwrap().focus().unwrap();
 			self.container_ref.cast::<HtmlElement>().unwrap().class_list().add_1("search-bar-container-in").unwrap();
 		}
-		use crate::{components::core::toolbar::{Msg, WhichButton}, event::Request};
-		self.toolbar_link.send(Request::EventBusMsg(Msg::HighlightButton(WhichButton::Search)));
+		use crate::{components::core::toolbar::{Msg, WhichButton}, event::*};
+		self.toolbar_link.send(Request::EventBusMsg(AgentMessage::ToolbarMsg(Msg::HighlightButton(WhichButton::Search))));
 	}
 
 	fn destroy(&mut self) {
-		use crate::{components::core::toolbar::{Msg, WhichButton}, event::Request};
-		self.toolbar_link.send(Request::EventBusMsg(Msg::UnhighlightButton(WhichButton::Search)))
+		use crate::{components::core::toolbar::{Msg, WhichButton}, event::*};
+		self.toolbar_link.send(Request::EventBusMsg(AgentMessage::ToolbarMsg(Msg::UnhighlightButton(WhichButton::Search))))
 	}
 }

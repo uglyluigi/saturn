@@ -32,7 +32,7 @@ pub struct NewClubPage {
 
 	form_errors: Option<Vec<FormError>>,
 	markdown_textarea_ref: NodeRef,
-	toolbar_link: Dispatcher<EventBus<crate::components::core::toolbar::Msg>>,
+	toolbar_link: Dispatcher<EventBus>,
 
 	right_col_ref: NodeRef,
 	left_col_ref: NodeRef,
@@ -475,12 +475,12 @@ impl Component for NewClubPage {
 			self.right_col_ref.cast::<HtmlElement>().unwrap().class_list().add_1("new-club-page-col-in").unwrap();
 		}
 
-		use crate::{components::core::toolbar::{Msg, WhichButton}, event::Request};
-		self.toolbar_link.send(Request::EventBusMsg(Msg::HighlightButton(WhichButton::AddClub)));
+		use crate::{components::core::toolbar::{Msg, WhichButton}, event::*};
+		self.toolbar_link.send(Request::EventBusMsg(AgentMessage::ToolbarMsg(Msg::HighlightButton(WhichButton::AddClub))));
 	}
 
 	fn destroy(&mut self) {
-		use crate::{components::core::toolbar::{Msg, WhichButton}, event::Request};
-		self.toolbar_link.send(Request::EventBusMsg(Msg::UnhighlightButton(WhichButton::AddClub)))
+		use crate::{components::core::toolbar::{Msg, WhichButton}, event::*};
+		self.toolbar_link.send(Request::EventBusMsg(AgentMessage::ToolbarMsg(Msg::UnhighlightButton(WhichButton::AddClub))))
 	}
 }
