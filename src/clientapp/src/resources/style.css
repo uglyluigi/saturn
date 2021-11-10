@@ -437,6 +437,11 @@ body {
     vertical-align: middle;
 }
 
+/* Applied by Rust once the corresponding button in the toolbar is clicked for a particular thing */
+.toolbar .selected {
+    background-color: #2bc29f;   
+    color: white;
+}
 
 .toolbar  #logo {
     height: 100%;
@@ -837,6 +842,10 @@ body {
 
 }
 
+.search-bar-input:focus {
+    outline: none;
+}
+
 .search-bar-input ::placeholder{
     color:#333;
     opacity: 0.8;
@@ -884,6 +893,7 @@ body {
 .new-club-page {
     display: flex;
     flex-direction: row;
+    overflow: hidden;
 }
 
 .new-club-page .club-input {
@@ -908,6 +918,17 @@ body {
     background-color: white;
     padding: 0.5em;
     border-radius: 0.25em;
+    transform: translateX(-60em);
+    transition: transform 0.5s ease;
+}
+
+.new-club-page .col2 {
+    transition: transform 0.5s ease;
+    transform: translateX(60em)
+}
+
+.new-club-page-col-in {
+    transform: translateX(0em) !important; 
 }
 
 .new-club-page .col1 span {

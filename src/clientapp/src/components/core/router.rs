@@ -22,8 +22,8 @@ pub enum AppRoute {
 	Search,
 	#[to = "/new_club"]
 	ClubForm,
-	#[to = "/details"]
-	Details(usize, ClubDetails),
+	#[to = "/details/{id}"]
+	Details{id: usize},
 
 }
 

@@ -11,6 +11,7 @@ use yew::{
 
 use crate::{components::{ClubView, core::router::*}, tell, types::*};
 
+// The component representing the cards that live inside the club view.
 pub struct ClubCard {
 	link: ComponentLink<Self>,
 	props: Props,
@@ -31,40 +32,54 @@ pub struct ClubCard {
 	number_spin_anim_end_cb: Option<Closure<dyn Fn()>>,
 
 	which_button: JoinButton,
-	box_shadow_color: String,
+
 	show_details: bool,
 }
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {
 	pub details: Mlk<ClubDetails>,
+	// This link is used to send messages to the ClubView, like when a club card is deleted.
 	pub parent_link: Mlk<ComponentLink<ClubView>>,
 	#[prop_or(0.0)]
+	// This is the delay that the card should wait for before playing its animation. Used to stagger the fade/drop-in animation in the club view.
 	pub reveal_delay: f32,
 }
 
 pub enum Msg {
-	ToggleLikeButton,
-
+	// Sent when a card is deleted and confirmed.
 	Delet,
+	// Sent when the club's record on the backend has been successfully removed.
 	DoneDelet,
 
+	// Sent when the star button is pressed. Send a request to the backend to add
+	// whatever user is logged in to the list of club members.
 	Join,
+	// Sent when the backend responds OK and the club is joined.
 	DoneJoin,
 
+	// Sent when the star button is pressed. Send a request to the backend to remove
+	// the logged-in user from the member list for that particular club.
 	Leave,
+	// Sent when the backend has successfully removed the user from the club's member list.
 	DoneLeave,
 
+	// Sent when the spin animation that plays on the count completes.
 	AnimDone,
 	ShowDetails,
 }
 
+// An enum used to represent the current state of the star button,
+// whether it should be displayed filled or not.
 #[derive(Copy, Clone)]
 enum JoinButton {
 	EmptyStar,
 	FilledStar,
 }
 
+// This lets me just put a JoinButton varient inside of the html! macro without having
+// to perform any sort of conversion or matching. It just implicitly into()s the variant
+// into its VNode representation.
 impl std::convert::Into<Html> for JoinButton {
 	fn into(self) -> Html {
 		match self {
@@ -79,6 +94,9 @@ impl std::convert::Into<Html> for JoinButton {
 }
 
 impl ClubCard {
+	// A function that is called in the view function. Either returns a VNode containing
+	// a delete button or an empty VNode, depending on whether or not the user is 
+	// authorized to delete the club or not.
 	pub fn delete_btn(&self) -> Html {
 		let delete = self.link.callback(|_: MouseEvent| Msg::Delet);
 
@@ -128,19 +146,14 @@ impl Component for ClubCard {
 			props,
 
 			number_spin_anim_end_cb: None,
-			box_shadow_color: colors
-				.choose(&mut rand::thread_rng())
-				.unwrap()
-				.to_owned()
-				.to_owned(),
 			show_details: false,
 		}
 	}
 
 	fn update(&mut self, msg: Self::Message) -> ShouldRender {
 		match msg {
-			Msg::ToggleLikeButton => {}
 
+			// Deletes the club represented by this card.
 			Msg::Delet => {
 				// opens confirm dialog
 				let result = confirm("Are you sure you want to delete?");
@@ -189,7 +202,8 @@ impl Component for ClubCard {
 						.send_message(crate::components::club_view::Msg::GetClubDetails(None));
 				}
 			}
-
+			
+			// Sent when the fetch service finishes deleting the club.
 			Msg::DoneDelet => {
 				self.delete_fetch_state = Some(FetchState::Done(()));
 				drop(self.delete_fetch_task.take());
@@ -209,6 +223,7 @@ impl Component for ClubCard {
 				el.class_list().add_1("disappear").unwrap();
 			}
 
+			// Sent when the button is pressed by a user that has not previously joined this club.
 			Msg::Join => {
 				let req = Request::put(format!(
 					"/api/clubs/{}/join",
@@ -249,6 +264,7 @@ impl Component for ClubCard {
 				}
 			}
 
+			// Sent when the fetch service has added the logged in user to the member list.
 			Msg::DoneJoin => {
 				// Get the element and activate the transition
 				let el = self.number_ref.cast::<HtmlElement>().unwrap();
@@ -257,6 +273,7 @@ impl Component for ClubCard {
 				drop(self.delete_fetch_task.take());
 			}
 
+			// Sent when the user tries to leave a club.
 			Msg::Leave => {
 				let req = Request::put(format!(
 					"/api/clubs/{}/leave",
@@ -337,12 +354,12 @@ impl Component for ClubCard {
 		let open_details = self.link.callback(|_: MouseEvent| Msg::ShowDetails);
 
 		html! {
-			<>
+			<div>
 				{
 					if self.show_details {
 						html! {
 							<>
-								<AppRedirect route=AppRoute::Details/>
+								<AppRedirect route=AppRoute::Details {id: self.props.details.unwrap().id as usize}/>
 							</>
 						}
 					} else {
@@ -406,15 +423,13 @@ impl Component for ClubCard {
 							</div>
 						</div>
 					</div>
-
-
-
 				</div>
-			</>
+			</div>
 		}
 	}
 
 	fn rendered(&mut self, first: bool) {
+		// A bunch of complicated nonsense related to the number animation.
 		if first {
 			let el = self.number_ref.cast::<HtmlElement>().unwrap();
 			let link_clone = self.link.clone();

@@ -6,22 +6,12 @@ use comrak::{ComrakExtensionOptions, ComrakOptions, arena_tree::Node, markdown_t
 use serde_json::{json};
 use wasm_bindgen::{JsCast, prelude::Closure};
 use web_sys::{Blob, FileReader, HtmlElement, HtmlImageElement, HtmlInputElement, HtmlTextAreaElement};
-use yew::{
-	format::{Bincode, Json, Nothing},
-	prelude::*,
-	services::{
+use yew::{Html, ShouldRender, agent::Dispatcher, format::{Bincode, Json, Nothing}, prelude::*, services::{
 		fetch::{FetchTask, Request, Response, StatusCode},
 		FetchService,
-	},
-	Html,
-	ShouldRender,
-};
+	}};
 
-use crate::{
-	components::{ClubCard, Spinner},
-	tell,
-	types::{FetchState},
-};
+use crate::{components::{ClubCard, Spinner}, event::{Amogus, EventBus}, tell, types::{FetchState}};
 
 pub struct NewClubPage {
 	link: ComponentLink<Self>,
@@ -42,6 +32,10 @@ pub struct NewClubPage {
 
 	form_errors: Option<Vec<FormError>>,
 	markdown_textarea_ref: NodeRef,
+	toolbar_link: Dispatcher<EventBus<crate::components::core::toolbar::Msg>>,
+
+	right_col_ref: NodeRef,
+	left_col_ref: NodeRef,
 }
 
 #[derive(Properties, Debug, Clone)]
@@ -229,6 +223,9 @@ impl Component for NewClubPage {
 			post_logo_task_state: FetchState::Waiting,
 			form_errors: None,
 			markdown_textarea_ref: NodeRef::default(),
+			toolbar_link: Amogus::dispatcher(),
+			left_col_ref: NodeRef::default(),
+			right_col_ref: NodeRef::default(),
 		}
 	}
 
@@ -403,7 +400,7 @@ impl Component for NewClubPage {
 
 		html! {
 			<div class="new-club-page">
-				<div class="column col1">
+				<div ref=self.left_col_ref.clone() class="column col1">
 					<h1>{"Create a new club!"}</h1>
 					<div class="image-input">
 						<img ref=self.img_preview_ref.clone() class="club-logo"/>
@@ -461,7 +458,7 @@ impl Component for NewClubPage {
 					</span>
 				</div>
 
-				<div class="column">
+				<div ref=self.right_col_ref.clone() class="column col2">
 					<h1>{"Markdown preview"}</h1>
 					<div ref=self.markdown_preview_ref.clone()>
 					</div>
@@ -474,6 +471,16 @@ impl Component for NewClubPage {
 	fn rendered(&mut self, first: bool) {
 		if first {
 			self.club_name_input_ref.cast::<HtmlElement>().unwrap().focus().unwrap();
+			self.left_col_ref.cast::<HtmlElement>().unwrap().class_list().add_1("new-club-page-col-in").unwrap();
+			self.right_col_ref.cast::<HtmlElement>().unwrap().class_list().add_1("new-club-page-col-in").unwrap();
 		}
+
+		use crate::{components::core::toolbar::{Msg, WhichButton}, event::Request};
+		self.toolbar_link.send(Request::EventBusMsg(Msg::HighlightButton(WhichButton::AddClub)));
+	}
+
+	fn destroy(&mut self) {
+		use crate::{components::core::toolbar::{Msg, WhichButton}, event::Request};
+		self.toolbar_link.send(Request::EventBusMsg(Msg::UnhighlightButton(WhichButton::AddClub)))
 	}
 }
