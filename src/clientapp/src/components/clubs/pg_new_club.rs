@@ -11,7 +11,7 @@ use yew::{Html, ShouldRender, agent::Dispatcher, format::{Bincode, Json, Nothing
 		FetchService,
 	}};
 
-use crate::{components::{ClubCard, Spinner}, event::{Amogus, EventBus}, tell, types::{FetchState}};
+use crate::{components::{ClubCard, Spinner}, event::{Amogus, EventBus}, tell, types::{FetchState, ClubDetails}};
 
 pub struct NewClubPage {
 	link: ComponentLink<Self>,
@@ -324,7 +324,7 @@ impl Component for NewClubPage {
 						.unwrap();
 
 					let response_callback = self.link.callback(
-						|response: Response<Json<Result<String, anyhow::Error>>>| {
+						|response: Response<Json<Result<Vec<ClubDetails>, anyhow::Error>>>| {
 							match response.status() {
 								StatusCode::OK => {
 									tell!("Successfully post`ed club");
