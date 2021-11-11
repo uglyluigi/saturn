@@ -319,7 +319,7 @@ impl Component for NewClubPage {
 					// Clean your body with ammonia
 					let json = json!({"name": name, "body": ammonia::clean(&body)});
 
-					let request = Request::post("http://localhost:443/api/clubs/create")
+					let request = Request::post("/api/clubs/create")
 						.body(Json(&json))
 						.unwrap();
 
