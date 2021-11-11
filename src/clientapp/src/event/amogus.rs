@@ -12,6 +12,7 @@ pub enum Request {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum AgentMessage {
     ToolbarMsg(crate::components::core::toolbar::Msg),
+    DetailsPageMsg(crate::components::clubs::pg_details::Msg),
 }
 
 pub struct EventBus {

@@ -1,15 +1,13 @@
+use std::rc::Rc;
+
 use gloo_dialogs::confirm;
 use regex::{self, Regex};
 use wasm_bindgen::{prelude::Closure, JsCast};
 use web_sys::{AnimationEffect, HtmlElement};
-use yew::{
-	prelude::*,
-	services::fetch::{FetchService, FetchTask, Request, Response, StatusCode},
-	Properties,
-};
+use yew::{Properties, agent::Dispatcher, prelude::*, services::fetch::{FetchService, FetchTask, Request, Response, StatusCode}};
 
 
-use crate::{components::{ClubView, core::router::*}, tell, types::*};
+use crate::{components::{ClubView, clubs::pg_details, core::router::*}, event::{AgentMessage, Amogus, EventBus}, tell, types::*};
 
 // The component representing the cards that live inside the club view.
 pub struct ClubCard {
@@ -67,6 +65,8 @@ pub enum Msg {
 	// Sent when the spin animation that plays on the count completes.
 	AnimDone,
 	ShowDetails,
+
+	SendDetails
 }
 
 // An enum used to represent the current state of the star button,
@@ -337,6 +337,12 @@ impl Component for ClubCard {
 
 			Msg::ShowDetails => {
 				self.show_details = true;
+				self.link.send_message(Msg::SendDetails);
+			},
+
+			Msg::SendDetails => {
+				let mut dispatcher = Amogus::dispatcher();
+				dispatcher.send(crate::event::Request::EventBusMsg(AgentMessage::DetailsPageMsg(pg_details::Msg::AcceptDetails(self.props.details.clone().unwrap_into()))));
 			}
 		}
 
@@ -351,7 +357,10 @@ impl Component for ClubCard {
 		let delete_club = self.link.callback(|_: MouseEvent| Msg::Delet);
 		let join_club = self.link.callback(|_: MouseEvent| Msg::Join);
 		let leave_club = self.link.callback(|_: MouseEvent| Msg::Leave);
-		let open_details = self.link.callback(|_: MouseEvent| Msg::ShowDetails);
+
+		let open_details = self.link.callback(move |_: MouseEvent| {
+			Msg::ShowDetails
+		});
 
 		html! {
 			<div>

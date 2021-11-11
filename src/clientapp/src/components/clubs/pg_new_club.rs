@@ -145,6 +145,10 @@ impl NewClubPage {
 								.unwrap()
 								.bytes()
 								.collect(),
+								// Ay yo Mistah White we need to get the target unwrap it cast it to FileReader
+								// Jesse
+								// unwrap it get the result unwrap it convert it to a string unwrap it get the bytes and collect it to a vec
+								// Jesse what the fuck are you talking about
 						))
 					})
 					.unchecked_ref(),
@@ -271,6 +275,7 @@ impl Component for NewClubPage {
 			},
 
 			Msg::ValidateForm => {
+				// Clear all old form errors
 				if let Some(v) = self.form_errors.as_mut() {
 					v.clear();
 				}
