@@ -12,6 +12,7 @@ use yew::{Html, ShouldRender, agent::Dispatcher, format::{Bincode, Json, Nothing
 	}};
 
 use crate::{components::{ClubCard, Spinner}, event::{Amogus, EventBus}, tell, types::{FetchState, ClubDetails}};
+use yew::binary_format;
 
 pub struct NewClubPage {
 	link: ComponentLink<Self>,
@@ -36,6 +37,9 @@ pub struct NewClubPage {
 
 	right_col_ref: NodeRef,
 	left_col_ref: NodeRef,
+	
+	post_img_state: FetchState<()>,
+	post_img_task: Option<FetchTask>,
 }
 
 #[derive(Properties, Debug, Clone)]
@@ -46,13 +50,15 @@ pub enum Msg {
 	UpdateInfoState(WhichTextField, String),
 	UpdateClubLogoState(Vec<u8>),
 	ValidateForm,
-	PostClubLogo(i64),
+	PostClubLogo(i32),
+	PostClubLogoDone,
+	
 	ReadLogo,
 
 	PostClub,
-	PostClubDone(i64),
+	PostClubDone(i32),
 	Reset,
-	PostClubFailedDuplicateName
+	PostClubFailedDuplicateName,
 }
 
 pub enum WhichTextField {
@@ -231,6 +237,9 @@ impl Component for NewClubPage {
 			toolbar_link: Amogus::dispatcher(),
 			left_col_ref: NodeRef::default(),
 			right_col_ref: NodeRef::default(),
+			
+			post_img_state: FetchState::Waiting,
+			post_img_task: None,
 		}
 	}
 
@@ -329,7 +338,11 @@ impl Component for NewClubPage {
 								StatusCode::OK => {
 									tell!("Successfully post`ed club");
 									tell!("{:?}", response);
-									Msg::PostClubDone(20202)
+									if let Json(thing) = response.body() {
+										Msg::PostClubDone(thing.as_ref().unwrap().get(0).unwrap().id)
+									}else {
+										Msg::Ignore
+									}
 								},
 
 								StatusCode::INTERNAL_SERVER_ERROR => {
@@ -363,8 +376,7 @@ impl Component for NewClubPage {
 			},
 
 			Msg::PostClubDone(id) => {
-				self.reset();
-				//self.link.send_message(Msg::PostClubLogo(id));
+				self.link.send_message(Msg::PostClubLogo(id));
 			}
 
 			Msg::UpdateClubLogoState(bytes) => {
@@ -378,7 +390,48 @@ impl Component for NewClubPage {
 				}
 			}
 
-			Msg::PostClubLogo(id) => {}
+			Msg::PostClubLogo(id) => {
+				self.post_logo_task_state = FetchState::Waiting;
+				
+				let thing = base64::decode(self.img_preview_ref.cast::<HtmlImageElement>().unwrap().src()[22..].to_owned()).unwrap();
+				tell!("{}",self.img_preview_ref.cast::<HtmlImageElement>().unwrap().src()[22..].to_owned());
+				let binchilling = Bincode(&thing);
+				let request = Request::put(format!("/api/clubs/{}/logo", id))
+					.header("Content-Type", "image/png")
+					.body(binchilling)
+					.unwrap();
+					
+				let response_callback = self.link.callback(
+					|response: Response<yew::format::Binary>| {
+						match response.status() {
+							StatusCode::OK => {
+								tell!("Successfully put`ed logo");
+								Msg::PostClubLogoDone
+							},
+				
+							_ => {
+								tell!("Bad status receieved: {:?}", response.status());
+								//Error stuff
+								Msg::Ignore
+							}
+						}
+					},
+				);
+				
+				match FetchService::fetch_binary(request, response_callback) {
+					Ok(task) => self.post_img_task = Some(task),
+					Err(err) => {
+						tell!("Failed to post logo: {}", err);
+						self.post_img_state =
+							FetchState::Failed(Some(anyhow!(format!("{:?}", err))));
+					}
+				}
+			},
+			
+			Msg::PostClubLogoDone => {
+				self.reset();
+			},
+			
 
 			Msg::ReadLogo => {
 				self.read_img_sync();
