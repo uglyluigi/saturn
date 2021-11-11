@@ -7,7 +7,7 @@ pub struct NewClubDTO<'r> {
 }
 
 #[post("/clubs/create", data = "<club>")]
-pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Json<ClubDetails>, ()> {
+pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Json<Vec<ClubDetails>>, ()> {
     use crate::schema::clubs::dsl::{clubs};
     use crate::schema::club_members::dsl::{club_members};
 
@@ -15,7 +15,7 @@ pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Js
     let body = club.body.to_string().clone();
     let user_id = user.id.clone();
 
-    let created_club: Club = db.run(move |conn| {
+    let (created_club, created_club_member): (Club, ClubMember) = db.run(move |conn| {
         let new_club = NewClub {
             name: &name.clone(),
             body: &body.clone(),
@@ -34,23 +34,18 @@ pub async fn create(user: User, db: Db, club: Json<NewClubDTO<'_>>) -> Result<Js
             is_moderator: &"head",
         };
 
-        insert_into(club_members)
+        let club_member = insert_into(club_members)
             .values(&new_club_member)
-            .execute(conn).expect("Failed to add owner member to club.");
+            .get_result::<ClubMember>(conn).expect("Failed to add owner member to club.");
         
-        club
+        (club, club_member)
     }).await;
 
-    let member = ClubMember{
-        id: -1,
-        user_id: user_id,
-        club_id: created_club.id,
-        is_moderator: "head".to_owned()
-    };
-
-    match ClubDetails::from_join_async((member, created_club), user_id, db).await {
+    match ClubDetails::from_join_async((created_club_member, created_club), user_id, db).await {
         Some(value) => {
-            Ok(Json(value))
+            let mut vec = Vec::new();
+            vec.push(value);
+            Ok(Json(vec))
         },
         None => {
             eprintln!("Uh this wasn't supposed to happen.");
