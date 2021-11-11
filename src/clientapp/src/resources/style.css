@@ -1094,3 +1094,12 @@ img[src="*"] {
 .status-and-spinner > .lds-dual-ring {
     
 }
+
+.details-page {
+    display: flex;
+    flex-direction: column;
+    background-color: #EEEEEE;
+    padding: 1em;
+    margin: 1em;
+    border-radius: 0.25em;
+}

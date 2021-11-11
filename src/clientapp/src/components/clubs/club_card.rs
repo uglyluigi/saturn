@@ -341,6 +341,7 @@ impl Component for ClubCard {
 			},
 
 			Msg::SendDetails => {
+				// Send the details to the details page via the 
 				let mut dispatcher = Amogus::dispatcher();
 				dispatcher.send(crate::event::Request::EventBusMsg(AgentMessage::DetailsPageMsg(pg_details::Msg::AcceptDetails(self.props.details.clone().unwrap_into()))));
 			}

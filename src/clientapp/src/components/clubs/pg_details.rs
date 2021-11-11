@@ -53,13 +53,58 @@ impl Component for DetailsPage {
 
 	fn view(&self) -> Html {
 		html! {
-            <>
-				<h1>{"Details for "}{self.props.id}</h1>
+            <div class="details-page">
 
 				{
 					if self.details.is_some() {
+						let details = self.details.as_ref().unwrap();
+						let mut date = details.publish_date;
+
 						html! {
-							<h3>{"Got details"}</h3>
+							<>
+								<img src={format!("/assets/clubs/{}.png", details.id)}/>
+								<h1>{details.name.clone()}</h1>
+								<h3>{details.member_count} {" interested"}</h3>
+								<h3>{"Published "} {date.format("%A, %B %e %Y")}</h3>
+
+								{
+									if details.is_member {
+										html! {
+											<h3>{"You are interested in this club."}</h3>
+										}
+									} else {
+										html! {
+											<>
+											</>
+										}
+									}
+								}
+
+								{
+									if details.is_moderator == "head" {
+										html! {
+											<h3>{"You are the head moderator for this club."}</h3>
+										}
+									} else if details.is_moderator == "true" {
+										html! {
+											<h3>{"You are a moderator for this club."}</h3>
+										}
+									} else {
+										html! {
+											<>
+											</>
+										}
+									}
+								}
+								
+								<div>
+									{details.body.clone()}
+								</div>
+
+								<div>
+									
+								</div>
+							</>
 						}
 					} else {
 						html! {
@@ -68,7 +113,7 @@ impl Component for DetailsPage {
 						}
 					}
 				}
-            </>
+            </div>
         }
 	}
 }
