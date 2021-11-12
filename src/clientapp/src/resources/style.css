@@ -1103,3 +1103,8 @@ img[src="*"] {
     margin: 1em;
     border-radius: 0.25em;
 }
+
+.details-page img {
+    width: 200px;
+    height: 200px;
+}
