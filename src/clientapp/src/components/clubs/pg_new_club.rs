@@ -333,25 +333,21 @@ impl Component for NewClubPage {
 						.unwrap();
 
 					let response_callback = self.link.callback(
-						|response: Response<Json<Result<ClubDetails, anyhow::Error>>>| {
+						|response: Response<Json<Result<Vec<ClubDetails>, anyhow::Error>>>| {
 							match response.status() {
-								StatusCode::OK | StatusCode::ACCEPTED => {
+								StatusCode::OK => {
 									tell!("Successfully post`ed club");
 									tell!("{:?}", response);
 									if let Json(thing) = response.body() {
-										Msg::PostClubDone(thing.as_ref().unwrap().id)
-									} else {
+										Msg::PostClubDone(thing.as_ref().unwrap().get(0).unwrap().id)
+									}else {
 										Msg::Ignore
-									}									
+									}
 								},
 
 								StatusCode::INTERNAL_SERVER_ERROR => {
+									tell!("Looks like a dupe");
 									Msg::PostClubFailedDuplicateName
-								},
-
-								StatusCode::FORBIDDEN => {
-									// TODO make this redirect
-									Msg::Ignore
 								},
 
 								_ => {
@@ -411,11 +407,6 @@ impl Component for NewClubPage {
 							StatusCode::OK => {
 								tell!("Successfully put`ed logo");
 								Msg::PostClubLogoDone
-							},
-
-							StatusCode::FORBIDDEN => {
-								// TODO make this redirect
-								Msg::Ignore
 							},
 				
 							_ => {
