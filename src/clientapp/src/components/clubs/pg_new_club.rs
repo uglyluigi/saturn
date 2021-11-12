@@ -13,6 +13,7 @@ use yew::{Html, ShouldRender, agent::Dispatcher, format::{Bincode, Json, Nothing
 
 use crate::{components::{ClubCard, Spinner}, event::{Amogus, EventBus}, tell, types::{FetchState, ClubDetails}};
 use yew::binary_format;
+use crate::types::BinaryBlob;
 
 pub struct NewClubPage {
 	link: ComponentLink<Self>,
@@ -395,8 +396,9 @@ impl Component for NewClubPage {
 				
 				let thing = base64::decode(self.img_preview_ref.cast::<HtmlImageElement>().unwrap().src()[22..].to_owned()).unwrap();
 				tell!("{}",self.img_preview_ref.cast::<HtmlImageElement>().unwrap().src()[22..].to_owned());
-				let binchilling = Bincode(&thing);
+				let binchilling = BinaryBlob(&thing);
 				let request = Request::put(format!("/api/clubs/{}/logo", id))
+					.header("Content-Length", thing.len())
 					.header("Content-Type", "image/png")
 					.body(binchilling)
 					.unwrap();
