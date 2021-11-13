@@ -406,7 +406,7 @@ impl Component for NewClubPage {
 				let response_callback = self.link.callback(
 					|response: Response<yew::format::Binary>| {
 						match response.status() {
-							StatusCode::OK => {
+							StatusCode::ACCEPTED => {
 								tell!("Successfully put`ed logo");
 								Msg::PostClubLogoDone
 							},
