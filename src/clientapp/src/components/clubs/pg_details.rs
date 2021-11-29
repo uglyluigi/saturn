@@ -2,17 +2,11 @@ use serde::{Deserialize, Serialize};
 use yew::{format::Json, prelude::*, services::fetch::{FetchTask, Response, StatusCode}};
 use crate::{event::{self, Amogus, EventBus}, types::*};
 use comrak::{ComrakExtensionOptions, ComrakOptions, arena_tree::Node, markdown_to_html};
-<<<<<<< HEAD
 use crate::components::core::router::*;
 use crate::tell;
 use web_sys::{Blob, FileReader, HtmlElement, HtmlImageElement, HtmlInputElement, HtmlTextAreaElement};
 use yew_router::switch::Permissive;
 
-=======
-#[macro_use]
-use crate::tell;
-use web_sys::{Blob, FileReader, HtmlElement, HtmlImageElement, HtmlInputElement, HtmlTextAreaElement};
->>>>>>> 7cbeab4b01d135425480ad8ebe084c91cd9ece41
 
 pub struct DetailsPage {
 	link: ComponentLink<Self>,
@@ -20,7 +14,6 @@ pub struct DetailsPage {
 	details: Option<ClubDetails>,
 	msg_acceptor: Box<dyn yew::Bridge<Amogus>>,
 	markdown_body_ref: NodeRef,
-<<<<<<< HEAD
 	markdown_rendered: bool,
 	
 	get_details_task: Option<FetchTask>,
@@ -28,10 +21,6 @@ pub struct DetailsPage {
 
 	redirect_to_404: bool,
 	redirect_to_logn: bool,
-=======
-	markdown_rendered: bool
-	
->>>>>>> 7cbeab4b01d135425480ad8ebe084c91cd9ece41
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -65,16 +54,12 @@ impl Component for DetailsPage {
 			})),
 			link,
 			markdown_body_ref: NodeRef::default(),
-<<<<<<< HEAD
 			markdown_rendered: false,
 			get_details_task: None,
 			get_details_task_state: FetchState::Waiting,
 
 			redirect_to_404: false,
 			redirect_to_logn: false,
-=======
-			markdown_rendered: false
->>>>>>> 7cbeab4b01d135425480ad8ebe084c91cd9ece41
 		}
 	}
 
