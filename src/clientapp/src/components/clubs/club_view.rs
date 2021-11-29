@@ -1,7 +1,10 @@
+use std::cmp::Ordering;
+
 use anyhow::*;
 use js_sys::Function;
 use serde::{Deserialize, Serialize};
-use web_sys::HtmlElement;
+use wasm_bindgen::JsCast;
+use web_sys::{HtmlButtonElement, HtmlElement, HtmlInputElement};
 use yew::{
 	format::{Json, Nothing},
 	prelude::*,
@@ -30,9 +33,15 @@ pub struct ClubView {
 	// Collections
 	fetch_tasks: Vec<FetchTask>,
 
-	clubs_fetch_state: FetchState<Vec<ClubDetails>>,
+	clubs_fetch_state: FetchState<()>,
 	auth_details_fetch_state: FetchState<AuthDetails>,
 	user_details_fetch_state: FetchState<UserDetails>,
+
+	interested_radio_button_ref: NodeRef,
+	most_popular_radio_button_ref: NodeRef,
+	moderated_radio_button_ref: NodeRef,
+	clubs: Vec<ClubDetails>,
+	show_cards: bool,
 }
 
 #[derive(Properties, PartialEq, Clone)]
@@ -59,6 +68,12 @@ pub enum Msg {
 	ShowDialog,
 	HideDialog,
 	FakeGettingClubs,
+	Ignore,
+
+
+	// Updates which rank to use. The thing wrapped in the enum is the button that was just selected
+	UpdateRankState(HtmlButtonElement),
+	UpdateClubSort,
 }
 
 enum Redirect {
@@ -90,13 +105,22 @@ impl ClubView {
 		}
 	}
 
-	pub fn make_cards(&self, vec: &Vec<ClubDetails>) -> Html {
+	pub fn get_radio_buttons(&self) -> [HtmlButtonElement; 3] {
+		let interested_button = self.interested_radio_button_ref.cast::<HtmlButtonElement>().unwrap();
+		let moderated_button = self.moderated_radio_button_ref.cast::<HtmlButtonElement>().unwrap();
+		let popular_button = self.most_popular_radio_button_ref.cast::<HtmlButtonElement>().unwrap();
+
+		[interested_button, moderated_button, popular_button]
+	}
+
+	pub fn make_cards(&self) -> Html {
+
 		let mut i = 0.1;
 
 		html! {
 			<>
 				{
-					for vec.iter().map(|x| {
+					for self.clubs.iter().map(|x| {
 
 						html! {
 							<ClubCard
@@ -111,25 +135,45 @@ impl ClubView {
 		}
 	}
 
-	pub fn normal_view(&self) -> Html {
-		match &self.clubs_fetch_state {
-			FetchState::Done(clubs) => {
-				if clubs.len() > 0 {
-					html! {
-						<>
-							{
-								self.make_cards(clubs)
-							}
-						</>
-					}
+	pub fn sort_clubs(&mut self) {
+		let [interested_button, moderated_button, popular_button] = self.get_radio_buttons();
+
+		// Unsurprisingly, these sort functions sort in ascending order. However, this is not super useful
+		// when you want the items you consider to be "higher" to be towards the front of the list (which is
+		// basically descending order). As such these are basically sorting backwards with "greater" items 
+		// at lower indices. That way, clubs that are meeting whatever qualifications set forth by
+		// the ranker are towards the top of the page when displayed.
+
+		if interested_button.class_list().contains("active-rank") {
+			self.clubs.sort_by(|x, y| {
+				if x.is_member == y.is_member {
+					Ordering::Equal
 				} else {
-					html! {
-						<></>
+					if x.is_member && !y.is_member {
+						Ordering::Less
+					} else {
+						Ordering::Greater
 					}
 				}
-			}
-
-			_ => html! { <> </> },
+			});
+		} else if moderated_button.class_list().contains("active-rank") {
+			self.clubs.sort_by(|x, y| {
+				if x.is_moderator == y.is_moderator {
+					Ordering::Equal
+				} else {
+					if (x.is_moderator == "true" || x.is_moderator == "head") && y.is_moderator == "false" {
+						Ordering::Less
+					} else {
+						Ordering::Greater
+					}
+				}
+			});
+		} else if popular_button.class_list().contains("active-rank") {
+			// This is pretty big brain if you ask me. Since it's sorting in ascending
+			// order by member count, all you need to do is make the higher member counts
+			// appear "lower" than the lower member counts. An incredibly simple way
+			// to do this is to just negate the member count.
+			self.clubs.sort_by_key(|x| -x.member_count);
 		}
 	}
 }
@@ -149,6 +193,11 @@ impl Component for ClubView {
 			clubs_fetch_state: FetchState::Waiting,
 			auth_details_fetch_state: FetchState::Waiting,
 			user_details_fetch_state: FetchState::Waiting,
+			moderated_radio_button_ref: NodeRef::default(),
+			interested_radio_button_ref: NodeRef::default(),
+			most_popular_radio_button_ref: NodeRef::default(),
+			clubs: vec![],
+			show_cards: true,
 		}
 	}
 
@@ -158,6 +207,8 @@ impl Component for ClubView {
 		self.clean_tasks();
 
 		match msg {
+			Ignore => (),
+
 			GetUserDetails => {
 				let req = yew::services::fetch::Request::get("/api/user/details")
 					.body(yew::format::Nothing);
@@ -340,31 +391,51 @@ impl Component for ClubView {
 						v.retain(|e| f(&search_text, e))
 					}
 
-					FetchState::Done(v)
+					self.clubs = v;
+
+					FetchState::Done(())
 				} else {
 					FetchState::Failed(Some(anyhow!(
 						"Failed to get club details (struct was none)"
 					)))
 				}
-			}
+			},
 
 			RequestLogin => {
 				// I like how this really looks like a stupid pseudocode example.
 				// I need coffee haha = Laughter(Kind::Insincere)
 				self.redirect = Yes(AppRoute::Login);
-			}
+			},
 
 			ShowDialog => {
 				self.show_dialog = true;
-			}
+			},
 
 			HideDialog => {
 				self.show_dialog = false;
-			}
+			},
 
 			FakeGettingClubs => {
-				self.clubs_fetch_state = FetchState::Done(vec![]);
-			}
+				self.clubs_fetch_state = FetchState::Done(());
+			},
+
+			UpdateRankState(el) => {
+				self.show_cards = false;
+				for butt in self.get_radio_buttons() {
+					if butt.class_list().contains("active-rank") {
+						butt.class_list().remove_1("active-rank").unwrap();
+					}
+				}
+
+				el.class_list().add_1("active-rank").unwrap();
+
+				self.link.send_message(Msg::UpdateClubSort);
+			},
+
+			UpdateClubSort => {
+				self.sort_clubs();
+				self.show_cards = true;
+			},
 		}
 
 		true
@@ -376,6 +447,16 @@ impl Component for ClubView {
 	}
 
 	fn view(&self) -> Html {
+		let on_clicc = self.link.callback(|e: MouseEvent| {
+			let target = e.target()
+			.unwrap()
+			.dyn_into::<HtmlButtonElement>()
+			.unwrap();
+
+
+			Msg::UpdateRankState(target)
+		});
+
 		if let Yes(route) = &self.redirect {
 			html! {
 				<AppRedirect route=route.clone()/>
@@ -384,31 +465,30 @@ impl Component for ClubView {
 			html! {
 				<>
 					<div class="club-filters">
-						<h3><i>{"Sort by..."}</i></h3>
-
-						<select name="sort" id="sort-select">
-							<option value="none">{"None"}</option>
-							<option value="atoz">{"A-Z"}</option>
-							<option value="mod">{"Moderated"}</option>
-							<option value="interested">{"Interested"}</option>
-							<option value="datepublished">{"Date Published"}</option>
-						</select>
+						<div class="content">
+							<h3><i>{"Rank by..."}</i></h3>
 
 
-
-						<div class="checkbox">
-							<input type="checkbox" id="academia" name="academia" value="Academia"/>
-							<label for="academia"> {"My clubs"}</label>
-						</div>
-							
-						<div class="checkbox">
-							<input type="checkbox" id="greek-life" name="greek-life" value="Greek Life"/>
-							<label for="greek-life"> {"Clubs I like"}</label>
-						</div>
-							
-						<div class="checkbox">
-							<input type="checkbox" id="sports" name="sports" value="Sports"/>
-							<label for="sports"> {"Sports"}</label>
+							<div class="ranks">
+								<button onclick=on_clicc.clone() class="rank-button" ref=self.interested_radio_button_ref.clone()>
+									<span class="material-icons">
+										{"done"}
+									</span>
+									{"Interested"}
+								</button>
+								<button onclick=on_clicc.clone() class="rank-button" ref=self.most_popular_radio_button_ref.clone()>
+									<span class="material-icons">
+										{"done"}
+									</span>
+									{"Most popular"}
+								</button>
+								<button onclick=on_clicc.clone() class="rank-button" ref=self.moderated_radio_button_ref.clone()>
+									<span class="material-icons">
+										{"done"}
+									</span>
+									{"Moderated"}
+								</button>
+							</div>
 						</div>
 					</div>		
 					
@@ -434,8 +514,8 @@ impl Component for ClubView {
 									}
 								},
 
-								FetchState::Done(deets) => {
-									if deets.len() == 0 {
+								FetchState::Done(()) => {
+									if self.clubs.len() == 0 {
 										html! {
 											<span class="bad">
 												<h2>
@@ -460,9 +540,36 @@ impl Component for ClubView {
 						}
 					</div>
 
-					<div class="club-view">
+					<div>
 						{
-							self.normal_view()
+							match &self.clubs_fetch_state {
+								FetchState::Done(()) => {
+									if self.clubs.len() > 0 {
+										html! {
+											if self.show_cards {
+												html! {
+													<div class="club-view">
+														{
+															self.make_cards()
+														}
+													</div>
+												}
+											} else {
+												html! {
+													<>
+													</>
+												}
+											}
+										}
+									} else {
+										html! {
+											<></>
+										}
+									}
+								}
+					
+								_ => html! { <> </> },
+							}
 						}
 					</div>
 				</>

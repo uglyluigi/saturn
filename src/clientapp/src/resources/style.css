@@ -1056,49 +1056,6 @@ img[src="*"] {
     background-color: #D64550;
 }
 
-.club-filters {
-    display: flex;
-    background-color: white;
-    color: black;
-    align-items: center;
-    padding-top: 1em;
-    padding-bottom: 1em;
-    flex-direction: row;
-    width: 100%;
-    justify-content: flex-end;
-}
-
-.club-filters select {
-    margin-left: 1em;
-}
-
-.club-filters .content-left {
-    margin-left: 1em;
-}
-
-.club-filters .content-right {
-    display: flex;
-
-}
-
-
-
-.checkbox {
-    margin-left: 2em;
-    margin-right: 2em;
-}
-
-.club-filters label {
-    font-size: large;
-}
-.club-filters input {
-    margin-right: 0.5em;
-}
-
-.status-and-spinner > .lds-dual-ring {
-    
-}
-
 .details-page {
     display: flex;
     flex-direction: column;
@@ -1111,4 +1068,61 @@ img[src="*"] {
 .details-page img {
     height: 250px;
     width: 250px;
+}
+
+
+.club-filters {
+    display: flex;
+    background-color: white;
+    color: black;
+    align-items: center;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    flex-direction: row;
+    width: 100%;
+}
+
+.club-filters .content {
+    margin-left: 1em;
+    display: flex;
+    align-items: center;
+}
+
+.ranks {
+    display: flex;
+    align-items: center;
+}
+
+.rank-button {
+    display: flex;
+    align-items: center;
+    border: none;
+    border-radius: 0.25em;
+    margin-left: 0.25em;
+    margin-right: 0.25em;
+    cursor: pointer;
+
+    padding: 0.35em;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+    font-size: 16px;
+    overflow: hidden;
+    background-color: #EEEEEE;
+    transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
+}
+
+.rank-button > .material-icons {
+    font-size: 30px;
+    transform: translateX(-40px);
+    transition: transform 0.25s ease-in-out;
+    margin-right: 0.25em;
+}
+
+.active-rank {
+    background-color: #4C1A88;
+    color: white;
+}
+
+.active-rank > .material-icons {
+    transform: translateX(0px);
 }
