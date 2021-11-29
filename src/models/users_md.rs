@@ -11,7 +11,7 @@ pub struct User {
     pub is_admin: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UserDetails{
     pub email: String,
     pub picture: String,

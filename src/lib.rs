@@ -72,6 +72,7 @@ pub fn rocket() -> Rocket<Build>{
         //Startup
         .mount("/api/", routes![
             controllers::clubs::get::get_all,
+            controllers::clubs::get::get_club_details,
             controllers::clubs::get::get_clubs_by_membership,
             controllers::clubs::get::get_clubs_by_moderatorship,
             controllers::clubs::create::create,
