@@ -384,22 +384,31 @@ impl Component for ClubView {
 			html! {
 				<>
 					<div class="club-filters">
-						<h3><i>{"Filter by..."}</i></h3>
+						<h3><i>{"Sort by..."}</i></h3>
+
+						<select name="sort" id="sort-select">
+							<option value="none">{"None"}</option>
+							<option value="atoz">{"A-Z"}</option>
+							<option value="mod">{"Moderated"}</option>
+							<option value="interested">{"Interested"}</option>
+							<option value="datepublished">{"Date Published"}</option>
+						</select>
+
 
 
 						<div class="checkbox">
-								<input type="checkbox" id="academia" name="academia" value="Academia"/>
-								<label for="academia"> {"Clubs I mod"}</label>
-							</div>
+							<input type="checkbox" id="academia" name="academia" value="Academia"/>
+							<label for="academia"> {"My clubs"}</label>
+						</div>
 							
-							<div class="checkbox">
-								<input type="checkbox" id="greek-life" name="greek-life" value="Greek Life"/>
-								<label for="greek-life"> {"Clubs I like"}</label>
-							</div>
+						<div class="checkbox">
+							<input type="checkbox" id="greek-life" name="greek-life" value="Greek Life"/>
+							<label for="greek-life"> {"Clubs I like"}</label>
+						</div>
 							
-							<div class="checkbox">
-								<input type="checkbox" id="sports" name="sports" value="Sports"/>
-								<label for="sports"> {"Sports"}</label>
+						<div class="checkbox">
+							<input type="checkbox" id="sports" name="sports" value="Sports"/>
+							<label for="sports"> {"Sports"}</label>
 						</div>
 					</div>		
 					
