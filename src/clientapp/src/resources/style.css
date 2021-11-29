@@ -1126,3 +1126,96 @@ img[src="*"] {
 .active-rank > .material-icons {
     transform: translateX(0px);
 }
+
+.details-page {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    margin: 1em auto;
+    width:60%;
+    max-width:50em;
+    min-width:15em;
+    border-radius: 0.25em;
+}
+
+.details-page h1,
+.details-page h2,
+.details-page h3,
+.details-page h4,
+.details-page h5,
+.details-page h6{
+    color:#26282C;
+}
+
+.details-page > .club-header {
+    padding: 1em;
+    background-color:white;
+    border-top-left-radius: 0.25em;
+    border-top-right-radius: 0.25em;
+}
+
+.details-page > .club-header > .club-header-line{
+    display:flex;
+}
+
+.details-page > .club-header > .club-header-line > .club-name{
+    flex:1;
+    display: inline-block;
+}
+.details-page > .club-header > .club-header-line > .club-edit{
+    display: inline-block;
+}
+
+.details-page > .club-image-wrapper > .club-image{
+    width:100%;
+}
+
+.details-page > .club-image-wrapper > .club-image-panel{
+    margin-top:-5px;
+    width:100%;
+    background-color:#EFEFEF;
+}
+
+.details-page > .club-image-wrapper > .club-image-panel > ul{
+    width:100%;
+    margin:0em;
+    padding:.5em 0em;
+    display: flex;
+    list-style-type: none;
+}
+
+.details-page > .club-image-wrapper > .club-image-panel > ul > li{
+    flex:1;
+    margin:0em;
+    border-right:1px solid #ccc;
+    border-left:1px solid #ccc;
+    padding: 0em .5em;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.details-page > .club-image-wrapper > .club-image-panel > ul > li:last-child{
+    border-right:0px;
+}
+
+
+.details-page > .club-image-wrapper > .club-image-panel > ul > li:first-child{
+    border-left:0px;
+}
+
+
+.details-page > .club-image-wrapper > .club-image-panel > ul > li > img{
+    vertical-align: middle;
+    border-radius:3em;
+    height:3em;
+    width:3em;
+}
+
+
+.details-page > .club-body {
+    padding:1em;
+}
+
+
+
+
