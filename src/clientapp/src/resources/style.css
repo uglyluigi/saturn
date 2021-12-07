@@ -1159,11 +1159,29 @@ img[src="*"] {
 }
 
 .details-page > .club-header > .club-header-line > .club-name{
-    flex:1;
+    flex: 1;
     display: inline-block;
 }
-.details-page > .club-header > .club-header-line > .club-edit{
+
+.details-page > .club-header > .club-header-line > .club-edit {
     display: inline-block;
+}
+
+.details-page > .club-header > .club-header-line > .club-edit button {
+    outline: none;
+    border: none;
+    background-color: transparent;
+    transition: transform 0.25s ease-in, color 0.20s ease-in;
+    cursor: pointer;
+
+}
+
+.details-page > .club-header > .club-header-line > .club-edit button:hover {
+    outline: none;
+    border: none;
+    background-color: transparent;
+    transform: translateY(-0.25em);
+    color: #2BC29F;
 }
 
 .details-page > .club-image-wrapper > .club-image{
