@@ -1,5 +1,53 @@
 use crate::prelude::*;
 
+#[derive(Deserialize)]
+pub struct UpdateClubDTO<'r> {
+    pub name: Cow<'r, str>,
+    pub body: Cow<'r, str>
+}
+
+#[put("/clubs/<id>", data = "<club>")]
+pub async fn update(user: User, db: Db, id: i32, club: Json<UpdateClubDTO<'_>>) -> std::result::Result<Json<ClubDetails>, status::Custom<Option<Json<JsonError>>>> {
+    let user_id=user.id.clone();
+    use crate::schema::clubs::dsl::{clubs, name,body};
+
+    let club_name = club.name.to_string().clone();
+    let club_body = club.body.to_string().clone();
+    match user.get_membership_status_async(&db, &id).await {
+        MembershipStatus::Moderator(is_head) => {
+            if is_head {
+                let result = db.run(move |conn| {
+                    let update = diesel::update(clubs.find(id))
+                        .set((
+                            name.eq(club_name),
+                            body.eq(club_body),
+                        ))
+                        .get_result::<Club>(conn);
+                    
+                    if let Ok(update) = update{
+                        let member = ClubMember{
+                            id: -1,
+                            user_id: user_id,
+                            club_id: update.id,
+                            is_moderator: if is_head {"head".to_owned()} else {"true".to_owned()}
+                        };
+                        Ok(Json(ClubDetails::from_join((member, update), user_id, &conn).unwrap()))
+                    }else{
+                        Err(status::Custom(Status::BadRequest, Some(Json(JsonError {error: "The club you are trying to access does not exist.".to_owned()}))))
+                    }
+                }).await;
+                result
+            }else{
+                Err(status::Custom(Status::Forbidden, None))
+            }
+        },
+        _ => {
+            Err(status::Custom(Status::Forbidden, None))
+        }
+    }
+}
+
+
 #[put("/clubs/<id>/renew")]
 pub async fn renew(user: User, db: Db, id: i32) -> std::result::Result<Json<ClubDetails>, status::Custom<Option<Json<JsonError>>>> {
     use crate::schema::clubs::dsl::{clubs, expiry_date};

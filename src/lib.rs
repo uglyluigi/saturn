@@ -76,6 +76,7 @@ pub fn rocket() -> Rocket<Build>{
             controllers::clubs::get::get_clubs_by_membership,
             controllers::clubs::get::get_clubs_by_moderatorship,
             controllers::clubs::create::create,
+            controllers::clubs::update::update,
             controllers::clubs::update::renew,
             controllers::clubs::update::join,
             controllers::clubs::update::leave,
