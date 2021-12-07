@@ -180,7 +180,13 @@ impl Component for DetailsPage {
 								<div class="club-header">
 									<div class="club-header-line">
 										<h1 class="club-name">{details.name.clone()}</h1>
-										<h1 class="club-edit"><abbr data_title="Edit"><span class="material-icons">{"edit"}</span></abbr></h1>
+										<h1 class="club-edit">
+											<abbr data_title="Edit">
+												<button>
+													<span class="material-icons">{"edit"}</span>
+												</button>
+											</abbr>
+										</h1>
 									</div>
 									<h3>
 										{"Published "} {date.format("%A, %B %e %Y")}

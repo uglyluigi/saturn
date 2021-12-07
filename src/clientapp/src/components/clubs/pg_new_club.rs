@@ -334,13 +334,13 @@ impl Component for NewClubPage {
 						.unwrap();
 
 					let response_callback = self.link.callback(
-						|response: Response<Json<Result<ClubDetails, anyhow::Error>>>| {
+						|response: Response<Json<Result<Vec<ClubDetails>, anyhow::Error>>>| {
 							match response.status() {
 								StatusCode::OK | StatusCode::ACCEPTED => {
 									tell!("Successfully post`ed club");
 									tell!("{:?}", response);
 									if let Json(thing) = response.body() {
-										Msg::PostClubDone(thing.as_ref().unwrap().id)
+										Msg::PostClubDone(thing.as_ref().unwrap()[0].id)
 									} else {
 										Msg::Ignore
 									}									
