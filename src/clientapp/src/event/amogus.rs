@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use yew::worker::*;
+use crate::tell;
 
 pub type Amogus = EventBus;
 
@@ -13,6 +14,7 @@ pub enum Request {
 pub enum AgentMessage {
     ToolbarMsg(crate::components::core::toolbar::Msg),
     DetailsPageMsg(crate::components::clubs::pg_details::Msg),
+    ClubFormMsg(crate::components::pg_new_club::Msg)
 }
 
 pub struct EventBus {
@@ -40,6 +42,7 @@ impl Agent for EventBus {
         match msg {
             Request::EventBusMsg(s) => {
                 for sub in self.subscribers.iter() {
+                    tell!("{:?} sent {:?}", sub, s);
                     self.link.respond(*sub, s.clone());
                 }
             }
@@ -47,7 +50,9 @@ impl Agent for EventBus {
     }
 
     fn connected(&mut self, id: HandlerId) {
+        tell!("connecting id={:?}", id);
         self.subscribers.insert(id);
+        tell!("inserted");
     }
 
     fn disconnected(&mut self, id: HandlerId) {

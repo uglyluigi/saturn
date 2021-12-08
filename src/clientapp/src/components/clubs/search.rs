@@ -155,9 +155,9 @@ impl Component for SearchBar {
 		if first {
 			self.search_bar_ref.cast::<HtmlElement>().unwrap().focus().unwrap();
 			self.container_ref.cast::<HtmlElement>().unwrap().class_list().add_1("search-bar-container-in").unwrap();
-		}
-		use crate::{components::core::toolbar::{Msg, WhichButton}, event::*};
-		self.toolbar_link.send(Request::EventBusMsg(AgentMessage::ToolbarMsg(Msg::HighlightButton(WhichButton::Search))));
+			use crate::{components::core::toolbar::{Msg, WhichButton}, event::*};
+			self.toolbar_link.send(Request::EventBusMsg(AgentMessage::ToolbarMsg(Msg::HighlightButton(WhichButton::Search))));
+		}	
 	}
 
 	fn destroy(&mut self) {

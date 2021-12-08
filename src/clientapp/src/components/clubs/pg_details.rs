@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use yew::{format::Json, prelude::*, services::fetch::{FetchTask, Response, StatusCode}};
-use crate::{event::{self, Amogus, EventBus}, types::*};
+use crate::{event::{self, Amogus, EventBus, Request, AgentMessage}, types::*, components::NewClubPage};
 use comrak::{ComrakExtensionOptions, ComrakOptions, arena_tree::Node, markdown_to_html};
 use crate::components::core::router::*;
 use crate::tell;
@@ -12,7 +12,7 @@ pub struct DetailsPage {
 	link: ComponentLink<Self>,
 	props: Props,
 	details: Option<ClubDetails>,
-	msg_acceptor: Box<dyn yew::Bridge<Amogus>>,
+	bridge: Box<dyn yew::Bridge<Amogus>>,
 	markdown_body_ref: NodeRef,
 	markdown_rendered: bool,
 	
@@ -21,6 +21,8 @@ pub struct DetailsPage {
 
 	redirect_to_404: bool,
 	redirect_to_logn: bool,
+
+	show_editor: bool,
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -36,6 +38,8 @@ pub enum Msg {
 	GetDetailsDone(ClubDetails),
 	GetDetailsFail,
 	RequestLogin,
+	EditClub,
+	CloseEditor,
 }
 
 impl Component for DetailsPage {
@@ -48,7 +52,7 @@ impl Component for DetailsPage {
 		Self {  
 			props,
 			details: None,
-			msg_acceptor: EventBus::bridge(link.callback(|e| match e {
+			bridge: EventBus::bridge(link.callback(|e| match e {
 				event::AgentMessage::DetailsPageMsg(msg) => msg,
 				_ => Msg::Ignore,
 			})),
@@ -60,6 +64,7 @@ impl Component for DetailsPage {
 
 			redirect_to_404: false,
 			redirect_to_logn: false,
+			show_editor: false,
 		}
 	}
 
@@ -132,6 +137,14 @@ impl Component for DetailsPage {
 			Msg::RequestLogin => {
 				self.redirect_to_logn = true;
 			},
+
+			Msg::EditClub => {
+				self.show_editor = true;
+			},
+
+			Msg::CloseEditor => {
+				self.show_editor = false;
+			}
 		}
 
 		true
@@ -142,25 +155,16 @@ impl Component for DetailsPage {
 	}
 
 	fn view(&self) -> Html {
+		let on_edit_button_click = self.link.callback(|e| {
+			Msg::EditClub
+		});
+
 		html! {
-            <div class="details-page">
+			<>
 				{
-					if self.redirect_to_logn {
+					if self.show_editor {
 						html! {
-							<AppRedirect route=AppRoute::Login/>
-						}
-					} else {
-						html! {
-							<>
-							</>
-						}
-					}	
-				}
-
-				{
-					if self.redirect_to_404 {
-						html! {
-							<AppRedirect route=AppRoute::NotFound(Permissive(Some("Mingus".to_owned())))/>
+							<NewClubPage starting_vals=self.details.clone()/>
 						}
 					} else {
 						html! {
@@ -170,91 +174,131 @@ impl Component for DetailsPage {
 					}
 				}
 
-				{
-					if self.details.is_some() {
-						let details = self.details.as_ref().unwrap();
-						let mut date = details.publish_date;
+				<div class="details-page">
+					{
+						if self.redirect_to_logn {
+							html! {
+								<AppRedirect route=AppRoute::Login/>
+							}
+						} else {
+							html! {
+								<>
+								</>
+							}
+						}	
+					}
 
-						html! {
-							<>
-								<div class="club-header">
-									<div class="club-header-line">
-										<h1 class="club-name">{details.name.clone()}</h1>
-										<h1 class="club-edit">
-											<abbr data_title="Edit">
-												<button>
-													<span class="material-icons">{"edit"}</span>
-												</button>
-											</abbr>
-										</h1>
-									</div>
-									<h3>
-										{"Published "} {date.format("%A, %B %e %Y")}
-									</h3>
-								</div>
-								<div class="club-image-wrapper">
-									<img class="club-image" src={format!("/assets/clubs/{}.png", details.id)}/>
-									<div class="club-image-panel">
-										<ul>
-											<li>
-												{"Created by "}<img src={format!("{}", details.head_moderator.picture)}/>
-											</li>
-											<li>
-												{details.member_count} {" interested"}
-											</li>
-											<li>
-												{"Published "} {date.format("%A, %B %e %Y")}
-											</li>
-										</ul>
-									</div>
-								</div>
-								<div class="club-body">
-									<hr/>
-									{
-										if details.is_member {
-											html! {
-												<h3>{"You are interested in this club."}</h3>
-											}
-										} else {
-											html! {
-												<>
-												</>
-											}
-										}
-									}
-
-									{
-										if details.is_moderator == "head" {
-											html! {
-												<h3>{"You are the head moderator for this club."}</h3>
-											}
-										} else if details.is_moderator == "true" {
-											html! {
-												<h3>{"You are a moderator for this club."}</h3>
-											}
-										} else {
-											html! {
-												<>
-												</>
-											}
-										}
-									}
-									
-									<h2>{"About this Club"}</h2>
-									<hr/>
-									<div ref=self.markdown_body_ref.clone()>
-									</div>
-								</div>
-							</>
-						}
-					} else {
-						html! {
-							<>
-							</>
+					{
+						if self.redirect_to_404 {
+							html! {
+								<AppRedirect route=AppRoute::NotFound(Permissive(Some("Mingus".to_owned())))/>
+							}
+						} else {
+							html! {
+								<>
+								</>
+							}
 						}
 					}
-				}
-            </div>
+
+					{
+						if self.details.is_some() {
+							let details = self.details.as_ref().unwrap();
+							let date = details.publish_date;
+							let is_moderator = &details.is_moderator;
+
+							html! {
+								<>
+									<div class="club-header">
+										<div class="club-header-line">
+											<h1 class="club-name">{details.name.clone()}</h1>
+											{
+												if is_moderator == "true" || is_moderator == "head" {
+													html! {
+														<h1 class="club-edit">
+															<abbr data_title="Edit">
+																<button onclick=on_edit_button_click>
+																	<span class="material-icons">{"edit"}</span>
+																</button>
+															</abbr>
+														</h1>
+													}
+												} else {
+													html! {
+														<>
+														</>
+													}
+												}
+											}
+										</div>
+										<h3>
+											{"Published "} {date.format("%A, %B %e %Y")}
+										</h3>
+									</div>
+									<div class="club-image-wrapper">
+										<img class="club-image" src={format!("/assets/clubs/{}.png", details.id)}/>
+										<div class="club-image-panel">
+											<ul>
+												<li>
+													{"Created by "}<img src={format!("{}", details.head_moderator.picture)}/>
+												</li>
+												<li>
+													{details.member_count} {" interested"}
+												</li>
+												<li>
+													{"Published "} {date.format("%A, %B %e %Y")}
+												</li>
+											</ul>
+										</div>
+									</div>
+									<div class="club-body">
+										<hr/>
+										{
+											if details.is_member {
+												html! {
+													<h3>{"You are interested in this club."}</h3>
+												}
+											} else {
+												html! {
+													<>
+													</>
+												}
+											}
+										}
+
+										{
+											if details.is_moderator == "head" {
+												html! {
+													<h3>{"You are the head moderator for this club."}</h3>
+												}
+											} else if details.is_moderator == "true" {
+												html! {
+													<h3>{"You are a moderator for this club."}</h3>
+												}
+											} else {
+												html! {
+													<>
+													</>
+												}
+											}
+										}
+										
+										<h2>{"About this Club"}</h2>
+										<hr/>
+										<div ref=self.markdown_body_ref.clone()>
+										</div>
+									</div>
+								</>
+							}
+						} else {
+							html! {
+								<>
+								</>
+							}
+						}
+					}
+				</div>
+			</>
         }
 	}
 
