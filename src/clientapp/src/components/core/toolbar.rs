@@ -39,11 +39,12 @@ pub enum Msg {
 	Hide,
 	DoNothing,
 
-	EnterSignOutButtonState,
-	ExitSignOutButtonState,
 	HighlightButton(WhichButton),
 	UnhighlightButton(WhichButton),
 	AcceptExternalMsg,
+
+	RevealDropdown,
+	HideDropdown
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -81,21 +82,6 @@ impl Component for ToolbarComponent {
 		match msg {
 			Msg::DoNothing => {},
 
-			Msg::EnterSignOutButtonState => {
-				self.is_signout_button = true;
-
-				let link = self.link.clone();
-
-				self.hide_timer = Some(Timeout::new(3_000, move || {
-					link.send_message(Msg::ExitSignOutButtonState);
-				}));
-			}
-
-			Msg::ExitSignOutButtonState => {
-				self.is_signout_button = false;
-				self.hide_timer.take().unwrap().cancel();
-			}
-
 			Msg::SignOut => {
 				let req = Request::post("/auth/logout").body(yew::format::Nothing);
 
@@ -130,7 +116,7 @@ impl Component for ToolbarComponent {
 			}
 
 			Msg::Hide => {
-				let name = "dropdown-content-transition";
+				let name = "pfp-button-dropdown-in";
 				let el = self.dropdown_content_ref.cast::<HtmlElement>().unwrap();
 
 				if el.class_list().contains(name) {
@@ -162,6 +148,36 @@ impl Component for ToolbarComponent {
 						self.search_ref.cast::<HtmlElement>().unwrap().class_list().remove_1("selected").unwrap();
 					},
 				}
+			},
+
+			Msg::RevealDropdown => {
+				let el = self.dropdown_content_ref.cast::<HtmlElement>().unwrap().class_list();
+
+				if !el.contains("pfp-button-dropdown-in") {
+					el.add_1("pfp-button-dropdown-in").unwrap();
+					let link = self.link.clone();
+
+					self.hide_timer = Some(Timeout::new(3_000, move || {
+						link.send_message(Msg::HideDropdown);
+					}));
+
+				} else {
+					self.link.send_message(Msg::HideDropdown)
+				}
+
+				
+			},
+
+			Msg::HideDropdown => {
+				let el = self.dropdown_content_ref.cast::<HtmlElement>().unwrap().class_list();
+
+				if el.contains("pfp-button-dropdown-in") {
+					el.remove_1("pfp-button-dropdown-in").unwrap();
+				}
+
+				if self.hide_timer.is_some() {
+					self.hide_timer.take().unwrap().cancel();
+				}
 			}
 		};
 
@@ -173,7 +189,9 @@ impl Component for ToolbarComponent {
 	}
 
 	fn view(&self) -> Html {
-		let on_dropdown_button_clicked = self.link.callback(|e| Msg::EnterSignOutButtonState);
+		let on_dropdown_button_clicked = self.link.callback(|e| {
+			Msg::RevealDropdown
+		});
 		let sign_out_cb = self.link.callback(|e: MouseEvent| Msg::SignOut);
 		
 
@@ -197,18 +215,24 @@ impl Component for ToolbarComponent {
 								</div>
 
 								<div class="toolbar-inner-component-right-side">
-									<button class="dropdown-btn" onclick=if self.is_signout_button { sign_out_cb } else { on_dropdown_button_clicked }>
+									<button class="dropdown-btn" onclick=on_dropdown_button_clicked>
 										<img class="toolbar-pfp" src=self.props.pfp_url.clone()/>
 										<h1>
 										{
-											if self.is_signout_button {
-												String::from("Sign out")
-											} else {
-												self.props.username.clone()
-											}
+											self.props.username.clone()
 										}
 										</h1>
 									</button>
+								</div>
+
+								<div class="pfp-button-dropdown" ref=self.dropdown_content_ref.clone()>
+										<button onclick=sign_out_cb>
+											<span class="material-icons">
+												{"exit_to_app"}
+											</span>
+											
+											{"Sign out"}
+										</button>
 								</div>
 							</>
 						}

@@ -1234,6 +1234,47 @@ img[src="*"] {
     padding:1em;
 }
 
+.pfp-button-dropdown {
+    position: absolute;
+    background-color: thistle;
+    width: 10em;
+    height: auto;
+    right: 0;
+    top: 72px;
 
+    display: flex;
+    flex-direction: column;
+    transform: translateY(-7em);
+    transition: transform 0.3s;
+    z-index: -1;
+}
 
+.pfp-button-dropdown button {
+    width: 100%;
+    height: auto;
+    font-family: 'Open Sans';
+    outline: none;
+    border: none;
+    cursor: pointer;
+    background-color: #4C1A88;
+    font-size: 16px;
+    color: #EEEEEE;
+    padding: 0.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.20s ease-in;
+}
+
+.pfp-button-dropdown button span {
+    padding-right: 0.1em;
+}
+
+.pfp-button-dropdown button:hover {
+    background-color: #2bc29f;
+}
+
+.pfp-button-dropdown-in {
+    transform: translateY(0px);
+}
 
