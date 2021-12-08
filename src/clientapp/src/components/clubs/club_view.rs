@@ -392,6 +392,9 @@ impl Component for ClubView {
 					}
 
 					self.clubs = v;
+					
+					self.interested_radio_button_ref.cast::<HtmlButtonElement>().unwrap().click();
+					self.sort_clubs();
 
 					FetchState::Done(())
 				} else {
