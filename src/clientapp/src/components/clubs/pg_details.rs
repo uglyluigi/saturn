@@ -1,4 +1,4 @@
-use comrak::{arena_tree::Node, markdown_to_html, ComrakExtensionOptions, ComrakOptions};
+use comrak::{markdown_to_html, ComrakExtensionOptions, ComrakOptions};
 use serde::{Deserialize, Serialize};
 use web_sys::{
 	Blob,
@@ -112,7 +112,7 @@ impl Component for DetailsPage {
 
 										match body {
 											Ok(deets) => Msg::GetDetailsDone(deets),
-											Err(err) => Msg::GetDetailsFail,
+											Err(_err) => Msg::GetDetailsFail,
 										}
 									}
 
@@ -133,7 +133,7 @@ impl Component for DetailsPage {
 							Ok(task) => {
 								self.get_details_task = Some(task);
 							}
-							Err(err) => {}
+							Err(_err) => {}
 						}
 					}
 
@@ -170,7 +170,7 @@ impl Component for DetailsPage {
 	}
 
 	fn view(&self) -> Html {
-		let on_edit_button_click = self.link.callback(|e| Msg::EditClub);
+		let on_edit_button_click = self.link.callback(|_e| Msg::EditClub);
 
 		html! {
 			<>
@@ -315,10 +315,10 @@ impl Component for DetailsPage {
 		}
 	}
 
-	fn rendered(&mut self, first_render: bool) {
+	fn rendered(&mut self, _first_render: bool) {
 		if self.details.is_some() && !self.markdown_rendered {
 			let details = self.details.as_ref().unwrap();
-			let mut date = details.publish_date;
+			let _date = details.publish_date;
 
 			let el = self.markdown_body_ref.cast::<HtmlElement>().unwrap();
 
