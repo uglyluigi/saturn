@@ -1,12 +1,11 @@
-use std::fmt::Display;
+
 
 use anyhow::anyhow;
-use comrak::{arena_tree::Node, markdown_to_html, ComrakExtensionOptions, ComrakOptions};
+use comrak::{markdown_to_html, ComrakExtensionOptions, ComrakOptions};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use wasm_bindgen::{prelude::Closure, JsCast};
 use web_sys::{
-	Blob,
 	FileReader,
 	HtmlElement,
 	HtmlImageElement,
@@ -27,7 +26,7 @@ use yew::{
 };
 
 use crate::{
-	components::{ClubCard, Spinner},
+	components::{Spinner},
 	event::{Amogus, EventBus},
 	tell,
 	types::{BinaryBlob, ClubDetails, FetchState},
@@ -379,7 +378,7 @@ impl Component for NewClubPage {
 					// Clean your body with ammonia
 					let json = json!({"name": name, "body": ammonia::clean(&body)});
 
-					let request = if !self.is_edit_mode {
+					let _request = if !self.is_edit_mode {
 						Request::post("/api/clubs/create")
 							.body(Json(&json))
 							.unwrap()
@@ -622,7 +621,7 @@ impl Component for NewClubPage {
 
 		let image_input_callback = self
 			.link
-			.callback(|data: yew::html::InputData| Msg::ReadLogo);
+			.callback(|_data: yew::html::InputData| Msg::ReadLogo);
 
 		let close_cb = self.link.callback(|_| Msg::SendCloseMessage);
 
