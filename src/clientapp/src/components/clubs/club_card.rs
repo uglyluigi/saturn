@@ -1,11 +1,10 @@
-use std::rc::Rc;
+
 
 use gloo_dialogs::confirm;
-use regex::{self, Regex};
+
 use wasm_bindgen::{prelude::Closure, JsCast};
-use web_sys::{AnimationEffect, HtmlElement};
+use web_sys::{HtmlElement};
 use yew::{
-	agent::Dispatcher,
 	prelude::*,
 	services::fetch::{FetchService, FetchTask, Request, Response, StatusCode},
 	Properties,
@@ -13,7 +12,7 @@ use yew::{
 
 use crate::{
 	components::{clubs::pg_details, core::router::*, ClubView},
-	event::{AgentMessage, Amogus, EventBus},
+	event::{AgentMessage, Amogus},
 	tell,
 	types::*,
 };
@@ -126,9 +125,9 @@ impl Component for ClubCard {
 	type Properties = Props;
 
 	fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-		use rand::seq::SliceRandom;
+		
 
-		let colors = vec!["ED6A5A", "FF5964", "2BC29F"];
+		let _colors = vec!["ED6A5A", "FF5964", "2BC29F"];
 
 		Self {
 			link,
@@ -165,7 +164,7 @@ impl Component for ClubCard {
 			Msg::Delet => {
 				// opens confirm dialog
 				let result = confirm("Are you sure you want to delete?");
-				if (result) {
+				if result {
 					let req =
 						Request::delete(format!("/api/clubs/{}", self.props.details.unwrap().id))
 							.body(yew::format::Nothing);
@@ -201,7 +200,7 @@ impl Component for ClubCard {
 								}
 							}
 						}
-						Err(err) => (),
+						Err(_err) => (),
 					}
 
 					self.props
@@ -268,7 +267,7 @@ impl Component for ClubCard {
 							}
 						}
 					}
-					Err(err) => (),
+					Err(_err) => (),
 				}
 			}
 
@@ -318,7 +317,7 @@ impl Component for ClubCard {
 							}
 						}
 					}
-					Err(err) => (),
+					Err(_err) => (),
 				}
 			}
 
