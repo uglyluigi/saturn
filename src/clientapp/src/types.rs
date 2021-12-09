@@ -105,3 +105,8 @@ impl<'a> From<BinaryBlob<&'a Vec<u8>>> for yew::format::Binary {
 		Ok(value.0.to_vec())
 	}
 }
+
+struct AmongUs {
+	imposter: bool,
+	color: i64,
+}
