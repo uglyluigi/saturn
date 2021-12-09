@@ -98,7 +98,7 @@ impl<T: Clone> Clone for PartialEqDummy<T> {
 // All PartialEqDummy<T>'s are created equal (to other PartialEqDummy<T>'s)
 pub type Mlk<T> = PartialEqDummy<T>;
 
-pub struct BinaryBlob<T> (pub T);
+pub struct BinaryBlob<T>(pub T);
 
 impl<'a> From<BinaryBlob<&'a Vec<u8>>> for yew::format::Binary {
 	fn from(value: BinaryBlob<&'a Vec<u8>>) -> yew::format::Binary {
