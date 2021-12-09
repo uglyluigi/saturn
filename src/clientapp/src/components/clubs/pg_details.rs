@@ -1,12 +1,26 @@
+use comrak::{arena_tree::Node, markdown_to_html, ComrakExtensionOptions, ComrakOptions};
 use serde::{Deserialize, Serialize};
-use yew::{format::Json, prelude::*, services::fetch::{FetchTask, Response, StatusCode}};
-use crate::{event::{self, Amogus, EventBus, Request, AgentMessage}, types::*, components::NewClubPage};
-use comrak::{ComrakExtensionOptions, ComrakOptions, arena_tree::Node, markdown_to_html};
-use crate::components::core::router::*;
-use crate::tell;
-use web_sys::{Blob, FileReader, HtmlElement, HtmlImageElement, HtmlInputElement, HtmlTextAreaElement};
+use web_sys::{
+	Blob,
+	FileReader,
+	HtmlElement,
+	HtmlImageElement,
+	HtmlInputElement,
+	HtmlTextAreaElement,
+};
+use yew::{
+	format::Json,
+	prelude::*,
+	services::fetch::{FetchTask, Response, StatusCode},
+};
 use yew_router::switch::Permissive;
 
+use crate::{
+	components::{core::router::*, NewClubPage},
+	event::{self, AgentMessage, Amogus, EventBus, Request},
+	tell,
+	types::*,
+};
 
 pub struct DetailsPage {
 	link: ComponentLink<Self>,
@@ -15,7 +29,7 @@ pub struct DetailsPage {
 	bridge: Box<dyn yew::Bridge<Amogus>>,
 	markdown_body_ref: NodeRef,
 	markdown_rendered: bool,
-	
+
 	get_details_task: Option<FetchTask>,
 	get_details_task_state: FetchState<ClubDetails>,
 
@@ -49,7 +63,7 @@ impl Component for DetailsPage {
 	fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
 		link.send_message(Msg::GetDetails);
 
-		Self {  
+		Self {
 			props,
 			details: None,
 			bridge: EventBus::bridge(link.callback(|e| match e {
@@ -72,18 +86,19 @@ impl Component for DetailsPage {
 		match msg {
 			Msg::AcceptDetails(details) => {
 				self.details = Some(details);
-			},
-			
+			}
+
 			Msg::GetDetailsDone(details) => {
 				self.get_details_task = None;
 				self.get_details_task_state = FetchState::Waiting;
 				self.details = Some(details);
-			},
+			}
 
 			Msg::Ignore => (),
 			Msg::GetDetails => {
-				let req = yew::services::fetch::Request::get(format!("/api/clubs/{}", self.props.id))
-					.body(yew::format::Nothing);
+				let req =
+					yew::services::fetch::Request::get(format!("/api/clubs/{}", self.props.id))
+						.body(yew::format::Nothing);
 
 				self.get_details_task_state = FetchState::Waiting;
 
@@ -97,7 +112,7 @@ impl Component for DetailsPage {
 
 										match body {
 											Ok(deets) => Msg::GetDetailsDone(deets),
-											Err(err) => Msg::GetDetailsFail
+											Err(err) => Msg::GetDetailsFail,
 										}
 									}
 
@@ -126,21 +141,21 @@ impl Component for DetailsPage {
 						tell!("Failed to build request for user details: {:?}", err);
 					}
 				}
-			},
+			}
 
 			Msg::GetDetailsFail => {
 				self.get_details_task_state = FetchState::Failed(None);
 				self.get_details_task = None;
 				self.redirect_to_404 = true;
-			},
+			}
 
 			Msg::RequestLogin => {
 				self.redirect_to_logn = true;
-			},
+			}
 
 			Msg::EditClub => {
 				self.show_editor = true;
-			},
+			}
 
 			Msg::CloseEditor => {
 				self.show_editor = false;
@@ -155,9 +170,7 @@ impl Component for DetailsPage {
 	}
 
 	fn view(&self) -> Html {
-		let on_edit_button_click = self.link.callback(|e| {
-			Msg::EditClub
-		});
+		let on_edit_button_click = self.link.callback(|e| Msg::EditClub);
 
 		html! {
 			<>
@@ -185,7 +198,7 @@ impl Component for DetailsPage {
 								<>
 								</>
 							}
-						}	
+						}
 					}
 
 					{
@@ -282,7 +295,7 @@ impl Component for DetailsPage {
 												}
 											}
 										}
-										
+
 										<h2>{"About this Club"}</h2>
 										<hr/>
 										<div ref=self.markdown_body_ref.clone()>
@@ -299,16 +312,16 @@ impl Component for DetailsPage {
 					}
 				</div>
 			</>
-        }
+		}
 	}
 
 	fn rendered(&mut self, first_render: bool) {
 		if self.details.is_some() && !self.markdown_rendered {
 			let details = self.details.as_ref().unwrap();
 			let mut date = details.publish_date;
-		
+
 			let el = self.markdown_body_ref.cast::<HtmlElement>().unwrap();
-	
+
 			el.set_inner_html(
 				if let Some(md) = Some(details.body.clone()) {
 					let md = markdown_to_html(
@@ -321,7 +334,7 @@ impl Component for DetailsPage {
 							..ComrakOptions::default()
 						},
 					);
-	
+
 					self.markdown_rendered = true;
 					ammonia::clean(md.as_str())
 				} else {
@@ -330,5 +343,5 @@ impl Component for DetailsPage {
 				.as_str(),
 			);
 		}
-    }
+	}
 }
