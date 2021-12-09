@@ -1,15 +1,26 @@
 use gloo_timers::callback::Timeout;
+use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::Closure;
 use web_sys::{HtmlElement, MouseEvent};
-use yew::{Bridged, Component, ComponentLink, Html, NodeRef, Properties, ShouldRender, html, services::{
+use yew::{
+	html,
+	services::{
 		fetch::{FetchTask, Request, Response, StatusCode},
 		FetchService,
-	}};
+	},
+	Bridged,
+	Component,
+	ComponentLink,
+	Html,
+	NodeRef,
+	Properties,
+	ShouldRender,
+};
 
-use serde::{Serialize, Deserialize};
-
-use crate::{components::core::router::*, event::{Amogus, EventBus}};
-
+use crate::{
+	components::core::router::*,
+	event::{Amogus, EventBus},
+};
 
 pub struct ToolbarComponent {
 	link: ComponentLink<Self>,
@@ -44,7 +55,7 @@ pub enum Msg {
 	AcceptExternalMsg,
 
 	RevealDropdown,
-	HideDropdown
+	HideDropdown,
 }
 
 #[derive(Properties, Clone, PartialEq)]
@@ -80,7 +91,7 @@ impl Component for ToolbarComponent {
 
 	fn update(&mut self, msg: Self::Message) -> ShouldRender {
 		match msg {
-			Msg::DoNothing => {},
+			Msg::DoNothing => {}
 
 			Msg::SignOut => {
 				let req = Request::post("/auth/logout").body(yew::format::Nothing);
@@ -122,36 +133,54 @@ impl Component for ToolbarComponent {
 				if el.class_list().contains(name) {
 					el.class_list().remove_1(name).unwrap();
 				}
-			},
+			}
 
-			Msg::AcceptExternalMsg => {
+			Msg::AcceptExternalMsg => {}
 
-			},
-
-			Msg::HighlightButton(which) => {
-				match which {
-					WhichButton::AddClub => {
-						self.add_club_ref.cast::<HtmlElement>().unwrap().class_list().add_1("selected").unwrap();
-					},
-					WhichButton::Search => {
-						self.search_ref.cast::<HtmlElement>().unwrap().class_list().add_1("selected").unwrap();
-					},
+			Msg::HighlightButton(which) => match which {
+				WhichButton::AddClub => {
+					self.add_club_ref
+						.cast::<HtmlElement>()
+						.unwrap()
+						.class_list()
+						.add_1("selected")
+						.unwrap();
+				}
+				WhichButton::Search => {
+					self.search_ref
+						.cast::<HtmlElement>()
+						.unwrap()
+						.class_list()
+						.add_1("selected")
+						.unwrap();
 				}
 			},
 
-			Msg::UnhighlightButton(which) => {
-				match which {
-					WhichButton::AddClub => {
-						self.add_club_ref.cast::<HtmlElement>().unwrap().class_list().remove_1("selected").unwrap();
-					},
-					WhichButton::Search => {
-						self.search_ref.cast::<HtmlElement>().unwrap().class_list().remove_1("selected").unwrap();
-					},
+			Msg::UnhighlightButton(which) => match which {
+				WhichButton::AddClub => {
+					self.add_club_ref
+						.cast::<HtmlElement>()
+						.unwrap()
+						.class_list()
+						.remove_1("selected")
+						.unwrap();
+				}
+				WhichButton::Search => {
+					self.search_ref
+						.cast::<HtmlElement>()
+						.unwrap()
+						.class_list()
+						.remove_1("selected")
+						.unwrap();
 				}
 			},
 
 			Msg::RevealDropdown => {
-				let el = self.dropdown_content_ref.cast::<HtmlElement>().unwrap().class_list();
+				let el = self
+					.dropdown_content_ref
+					.cast::<HtmlElement>()
+					.unwrap()
+					.class_list();
 
 				if !el.contains("pfp-button-dropdown-in") {
 					el.add_1("pfp-button-dropdown-in").unwrap();
@@ -160,16 +189,17 @@ impl Component for ToolbarComponent {
 					self.hide_timer = Some(Timeout::new(3_000, move || {
 						link.send_message(Msg::HideDropdown);
 					}));
-
 				} else {
 					self.link.send_message(Msg::HideDropdown)
 				}
-
-				
-			},
+			}
 
 			Msg::HideDropdown => {
-				let el = self.dropdown_content_ref.cast::<HtmlElement>().unwrap().class_list();
+				let el = self
+					.dropdown_content_ref
+					.cast::<HtmlElement>()
+					.unwrap()
+					.class_list();
 
 				if el.contains("pfp-button-dropdown-in") {
 					el.remove_1("pfp-button-dropdown-in").unwrap();
@@ -189,11 +219,8 @@ impl Component for ToolbarComponent {
 	}
 
 	fn view(&self) -> Html {
-		let on_dropdown_button_clicked = self.link.callback(|e| {
-			Msg::RevealDropdown
-		});
+		let on_dropdown_button_clicked = self.link.callback(|e| Msg::RevealDropdown);
 		let sign_out_cb = self.link.callback(|e: MouseEvent| Msg::SignOut);
-		
 
 		html! {
 			<div class="toolbar-wrapper">
@@ -230,7 +257,7 @@ impl Component for ToolbarComponent {
 											<span class="material-icons">
 												{"exit_to_app"}
 											</span>
-											
+
 											{"Sign out"}
 										</button>
 								</div>
