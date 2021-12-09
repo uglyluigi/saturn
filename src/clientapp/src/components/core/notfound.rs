@@ -18,7 +18,7 @@ impl Component for NotFound {
 		Self { link, props }
 	}
 
-	fn update(&mut self, msg: Self::Message) -> ShouldRender {
+	fn update(&mut self, _msg: Self::Message) -> ShouldRender {
 		false
 	}
 
