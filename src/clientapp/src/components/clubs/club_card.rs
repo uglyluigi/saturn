@@ -339,6 +339,7 @@ impl Component for ClubCard {
 				} else if classes.contains("number-spin-out") {
 					classes.remove_1("number-spin-out").unwrap();
 					self.member_count -= 1;
+					//
 				}
 			}
 
