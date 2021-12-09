@@ -1,6 +1,6 @@
 use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
-use crate::components::core::router::*;
+
 
 pub struct Footer {
 	link: ComponentLink<Self>,
@@ -20,7 +20,7 @@ impl Component for Footer {
 		Self { link, props }
 	}
 
-	fn update(&mut self, msg: Self::Message) -> ShouldRender {
+	fn update(&mut self, _msg: Self::Message) -> ShouldRender {
 		false
 	}
 
