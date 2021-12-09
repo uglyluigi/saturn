@@ -19,14 +19,13 @@ pub enum AppRoute {
 	#[to = "/!"]
 	Home,
 	#[to = "/search/{term}"]
-	SearchTerm{term: String},
-	#[to= "/search"]
+	SearchTerm { term: String },
+	#[to = "/search"]
 	Search,
 	#[to = "/new_club"]
 	ClubForm,
 	#[to = "/details/{id}"]
-	Details{id: usize},
-
+	Details { id: usize },
 }
 
 pub type AppRouter = Router<AppRoute>;
@@ -45,7 +44,6 @@ impl<SW: Switch + Clone + 'static, STATE: RouterState> Component for RouterRedir
 
 	fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
 		let router = RouteAgentDispatcher::new();
-
 
 		Self {
 			link,
@@ -67,14 +65,11 @@ impl<SW: Switch + Clone + 'static, STATE: RouterState> Component for RouterRedir
 	fn view(&self) -> Html {
 		self.link.send_message(Msg::Clicked);
 
-
 		html! {
 			<>
 			</>
 		}
 	}
 
-	fn rendered(&mut self, _first_render: bool) {
-
-	}
+	fn rendered(&mut self, _first_render: bool) {}
 }
