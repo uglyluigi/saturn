@@ -1,10 +1,10 @@
 use std::cmp::Ordering;
 
 use anyhow::*;
-use js_sys::Function;
-use serde::{Deserialize, Serialize};
+
+
 use wasm_bindgen::JsCast;
-use web_sys::{HtmlButtonElement, HtmlElement, HtmlInputElement};
+use web_sys::{HtmlButtonElement};
 use yew::{
 	format::{Json, Nothing},
 	prelude::*,
@@ -259,7 +259,7 @@ impl Component for ClubView {
 							Ok(task) => {
 								self.push_task(task);
 							}
-							Err(err) => {}
+							Err(_err) => {}
 						}
 					}
 
@@ -308,7 +308,7 @@ impl Component for ClubView {
 							Ok(task) => {
 								self.push_task(task);
 							}
-							Err(err) => {}
+							Err(_err) => {}
 						}
 					}
 
@@ -318,7 +318,7 @@ impl Component for ClubView {
 				}
 			}
 
-			GetClubDetails(id) => {
+			GetClubDetails(_id) => {
 				self.clubs_fetch_state = FetchState::Waiting;
 
 				let req =
@@ -359,7 +359,7 @@ impl Component for ClubView {
 							Ok(task) => {
 								self.push_task(task);
 							}
-							Err(err) => {}
+							Err(_err) => {}
 						}
 					}
 
@@ -506,7 +506,7 @@ impl Component for ClubView {
 					{
 
 							match &self.clubs_fetch_state {
-								FetchState::Failed(maybe_msg) => {
+								FetchState::Failed(_maybe_msg) => {
 									html! {
 										<span class="bad">
 											<h2>{"Failed to fetch clubs."}</h2>
