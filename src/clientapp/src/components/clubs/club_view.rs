@@ -70,7 +70,6 @@ pub enum Msg {
 	FakeGettingClubs,
 	Ignore,
 
-
 	// Updates which rank to use. The thing wrapped in the enum is the button that was just selected
 	UpdateRankState(HtmlButtonElement),
 	UpdateClubSort,
@@ -106,15 +105,23 @@ impl ClubView {
 	}
 
 	pub fn get_radio_buttons(&self) -> [HtmlButtonElement; 3] {
-		let interested_button = self.interested_radio_button_ref.cast::<HtmlButtonElement>().unwrap();
-		let moderated_button = self.moderated_radio_button_ref.cast::<HtmlButtonElement>().unwrap();
-		let popular_button = self.most_popular_radio_button_ref.cast::<HtmlButtonElement>().unwrap();
+		let interested_button = self
+			.interested_radio_button_ref
+			.cast::<HtmlButtonElement>()
+			.unwrap();
+		let moderated_button = self
+			.moderated_radio_button_ref
+			.cast::<HtmlButtonElement>()
+			.unwrap();
+		let popular_button = self
+			.most_popular_radio_button_ref
+			.cast::<HtmlButtonElement>()
+			.unwrap();
 
 		[interested_button, moderated_button, popular_button]
 	}
 
 	pub fn make_cards(&self) -> Html {
-
 		let mut i = 0.1;
 
 		html! {
@@ -140,7 +147,7 @@ impl ClubView {
 
 		// Unsurprisingly, these sort functions sort in ascending order. However, this is not super useful
 		// when you want the items you consider to be "higher" to be towards the front of the list (which is
-		// basically descending order). As such these are basically sorting backwards with "greater" items 
+		// basically descending order). As such these are basically sorting backwards with "greater" items
 		// at lower indices. That way, clubs that are meeting whatever qualifications set forth by
 		// the ranker are towards the top of the page when displayed.
 
@@ -161,7 +168,9 @@ impl ClubView {
 				if x.is_moderator == y.is_moderator {
 					Ordering::Equal
 				} else {
-					if (x.is_moderator == "true" || x.is_moderator == "head") && y.is_moderator == "false" {
+					if (x.is_moderator == "true" || x.is_moderator == "head")
+						&& y.is_moderator == "false"
+					{
 						Ordering::Less
 					} else {
 						Ordering::Greater
@@ -325,9 +334,7 @@ impl Component for ClubView {
 										let Json(body) = response.into_body();
 
 										match body {
-											Ok(deets) => {
-												ReceiveClubDetails(Some(deets))
-											}
+											Ok(deets) => ReceiveClubDetails(Some(deets)),
 											Err(err) => {
 												tell!("Failed to deser auth data: {}", err);
 												Msg::ReceiveClubDetails(None)
@@ -392,8 +399,11 @@ impl Component for ClubView {
 					}
 
 					self.clubs = v;
-					
-					self.interested_radio_button_ref.cast::<HtmlButtonElement>().unwrap().click();
+
+					self.interested_radio_button_ref
+						.cast::<HtmlButtonElement>()
+						.unwrap()
+						.click();
 					self.sort_clubs();
 
 					FetchState::Done(())
@@ -402,25 +412,25 @@ impl Component for ClubView {
 						"Failed to get club details (struct was none)"
 					)))
 				}
-			},
+			}
 
 			RequestLogin => {
 				// I like how this really looks like a stupid pseudocode example.
 				// I need coffee haha = Laughter(Kind::Insincere)
 				self.redirect = Yes(AppRoute::Login);
-			},
+			}
 
 			ShowDialog => {
 				self.show_dialog = true;
-			},
+			}
 
 			HideDialog => {
 				self.show_dialog = false;
-			},
+			}
 
 			FakeGettingClubs => {
 				self.clubs_fetch_state = FetchState::Done(());
-			},
+			}
 
 			UpdateRankState(el) => {
 				self.show_cards = false;
@@ -433,12 +443,12 @@ impl Component for ClubView {
 				el.class_list().add_1("active-rank").unwrap();
 
 				self.link.send_message(Msg::UpdateClubSort);
-			},
+			}
 
 			UpdateClubSort => {
 				self.sort_clubs();
 				self.show_cards = true;
-			},
+			}
 		}
 
 		true
@@ -451,11 +461,7 @@ impl Component for ClubView {
 
 	fn view(&self) -> Html {
 		let on_clicc = self.link.callback(|e: MouseEvent| {
-			let target = e.target()
-			.unwrap()
-			.dyn_into::<HtmlButtonElement>()
-			.unwrap();
-
+			let target = e.target().unwrap().dyn_into::<HtmlButtonElement>().unwrap();
 
 			Msg::UpdateRankState(target)
 		});
@@ -493,8 +499,8 @@ impl Component for ClubView {
 								</button>
 							</div>
 						</div>
-					</div>		
-					
+					</div>
+
 					<div class="club-view-fetch-info">
 
 					{
@@ -570,7 +576,7 @@ impl Component for ClubView {
 										}
 									}
 								}
-					
+
 								_ => html! { <> </> },
 							}
 						}
