@@ -1116,7 +1116,6 @@ img[src="*"] {
     transform: translateX(-40px);
     transition: transform 0.25s ease-in-out;
     margin-right: 0.25em;
-    font-size: 30px;
 }
 
 .active-rank {
