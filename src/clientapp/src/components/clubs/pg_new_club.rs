@@ -1,20 +1,37 @@
 use std::fmt::Display;
 
 use anyhow::anyhow;
-use comrak::{ComrakExtensionOptions, ComrakOptions, arena_tree::Node, markdown_to_html};
-
-use serde::{Serialize, Deserialize};
-use serde_json::{json};
-use wasm_bindgen::{JsCast, prelude::Closure};
-use web_sys::{Blob, FileReader, HtmlElement, HtmlImageElement, HtmlInputElement, HtmlTextAreaElement};
-use yew::{Html, ShouldRender, agent::Dispatcher, format::{Bincode, Json, Nothing}, prelude::*, services::{
+use comrak::{arena_tree::Node, markdown_to_html, ComrakExtensionOptions, ComrakOptions};
+use serde::{Deserialize, Serialize};
+use serde_json::json;
+use wasm_bindgen::{prelude::Closure, JsCast};
+use web_sys::{
+	Blob,
+	FileReader,
+	HtmlElement,
+	HtmlImageElement,
+	HtmlInputElement,
+	HtmlTextAreaElement,
+};
+use yew::{
+	agent::Dispatcher,
+	binary_format,
+	format::{Bincode, Json, Nothing},
+	prelude::*,
+	services::{
 		fetch::{FetchTask, Request, Response, StatusCode},
 		FetchService,
-	}};
+	},
+	Html,
+	ShouldRender,
+};
 
-use crate::{components::{ClubCard, Spinner}, event::{Amogus, EventBus}, tell, types::{FetchState, ClubDetails}};
-use yew::binary_format;
-use crate::types::BinaryBlob;
+use crate::{
+	components::{ClubCard, Spinner},
+	event::{Amogus, EventBus},
+	tell,
+	types::{BinaryBlob, ClubDetails, FetchState},
+};
 
 pub struct NewClubPage {
 	link: ComponentLink<Self>,
@@ -39,7 +56,7 @@ pub struct NewClubPage {
 
 	right_col_ref: NodeRef,
 	left_col_ref: NodeRef,
-	
+
 	post_img_state: FetchState<()>,
 	post_img_task: Option<FetchTask>,
 	msg_acceptor: Box<dyn yew::Bridge<crate::event::Amogus>>,
@@ -60,7 +77,7 @@ pub enum Msg {
 	ValidateForm,
 	PostClubLogo(i32),
 	PostClubLogoDone,
-	
+
 	ReadLogo,
 
 	PostClub,
@@ -68,7 +85,7 @@ pub enum Msg {
 	Reset,
 	PostClubFailedDuplicateName,
 	ActivateEditMode(ClubDetails),
-	SendCloseMessage
+	SendCloseMessage,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -94,17 +111,11 @@ pub enum FormError {
 impl FormError {
 	fn unwrap(self) -> String {
 		match self {
-			Self::ClubName(string) => {
-				string
-			},
+			Self::ClubName(string) => string,
 
-			Self::ClubDescription(string) => {
-				string
-			},
+			Self::ClubDescription(string) => string,
 
-			Self::ClubLogo(string) => {
-				string
-			}
+			Self::ClubLogo(string) => string,
 		}
 	}
 }
@@ -120,9 +131,19 @@ impl NewClubPage {
 			self.form_errors.take(); //Take and drop
 		}
 
-		self.img_preview_ref.cast::<HtmlImageElement>().unwrap().remove_attribute("src").unwrap();
-		self.club_name_input_ref.cast::<HtmlInputElement>().unwrap().set_value("");
-		self.markdown_textarea_ref.cast::<HtmlTextAreaElement>().unwrap().set_value("");
+		self.img_preview_ref
+			.cast::<HtmlImageElement>()
+			.unwrap()
+			.remove_attribute("src")
+			.unwrap();
+		self.club_name_input_ref
+			.cast::<HtmlInputElement>()
+			.unwrap()
+			.set_value("");
+		self.markdown_textarea_ref
+			.cast::<HtmlTextAreaElement>()
+			.unwrap()
+			.set_value("");
 
 		self.markdown_preview_ref
 			.cast::<HtmlElement>()
@@ -132,7 +153,11 @@ impl NewClubPage {
 
 	fn close_editor(&self) {
 		let mut dispatcher = Amogus::dispatcher();
-		dispatcher.send(crate::event::Request::EventBusMsg(crate::event::AgentMessage::DetailsPageMsg(crate::components::pg_details::Msg::CloseEditor)));
+		dispatcher.send(crate::event::Request::EventBusMsg(
+			crate::event::AgentMessage::DetailsPageMsg(
+				crate::components::pg_details::Msg::CloseEditor,
+			),
+		));
 	}
 
 	fn add_form_error(&mut self, e: FormError) {
@@ -167,10 +192,10 @@ impl NewClubPage {
 								.unwrap()
 								.bytes()
 								.collect(),
-								// Ay yo Mistah White we need to get the target unwrap it cast it to FileReader
-								// Jesse
-								// unwrap it get the result unwrap it convert it to a string unwrap it get the bytes and collect it to a vec
-								// Jesse what the fuck are you talking about
+							// Ay yo Mistah White we need to get the target unwrap it cast it to FileReader
+							// Jesse
+							// unwrap it get the result unwrap it convert it to a string unwrap it get the bytes and collect it to a vec
+							// Jesse what the fuck are you talking about
 						))
 					})
 					.unchecked_ref(),
@@ -189,7 +214,7 @@ impl NewClubPage {
 					if let ClubLogo(_) = e {
 						ret_errors.push(error.clone());
 					}
-				} 
+				}
 
 				if let ClubName(_) = error {
 					if let ClubName(_) = e {
@@ -252,7 +277,7 @@ impl Component for NewClubPage {
 			toolbar_link: Amogus::dispatcher(),
 			left_col_ref: NodeRef::default(),
 			right_col_ref: NodeRef::default(),
-			
+
 			post_img_state: FetchState::Waiting,
 			post_img_task: None,
 			msg_acceptor: EventBus::bridge(link.callback(|e| match e {
@@ -268,7 +293,7 @@ impl Component for NewClubPage {
 	fn update(&mut self, msg: Self::Message) -> ShouldRender {
 		match msg {
 			Msg::Ignore => (),
-	
+
 			Msg::UpdateInfoState(which, value) => match which {
 				WhichTextField::TheBodyOne => {
 					self.club_body_field_contents = if value.len() > 0 { Some(value) } else { None }
@@ -318,17 +343,21 @@ impl Component for NewClubPage {
 				}
 
 				if self.long_club_description_contents.is_none() {
-					v.push(FormError::ClubDescription("Club description cannot be empty.".to_owned()));
+					v.push(FormError::ClubDescription(
+						"Club description cannot be empty.".to_owned(),
+					));
 				}
 
 				if let Some(el) = self.img_preview_ref.cast::<HtmlImageElement>() {
-
 					let src = el.src();
 
 					if src.is_empty() {
 						v.push(FormError::ClubLogo("Club logo cannot be empty.".to_owned()));
 					} else if src.bytes().len() > 1000000 {
-						v.push(FormError::ClubLogo(format!("Club logo is too large. ({} MB > 1MB)", src.bytes().len() as f32 / 1000000.0)));
+						v.push(FormError::ClubLogo(format!(
+							"Club logo is too large. ({} MB > 1MB)",
+							src.bytes().len() as f32 / 1000000.0
+						)));
 					}
 				}
 
@@ -352,18 +381,21 @@ impl Component for NewClubPage {
 
 					let request = if !self.is_edit_mode {
 						Request::post("/api/clubs/create")
-						.body(Json(&json))
-						.unwrap()
+							.body(Json(&json))
+							.unwrap()
 					} else {
-						Request::put(format!("/api/clubs/{}", self.props.starting_vals.as_ref().unwrap().id))
+						Request::put(format!(
+							"/api/clubs/{}",
+							self.props.starting_vals.as_ref().unwrap().id
+						))
 						.body(Json(&json))
 						.unwrap()
 					};
 
 					if !self.is_edit_mode {
 						let request = Request::post("/api/clubs/create")
-						.body(Json(&json))
-						.unwrap();
+							.body(Json(&json))
+							.unwrap();
 
 						let response_callback = self.link.callback(
 							|response: Response<Json<Result<Vec<ClubDetails>, anyhow::Error>>>| {
@@ -375,18 +407,18 @@ impl Component for NewClubPage {
 											Msg::PostClubDone(thing.as_ref().unwrap()[0].id)
 										} else {
 											Msg::Ignore
-										}									
-									},
-	
+										}
+									}
+
 									StatusCode::INTERNAL_SERVER_ERROR => {
 										Msg::PostClubFailedDuplicateName
-									},
-	
+									}
+
 									StatusCode::FORBIDDEN => {
 										// TODO make this redirect
 										Msg::Ignore
-									},
-	
+									}
+
 									_ => {
 										tell!("Bad status receieved: {:?}", response.status());
 										//Error stuff
@@ -395,7 +427,7 @@ impl Component for NewClubPage {
 								}
 							},
 						);
-	
+
 						match FetchService::fetch(request, response_callback) {
 							Ok(task) => self.post_task = Some(task),
 							Err(err) => {
@@ -405,7 +437,10 @@ impl Component for NewClubPage {
 							}
 						}
 					} else {
-						let request = Request::put(format!("/api/clubs/{}", self.props.starting_vals.as_ref().unwrap().id))
+						let request = Request::put(format!(
+							"/api/clubs/{}",
+							self.props.starting_vals.as_ref().unwrap().id
+						))
 						.body(Json(&json))
 						.unwrap();
 
@@ -419,17 +454,15 @@ impl Component for NewClubPage {
 											Msg::PostClubDone(thing.as_ref().unwrap().id)
 										} else {
 											Msg::Ignore
-										}									
-									},
-	
+										}
+									}
+
 									StatusCode::INTERNAL_SERVER_ERROR => {
 										Msg::PostClubFailedDuplicateName
-									},
-	
-									StatusCode::FORBIDDEN => {
-										Msg::Ignore
-									},
-	
+									}
+
+									StatusCode::FORBIDDEN => Msg::Ignore,
+
 									_ => {
 										tell!("Bad status receieved: {:?}", response.status());
 										//Error stuff
@@ -438,7 +471,7 @@ impl Component for NewClubPage {
 								}
 							},
 						);
-	
+
 						match FetchService::fetch(request, response_callback) {
 							Ok(task) => self.post_task = Some(task),
 							Err(err) => {
@@ -453,8 +486,10 @@ impl Component for NewClubPage {
 
 			Msg::PostClubFailedDuplicateName => {
 				self.post_task.take();
-				self.add_form_error(FormError::ClubName("A club with this name already exists.".to_owned()));
-			},
+				self.add_form_error(FormError::ClubName(
+					"A club with this name already exists.".to_owned(),
+				));
+			}
 
 			Msg::PostClubDone(id) => {
 				self.link.send_message(Msg::PostClubLogo(id));
@@ -465,21 +500,23 @@ impl Component for NewClubPage {
 
 				match std::str::from_utf8(&bytes[0..]) {
 					Ok(src) => el.set_src(src),
-					Err(_) => {
-						self.add_form_error(FormError::ClubLogo("Invalid image.".to_owned()))
-					},
+					Err(_) => self.add_form_error(FormError::ClubLogo("Invalid image.".to_owned())),
 				}
 			}
 
 			Msg::PostClubLogo(id) => {
 				self.post_logo_task_state = FetchState::Waiting;
-				let img_code = self.img_preview_ref.cast::<HtmlImageElement>().unwrap().src();
+				let img_code = self
+					.img_preview_ref
+					.cast::<HtmlImageElement>()
+					.unwrap()
+					.src();
 
 				if !img_code.starts_with("data:image/png;base64") {
 					tell!("Image was not changed. Skipping");
 					return true;
 				}
-				
+
 				let thing = base64::decode(img_code[22..].to_owned()).unwrap();
 				let binchilling = BinaryBlob(&thing);
 				let request = Request::put(format!("/api/clubs/{}/logo", id))
@@ -487,29 +524,29 @@ impl Component for NewClubPage {
 					.header("Content-Type", "image/png")
 					.body(binchilling)
 					.unwrap();
-					
-				let response_callback = self.link.callback(
-					|response: Response<yew::format::Binary>| {
-						match response.status() {
-							StatusCode::ACCEPTED => {
-								tell!("Successfully put`ed logo");
-								Msg::PostClubLogoDone
-							},
 
-							StatusCode::FORBIDDEN => {
-								// TODO make this redirect
-								Msg::Ignore
-							},
-				
-							_ => {
-								tell!("Bad status receieved: {:?}", response.status());
-								//Error stuff
-								Msg::Ignore
+				let response_callback =
+					self.link
+						.callback(|response: Response<yew::format::Binary>| {
+							match response.status() {
+								StatusCode::ACCEPTED => {
+									tell!("Successfully put`ed logo");
+									Msg::PostClubLogoDone
+								}
+
+								StatusCode::FORBIDDEN => {
+									// TODO make this redirect
+									Msg::Ignore
+								}
+
+								_ => {
+									tell!("Bad status receieved: {:?}", response.status());
+									//Error stuff
+									Msg::Ignore
+								}
 							}
-						}
-					},
-				);
-				
+						});
+
 				match FetchService::fetch_binary(request, response_callback) {
 					Ok(task) => self.post_img_task = Some(task),
 					Err(err) => {
@@ -518,31 +555,45 @@ impl Component for NewClubPage {
 							FetchState::Failed(Some(anyhow!(format!("{:?}", err))));
 					}
 				}
-			},
-			
+			}
+
 			Msg::PostClubLogoDone => {
 				self.reset();
-			},
-			
+			}
 
 			Msg::ReadLogo => {
 				self.read_img_sync();
-			},
+			}
 
 			Msg::Reset => {
-				if gloo_dialogs::confirm("Are you sure you want to clear all fields? This cannot be undone.") {
+				if gloo_dialogs::confirm(
+					"Are you sure you want to clear all fields? This cannot be undone.",
+				) {
 					self.reset();
 				}
-			},
+			}
 
 			Msg::ActivateEditMode(deets) => {
 				self.is_edit_mode = true;
-				self.img_preview_ref.cast::<HtmlImageElement>().unwrap().set_src(format!("/assets/clubs/{}.png", deets.id).as_str());
-				self.markdown_textarea_ref.cast::<HtmlInputElement>().unwrap().set_value(deets.body.as_str());
-				self.club_name_input_ref.cast::<HtmlInputElement>().unwrap().set_value(deets.name.as_str());
-				self.link.send_message(Msg::UpdateInfoState(WhichTextField::TheLongDescriptionOne, deets.body));
-				self.link.send_message(Msg::UpdateInfoState(WhichTextField::TheNameOne, deets.name));
-			},
+				self.img_preview_ref
+					.cast::<HtmlImageElement>()
+					.unwrap()
+					.set_src(format!("/assets/clubs/{}.png", deets.id).as_str());
+				self.markdown_textarea_ref
+					.cast::<HtmlInputElement>()
+					.unwrap()
+					.set_value(deets.body.as_str());
+				self.club_name_input_ref
+					.cast::<HtmlInputElement>()
+					.unwrap()
+					.set_value(deets.name.as_str());
+				self.link.send_message(Msg::UpdateInfoState(
+					WhichTextField::TheLongDescriptionOne,
+					deets.body,
+				));
+				self.link
+					.send_message(Msg::UpdateInfoState(WhichTextField::TheNameOne, deets.name));
+			}
 
 			Msg::SendCloseMessage => {
 				self.close_editor();
@@ -565,21 +616,15 @@ impl Component for NewClubPage {
 			Msg::UpdateInfoState(WhichTextField::TheLongDescriptionOne, data.value)
 		});
 
-		let submit_cb = self.link.callback(|_| {
-			Msg::ValidateForm
-		});
+		let submit_cb = self.link.callback(|_| Msg::ValidateForm);
 
-		let reset_cb = self.link.callback(|_| {
-			Msg::Reset
-		});
+		let reset_cb = self.link.callback(|_| Msg::Reset);
 
 		let image_input_callback = self
 			.link
 			.callback(|data: yew::html::InputData| Msg::ReadLogo);
 
-		let close_cb = self.link.callback(|_| {
-			Msg::SendCloseMessage
-		});
+		let close_cb = self.link.callback(|_| Msg::SendCloseMessage);
 
 		html! {
 			<div class="new-club-page">
@@ -681,22 +726,49 @@ impl Component for NewClubPage {
 
 	fn rendered(&mut self, first: bool) {
 		if first {
-			self.club_name_input_ref.cast::<HtmlElement>().unwrap().focus().unwrap();
-			self.left_col_ref.cast::<HtmlElement>().unwrap().class_list().add_1("new-club-page-col-in").unwrap();
-			self.right_col_ref.cast::<HtmlElement>().unwrap().class_list().add_1("new-club-page-col-in").unwrap();
+			self.club_name_input_ref
+				.cast::<HtmlElement>()
+				.unwrap()
+				.focus()
+				.unwrap();
+			self.left_col_ref
+				.cast::<HtmlElement>()
+				.unwrap()
+				.class_list()
+				.add_1("new-club-page-col-in")
+				.unwrap();
+			self.right_col_ref
+				.cast::<HtmlElement>()
+				.unwrap()
+				.class_list()
+				.add_1("new-club-page-col-in")
+				.unwrap();
 
 			use crate::event::*;
 
 			if self.props.starting_vals.is_some() {
-				self.link.send_message(Msg::ActivateEditMode(self.props.starting_vals.clone().unwrap()));
+				self.link.send_message(Msg::ActivateEditMode(
+					self.props.starting_vals.clone().unwrap(),
+				));
 			} else {
-				self.toolbar_link.send(Request::EventBusMsg(AgentMessage::ToolbarMsg(crate::components::core::toolbar::Msg::HighlightButton(crate::components::core::toolbar::WhichButton::AddClub))));
+				self.toolbar_link
+					.send(Request::EventBusMsg(AgentMessage::ToolbarMsg(
+						crate::components::core::toolbar::Msg::HighlightButton(
+							crate::components::core::toolbar::WhichButton::AddClub,
+						),
+					)));
 			}
-		}	
+		}
 	}
 
 	fn destroy(&mut self) {
-		use crate::{components::core::toolbar::{Msg, WhichButton}, event::*};
-		self.toolbar_link.send(Request::EventBusMsg(AgentMessage::ToolbarMsg(Msg::UnhighlightButton(WhichButton::AddClub))))
+		use crate::{
+			components::core::toolbar::{Msg, WhichButton},
+			event::*,
+		};
+		self.toolbar_link
+			.send(Request::EventBusMsg(AgentMessage::ToolbarMsg(
+				Msg::UnhighlightButton(WhichButton::AddClub),
+			)))
 	}
 }
