@@ -1,6 +1,6 @@
 use gloo_timers::callback::Timeout;
 use serde::{Deserialize, Serialize};
-use wasm_bindgen::prelude::Closure;
+
 use web_sys::{HtmlElement, MouseEvent};
 use yew::{
 	html,
@@ -116,7 +116,7 @@ impl Component for ToolbarComponent {
 						};
 					}
 
-					Err(err) => (),
+					Err(_err) => (),
 				}
 			}
 
@@ -219,8 +219,8 @@ impl Component for ToolbarComponent {
 	}
 
 	fn view(&self) -> Html {
-		let on_dropdown_button_clicked = self.link.callback(|e| Msg::RevealDropdown);
-		let sign_out_cb = self.link.callback(|e: MouseEvent| Msg::SignOut);
+		let on_dropdown_button_clicked = self.link.callback(|_e| Msg::RevealDropdown);
+		let sign_out_cb = self.link.callback(|_e: MouseEvent| Msg::SignOut);
 
 		html! {
 			<div class="toolbar-wrapper">
