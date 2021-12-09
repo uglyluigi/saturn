@@ -1,4 +1,4 @@
-use yew::{html, services::ConsoleService, Component, ComponentLink, Html, ShouldRender};
+use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
 use crate::flags::IS_DEBUG_MODE;
 
