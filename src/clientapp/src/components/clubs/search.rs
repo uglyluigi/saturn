@@ -3,10 +3,13 @@ use gloo_timers::callback::Timeout;
 use regex::internal::Inst;
 use wasm_bindgen::prelude::Closure;
 use web_sys::HtmlElement;
-use yew::{Properties, agent::Dispatcher, prelude::*};
+use yew::{agent::Dispatcher, prelude::*, Properties};
 
-use crate::{components::clubs::ClubView, event::{Amogus, EventBus}, types::ClubDetails};
-
+use crate::{
+	components::clubs::ClubView,
+	event::{Amogus, EventBus},
+	types::ClubDetails,
+};
 
 // TODO Future improvements
 // Add search filters, aka searching specifically by user, body text, or organizer
@@ -31,9 +34,7 @@ pub struct ClubViewEmitter {
 // and automatically searches.
 impl ClubViewEmitter {
 	pub fn new(default: bool) -> Self {
-		Self {
-			show: default,
-		}
+		Self { show: default }
 	}
 
 	fn get(&self, search_text: Option<String>) -> Html {
@@ -153,15 +154,36 @@ impl Component for SearchBar {
 
 	fn rendered(&mut self, first: bool) {
 		if first {
-			self.search_bar_ref.cast::<HtmlElement>().unwrap().focus().unwrap();
-			self.container_ref.cast::<HtmlElement>().unwrap().class_list().add_1("search-bar-container-in").unwrap();
-			use crate::{components::core::toolbar::{Msg, WhichButton}, event::*};
-			self.toolbar_link.send(Request::EventBusMsg(AgentMessage::ToolbarMsg(Msg::HighlightButton(WhichButton::Search))));
-		}	
+			self.search_bar_ref
+				.cast::<HtmlElement>()
+				.unwrap()
+				.focus()
+				.unwrap();
+			self.container_ref
+				.cast::<HtmlElement>()
+				.unwrap()
+				.class_list()
+				.add_1("search-bar-container-in")
+				.unwrap();
+			use crate::{
+				components::core::toolbar::{Msg, WhichButton},
+				event::*,
+			};
+			self.toolbar_link
+				.send(Request::EventBusMsg(AgentMessage::ToolbarMsg(
+					Msg::HighlightButton(WhichButton::Search),
+				)));
+		}
 	}
 
 	fn destroy(&mut self) {
-		use crate::{components::core::toolbar::{Msg, WhichButton}, event::*};
-		self.toolbar_link.send(Request::EventBusMsg(AgentMessage::ToolbarMsg(Msg::UnhighlightButton(WhichButton::Search))))
+		use crate::{
+			components::core::toolbar::{Msg, WhichButton},
+			event::*,
+		};
+		self.toolbar_link
+			.send(Request::EventBusMsg(AgentMessage::ToolbarMsg(
+				Msg::UnhighlightButton(WhichButton::Search),
+			)))
 	}
 }
