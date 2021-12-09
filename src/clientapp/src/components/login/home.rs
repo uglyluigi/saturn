@@ -5,12 +5,13 @@ use yew::{
 	services::fetch::{FetchService, FetchTask, Request, Response, StatusCode},
 };
 
-use crate::{components::{
+use crate::{
+	components::{
 		core::{router::*, *},
 		ClubView,
+		DetailsPage,
 		NewClubPage,
 		SearchBar,
-		DetailsPage
 	},
 	tell,
 	types::*,
@@ -131,7 +132,7 @@ impl Component for Home {
 }
 
 impl Home {
-	fn normal_view(&self) -> Html {		
+	fn normal_view(&self) -> Html {
 		match &self.fetch_state {
 			FetchState::Waiting => html! {
 				<h1> {"Waiting..."} </h1>
@@ -150,7 +151,7 @@ impl Home {
 											<ClubView/>
 										}
 									},
-									
+
 									AppRoute::Search => {
 										html! {
 											<SearchBar/>
