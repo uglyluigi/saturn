@@ -1,7 +1,7 @@
 use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
 use gloo_timers::callback::Timeout;
-use regex::internal::Inst;
-use wasm_bindgen::prelude::Closure;
+
+
 use web_sys::HtmlElement;
 use yew::{agent::Dispatcher, prelude::*, Properties};
 
@@ -136,7 +136,7 @@ impl Component for SearchBar {
 			.link
 			.callback(|data: yew::html::InputData| Msg::UpdateSearchFieldState(data.value));
 
-		let key_cb = self.link.callback(|data: KeyboardEvent| Msg::AfterKeyPress);
+		let key_cb = self.link.callback(|_data: KeyboardEvent| Msg::AfterKeyPress);
 
 		html! {
 			<>
