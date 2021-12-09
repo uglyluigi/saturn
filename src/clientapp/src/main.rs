@@ -1,9 +1,9 @@
 use yew::prelude::*;
 mod components;
+mod event;
 mod flags;
 mod types;
 mod wbg;
-mod event;
 
 use components::{
 	coolshit::ThreeJSViewport,
