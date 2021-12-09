@@ -4,10 +4,19 @@ use gloo_dialogs::confirm;
 use regex::{self, Regex};
 use wasm_bindgen::{prelude::Closure, JsCast};
 use web_sys::{AnimationEffect, HtmlElement};
-use yew::{Properties, agent::Dispatcher, prelude::*, services::fetch::{FetchService, FetchTask, Request, Response, StatusCode}};
+use yew::{
+	agent::Dispatcher,
+	prelude::*,
+	services::fetch::{FetchService, FetchTask, Request, Response, StatusCode},
+	Properties,
+};
 
-
-use crate::{components::{ClubView, clubs::pg_details, core::router::*}, event::{AgentMessage, Amogus, EventBus}, tell, types::*};
+use crate::{
+	components::{clubs::pg_details, core::router::*, ClubView},
+	event::{AgentMessage, Amogus, EventBus},
+	tell,
+	types::*,
+};
 
 // The component representing the cards that live inside the club view.
 pub struct ClubCard {
@@ -66,7 +75,7 @@ pub enum Msg {
 	AnimDone,
 	ShowDetails,
 
-	SendDetails
+	SendDetails,
 }
 
 // An enum used to represent the current state of the star button,
@@ -95,7 +104,7 @@ impl std::convert::Into<Html> for JoinButton {
 
 impl ClubCard {
 	// A function that is called in the view function. Either returns a VNode containing
-	// a delete button or an empty VNode, depending on whether or not the user is 
+	// a delete button or an empty VNode, depending on whether or not the user is
 	// authorized to delete the club or not.
 	pub fn delete_btn(&self) -> Html {
 		let delete = self.link.callback(|_: MouseEvent| Msg::Delet);
@@ -152,7 +161,6 @@ impl Component for ClubCard {
 
 	fn update(&mut self, msg: Self::Message) -> ShouldRender {
 		match msg {
-
 			// Deletes the club represented by this card.
 			Msg::Delet => {
 				// opens confirm dialog
@@ -202,7 +210,7 @@ impl Component for ClubCard {
 						.send_message(crate::components::club_view::Msg::GetClubDetails(None));
 				}
 			}
-			
+
 			// Sent when the fetch service finishes deleting the club.
 			Msg::DoneDelet => {
 				self.delete_fetch_state = Some(FetchState::Done(()));
@@ -333,17 +341,21 @@ impl Component for ClubCard {
 					classes.remove_1("number-spin-out").unwrap();
 					self.member_count -= 1;
 				}
-			},
+			}
 
 			Msg::ShowDetails => {
 				self.show_details = true;
 				self.link.send_message(Msg::SendDetails);
-			},
+			}
 
 			Msg::SendDetails => {
-				// Send the details to the details page via the 
+				// Send the details to the details page via the
 				let mut dispatcher = Amogus::dispatcher();
-				dispatcher.send(crate::event::Request::EventBusMsg(AgentMessage::DetailsPageMsg(pg_details::Msg::AcceptDetails(self.props.details.clone().unwrap_into()))));
+				dispatcher.send(crate::event::Request::EventBusMsg(
+					AgentMessage::DetailsPageMsg(pg_details::Msg::AcceptDetails(
+						self.props.details.clone().unwrap_into(),
+					)),
+				));
 			}
 		}
 
@@ -359,9 +371,7 @@ impl Component for ClubCard {
 		let join_club = self.link.callback(|_: MouseEvent| Msg::Join);
 		let leave_club = self.link.callback(|_: MouseEvent| Msg::Leave);
 
-		let open_details = self.link.callback(move |_: MouseEvent| {
-			Msg::ShowDetails
-		});
+		let open_details = self.link.callback(move |_: MouseEvent| Msg::ShowDetails);
 
 		html! {
 			<div>
