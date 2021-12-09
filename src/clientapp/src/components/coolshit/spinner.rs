@@ -25,7 +25,7 @@ impl Component for Spinner {
 		Self { link, props }
 	}
 
-	fn update(&mut self, msg: Self::Message) -> ShouldRender {
+	fn update(&mut self, _msg: Self::Message) -> ShouldRender {
 		false
 	}
 
