@@ -6,7 +6,7 @@ use yew_router::{
 	switch::Permissive,
 };
 
-use crate::types::ClubDetails;
+
 
 #[derive(Clone, Debug, Switch)]
 pub enum AppRoute {
@@ -52,13 +52,13 @@ impl<SW: Switch + Clone + 'static, STATE: RouterState> Component for RouterRedir
 		}
 	}
 
-	fn update(&mut self, msg: Self::Message) -> ShouldRender {
+	fn update(&mut self, _msg: Self::Message) -> ShouldRender {
 		let route: Route<STATE> = Route::from(self.props.route.clone());
 		self.router.send(RouteRequest::ChangeRoute(route));
 		false
 	}
 
-	fn change(&mut self, props: Self::Properties) -> ShouldRender {
+	fn change(&mut self, _props: Self::Properties) -> ShouldRender {
 		false
 	}
 
