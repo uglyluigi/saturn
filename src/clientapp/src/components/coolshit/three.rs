@@ -1,4 +1,4 @@
-use wasm_bindgen::prelude::*;
+
 use yew::prelude::*;
 
 pub struct ThreeJSViewport {
